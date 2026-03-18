@@ -29,7 +29,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @author Yonel Ceruto <yonelceruto@gmail.com>
  */
 #[ORM\Entity(repositoryClass: PostRepository::class)]
-#[ORM\Table(name: 'symfony_demo_post')]
+#[ORM\Table(name: 'post')]
 #[UniqueEntity(fields: ['slug'], errorPath: 'title', message: 'post.slug_unique')]
 class Post
 {
@@ -38,16 +38,15 @@ class Post
     #[ORM\Column(type: Types::INTEGER)]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::STRING)]
+    #[ORM\Column(type: Types::STRING, length: 191)]
     #[Assert\NotBlank]
     private ?string $title = null;
 
-    #[ORM\Column(type: Types::STRING)]
+    #[ORM\Column(type: Types::STRING, length: 191)]
     private ?string $slug = null;
 
-    #[ORM\Column(type: Types::STRING)]
+    #[ORM\Column(type: Types::STRING, length: 191)]
     #[Assert\NotBlank(message: 'post.blank_summary')]
-    #[Assert\Length(max: 255)]
     private ?string $summary = null;
 
     #[ORM\Column(type: Types::TEXT)]
@@ -73,7 +72,7 @@ class Post
      * @var Collection<int, Tag>
      */
     #[ORM\ManyToMany(targetEntity: Tag::class, cascade: ['persist'])]
-    #[ORM\JoinTable(name: 'symfony_demo_post_tag')]
+    #[ORM\JoinTable(name: 'post_tag')]
     #[ORM\OrderBy(['name' => 'ASC'])]
     #[Assert\Count(max: 4, maxMessage: 'post.too_many_tags')]
     private Collection $tags;

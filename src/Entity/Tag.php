@@ -22,7 +22,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @author Yonel Ceruto <yonelceruto@gmail.com>
  */
 #[ORM\Entity]
-#[ORM\Table(name: 'symfony_demo_tag')]
+#[ORM\Table(name: 'tag')]
 class Tag implements \Stringable, \JsonSerializable
 {
     #[ORM\Id]
@@ -30,7 +30,7 @@ class Tag implements \Stringable, \JsonSerializable
     #[ORM\Column(type: Types::INTEGER)]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::STRING, unique: true)]
+    #[ORM\Column(type: Types::STRING, length: 191, unique: true)]
     private readonly string $name;
 
     public function __construct(string $name)
