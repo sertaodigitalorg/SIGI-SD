@@ -58,7 +58,7 @@
 
             <trans-unit id="title.homepage">
                 <source>title.homepage</source>
-                <target><![CDATA[Bem-vindo à aplicação <strong>Symfony Demo</strong>]]></target>
+                <target><![CDATA[Bem-vindo ao <strong>SIGI-SD</strong>]]></target>
             </trans-unit>
             <trans-unit id="title.source_code">
                 <source>title.source_code</source>
@@ -171,7 +171,7 @@
             </trans-unit>
             <trans-unit id="action.browse_app">
                 <source>action.browse_app</source>
-                <target>Navegar na aplicação</target>
+                <target>Navegar na área pública</target>
             </trans-unit>
             <trans-unit id="action.browse_admin">
                 <source>action.browse_admin</source>
@@ -373,11 +373,11 @@
             </trans-unit>
             <trans-unit id="help.browse_app">
                 <source>help.browse_app</source>
-                <target><![CDATA[Navegue pela <strong>área pública</strong> da aplicação de demonstração.]]></target>
+                <target><![CDATA[Navegue pela <strong>área pública</strong> do SIGI-SD, comunicados e observatórios.]]></target>
             </trans-unit>
             <trans-unit id="help.browse_admin">
                 <source>help.browse_admin</source>
-                <target><![CDATA[Navegue pela <strong>área administrativa</strong> da aplicação de demonstração.]]></target>
+                <target><![CDATA[Navegue pela <strong>área administrativa</strong> do SIGI-SD, gerenciamento e configuração.]]></target>
             </trans-unit>
             <trans-unit id="help.login_users">
                 <source>help.login_users</source>
@@ -428,7 +428,7 @@
 
             <trans-unit id="rss.title">
                 <source>rss.title</source>
-                <target>Symfony Demo blog</target>
+                <target>SIGI-SD</target>
             </trans-unit>
             <trans-unit id="rss.description">
                 <source>rss.description</source>

@@ -24,12 +24,6 @@ class Organization
     #[ORM\Column(length: 18, unique: true)]
     private ?string $cnpj = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?string $email = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?string $phone = null;
-
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
@@ -78,30 +72,6 @@ class Organization
     public function setCnpj(string $cnpj): static
     {
         $this->cnpj = $cnpj;
-
-        return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(?string $email): static
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    public function getPhone(): ?string
-    {
-        return $this->phone;
-    }
-
-    public function setPhone(?string $phone): static
-    {
-        $this->phone = $phone;
 
         return $this;
     }

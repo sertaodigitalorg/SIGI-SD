@@ -21,12 +21,6 @@ class Person
     #[ORM\Column(length: 14, unique: true)]
     private ?string $cpf = null;
 
-    #[ORM\Column(length: 191, nullable: true)]
-    private ?string $email = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?string $phone = null;
-
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
@@ -63,30 +57,6 @@ class Person
     public function setCpf(string $cpf): static
     {
         $this->cpf = $cpf;
-
-        return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(?string $email): static
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    public function getPhone(): ?string
-    {
-        return $this->phone;
-    }
-
-    public function setPhone(?string $phone): static
-    {
-        $this->phone = $phone;
 
         return $this;
     }
