@@ -291,6 +291,18 @@
                 <source>menu.admin</source>
                 <target>Backend</target>
             </trans-unit>
+            <trans-unit id="menu.organizations">
+                <source>menu.organizations</source>
+                <target>Organizations</target>
+            </trans-unit>
+            <trans-unit id="menu.organization_list">
+                <source>menu.organization_list</source>
+                <target>Organization list</target>
+            </trans-unit>
+            <trans-unit id="menu.organization_new">
+                <source>menu.organization_new</source>
+                <target>New organization</target>
+            </trans-unit>
             <trans-unit id="menu.user">
                 <source>menu.user</source>
                 <target>Account</target>

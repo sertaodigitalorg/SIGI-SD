@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use App\Entity\Organization;
 use App\Entity\User;
@@ -14,13 +14,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/organizations'), IsGranted(User::ROLE_USER)]
+#[Route('/admin/organizations'), IsGranted(User::ROLE_ADMIN)]
 final class OrganizationController extends AbstractController
 {
     #[Route('', name: 'organization_index', methods: ['GET'])]
     public function index(OrganizationRepository $organizationRepository): Response
     {
-        return $this->render('organization/index.html.twig', [
+        return $this->render('admin/organization/index.html.twig', [
             'organizations' => $organizationRepository->createAlphabeticalQueryBuilder()->getQuery()->getResult(),
         ]);
     }
@@ -42,7 +42,7 @@ final class OrganizationController extends AbstractController
             return $this->redirectToRoute('organization_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('organization/new.html.twig', [
+        return $this->render('admin/organization/new.html.twig', [
             'organization' => $organization,
             'form' => $form,
         ]);
@@ -51,7 +51,7 @@ final class OrganizationController extends AbstractController
     #[Route('/{id}', name: 'organization_show', methods: ['GET'])]
     public function show(Organization $organization): Response
     {
-        return $this->render('organization/show.html.twig', [
+        return $this->render('admin/organization/show.html.twig', [
             'organization' => $organization,
         ]);
     }
@@ -71,7 +71,7 @@ final class OrganizationController extends AbstractController
             return $this->redirectToRoute('organization_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('organization/edit.html.twig', [
+        return $this->render('admin/organization/edit.html.twig', [
             'organization' => $organization,
             'form' => $form,
         ]);

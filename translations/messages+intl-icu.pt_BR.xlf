@@ -291,6 +291,18 @@
                 <source>menu.admin</source>
                 <target>Área Administrativa</target>
             </trans-unit>
+            <trans-unit id="menu.organizations">
+                <source>menu.organizations</source>
+                <target>Organizações</target>
+            </trans-unit>
+            <trans-unit id="menu.organization_list">
+                <source>menu.organization_list</source>
+                <target>Lista de organizações</target>
+            </trans-unit>
+            <trans-unit id="menu.organization_new">
+                <source>menu.organization_new</source>
+                <target>Nova organização</target>
+            </trans-unit>
             <trans-unit id="menu.user">
                 <source>menu.user</source>
                 <target>Conta</target>

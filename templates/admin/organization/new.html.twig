@@ -1,0 +1,9 @@
+﻿{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Nova organização{% endblock %}
+
+{% block main %}
+    <h1 class="mb-4">Nova organização</h1>
+
+    {{ include('admin/organization/_form.html.twig', {button_label: 'Criar organização'}) }}
+{% endblock %}
