@@ -19,24 +19,35 @@ class GeographyFixtures extends Fixture
         // COUNTRY - BRAZIL
         // =========================
         $brazil = new Country();
-        $brazil->setName('Brazil');
+        $brazil->setName('Brasil');
         $brazil->setIso2('BR');
         $brazil->setIso3('BRA');
         $brazil->setNumericCode('076');
         $brazil->setPhoneCode('55');
         $brazil->setCurrency('BRL');
-        $brazil->setCreatedAt(new \DateTimeImmutable('2026-03-19 01:33:06'));
-
+    
         $manager->persist($brazil);
 
         // =========================
-        // REGION - NORTHEAST
+        // REGION (ALL BRAZIL)
         // =========================
-        $northeast = new Region();
-        $northeast->setName('Nordeste');
-        $northeast->setCountry($brazil);
+        $regionsData = [
+            ['Norte'],
+            ['Nordeste'],
+            ['Sudeste'],
+            ['Sul'],
+            ['Centro-Oeste']
+        ];
+            
+        foreach ($regionsData as [$name]) {
+            $region = new Region();
+            $region->setName($name);
+            $region->setCountry($brazil);
 
-        $manager->persist($northeast);
+            $manager->persist($region);
+
+            $this->addReference('region_'.$name, $region);
+        }
 
         // =========================
         // STATES (ALL BRAZIL)
@@ -77,11 +88,30 @@ class GeographyFixtures extends Fixture
             $state = new State();
             $state->setUf($uf);
             $state->setName($name);
-            $state->setCountry($brazil);
+
+            // Apenas Norte vinculado à região
+            if (in_array($uf, ['AC','AP','AM','PA','RO','RR','TO'])) {
+                $state->setRegion($this->getReference('region_Norte', Region::class));
+            }
 
             // Apenas Nordeste vinculado à região
             if (in_array($uf, ['AL','BA','CE','MA','PB','PE','PI','RN','SE'])) {
-                $state->setRegion($northeast);
+                $state->setRegion($this->getReference('region_Nordeste', Region::class));
+            }
+
+            // Apenas Sudeste vinculado à região
+            if (in_array($uf, ['SP','RJ','MG','ES'])) {
+                $state->setRegion($this->getReference('region_Sudeste', Region::class));
+            }
+            
+            // Apenas Sul vinculado à região
+            if (in_array($uf, ['PR','RS','SC'])) {
+                $state->setRegion($this->getReference('region_Sul', Region::class));
+            }
+
+            // Apenas Centro-Oeste vinculado à região
+            if (in_array($uf, ['GO','MT','MS','DF'])) {
+                $state->setRegion($this->getReference('region_Centro-Oeste', Region::class));
             }
 
             $manager->persist($state);

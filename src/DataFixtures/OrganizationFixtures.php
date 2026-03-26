@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Organization;
 use App\Entity\Person;
+use App\Entity\Role;
 use App\Entity\PersonOrganization;
 use App\Entity\PersonOrganizationRole;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -21,7 +22,6 @@ class OrganizationFixtures extends Fixture implements DependentFixtureInterface
         $organization->setLegalName('CENTRO DE INOVACAO E TECNOLOGIA SERTAO DIGITAL');
         $organization->setTradeName('Sertão Digital');
         $organization->setCnpj('61.367.666/0001-77');
-        $organization->setCreatedAt(new \DateTimeImmutable('2025-06-06 00:00:00'));
         $organization->setUpdatedAt(null);
 
         $manager->persist($organization);
@@ -32,7 +32,6 @@ class OrganizationFixtures extends Fixture implements DependentFixtureInterface
         $person = new Person();
         $person->setFullName('Wellington Carvalho Silva');
         $person->setCpf('314.269.938-46');
-        $person->setCreatedAt(new \DateTimeImmutable('2025-06-06 00:00:00'));
         $person->setUpdatedAt(null);
 
         $manager->persist($person);
@@ -55,7 +54,7 @@ class OrganizationFixtures extends Fixture implements DependentFixtureInterface
         // =====================================
         $personOrganizationRole = new PersonOrganizationRole();
         $personOrganizationRole->setPersonOrganization($personOrganization);
-        $personOrganizationRole->setRole($this->getReference('role_presidente'));
+        $personOrganizationRole->setRole($this->getReference('role_presidente', Role::class));
         $personOrganizationRole->setStartDate(new \DateTimeImmutable('2025-06-06 00:00:00'));
         $personOrganizationRole->setEndDate(null);
 

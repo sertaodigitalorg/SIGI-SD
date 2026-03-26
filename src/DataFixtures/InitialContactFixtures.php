@@ -3,6 +3,9 @@
 namespace App\DataFixtures;
 
 use App\Entity\OrganizationContact;
+use App\Entity\Organization;
+use App\Entity\ContactType;
+use App\Entity\ContactStatus;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -11,14 +14,14 @@ class InitialContactFixtures extends Fixture implements DependentFixtureInterfac
 {
     public function load(ObjectManager $manager): void
     {
-        $organization = $this->getReference('organization_sertao_digital');
+        $organization = $this->getReference('organization_sertao_digital', Organization::class);
 
-        $emailType = $this->getReference('contact_type_email');
-        $websiteType = $this->getReference('contact_type_website');
-        $whatsAppType = $this->getReference('contact_type_whatsapp');
-        $instagramType = $this->getReference('contact_type_instagram');
+        $emailType = $this->getReference('contact_type_email', ContactType::class);
+        $websiteType = $this->getReference('contact_type_website', ContactType::class);
+        $whatsAppType = $this->getReference('contact_type_whatsapp', ContactType::class);
+        $instagramType = $this->getReference('contact_type_instagram', ContactType::class);
 
-        $activeStatus = $this->getReference('contact_status_active');
+        $activeStatus = $this->getReference('contact_status_active', ContactStatus::class);
 
         $contacts = [
             [

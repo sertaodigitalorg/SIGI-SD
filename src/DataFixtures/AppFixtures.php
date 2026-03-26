@@ -14,14 +14,16 @@ namespace App\DataFixtures;
 use App\Entity\Comment;
 use App\Entity\Post;
 use App\Entity\Tag;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\String\AbstractUnicodeString;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 use function Symfony\Component\String\u;
 
-final class AppFixtures extends Fixture
+final class AppFixtures extends Fixture implements DependentFixtureInterface
 {
     public function __construct(
         private readonly SluggerInterface $slugger,
@@ -32,6 +34,17 @@ final class AppFixtures extends Fixture
     {
         $this->loadTags($manager);
         $this->loadPosts($manager);
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            GeographyFixtures::class,
+            CatalogFixtures::class,
+            UserFixtures::class,
+            OrganizationFixtures::class,
+            InitialContactFixtures::class,
+        ];
     }
 
     private function loadTags(ObjectManager $manager): void
@@ -61,7 +74,7 @@ final class AppFixtures extends Fixture
 
             foreach (range(1, 5) as $i) {
                 $comment = new Comment();
-                $comment->setAuthor($this->getReference('john_user', User::class));
+                $comment->setAuthor($this->getReference('user_operacional', User::class));
                 $comment->setContent($this->getRandomText(random_int(255, 512)));
                 $comment->setPublishedAt(new \DateTimeImmutable('now + '.$i.'seconds'));
 
@@ -110,7 +123,7 @@ final class AppFixtures extends Fixture
                 $this->getPostContent(),
                 new \DateTimeImmutable('now - '.$i.'days')->setTime(random_int(8, 17), random_int(7, 49), random_int(0, 59)),
                 // Ensure that the first post is written by Jane Doe to simplify tests
-                $this->getReference(['jane_admin', 'tom_admin'][0 === $i ? 0 : random_int(0, 1)], User::class),
+                $this->getReference(['user_wellington', 'user_admin'][0 === $i ? 0 : random_int(0, 1)], User::class),
                 $this->getRandomTags(),
             ];
         }
