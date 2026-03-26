@@ -1,0 +1,12 @@
+﻿{% extends 'base.html.twig' %}
+
+{% block title %}Editar organização{% endblock %}
+
+{% block main %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Editar organização</h1>
+        {{ include('organization/_delete_form.html.twig') }}
+    </div>
+
+    {{ include('organization/_form.html.twig', {button_label: 'Salvar alterações'}) }}
+{% endblock %}

@@ -142,13 +142,13 @@ Permite múltiplos papéis para a mesma pessoa na mesma organização.
 - organizações filhas podem ser recuperadas pelo lado inverso da relação, como `children`
 
 ### Classificação com `organizationType`
-- use `organizationType` para representar a categoria institucional da organização
+- use `organizationType` para representar o tipo de organização
 - `organizationType` não substitui a hierarquia
 - duas organizações do mesmo tipo podem ocupar posições diferentes na hierarquia
 
 ### Exemplo prático
-- `Rede do Sertão` pode ter tipo `Associação`
-- `Sertão Digital` pode ter tipo `Instituição de Ciência e Tecnologia`
+- `Rede do Sertão` pode ter tipo de organização `Associação`
+- `Sertão Digital` pode ter tipo de organização `Instituição de Ciência e Tecnologia`
 - `Sertão Digital.parent = Rede do Sertão`
 
 ---
@@ -299,7 +299,7 @@ Catálogo hierárquico de áreas temáticas de atuação.
 ## 10. Observações finais
 
 - `parent` e `organizationType` têm responsabilidades diferentes e complementares.
-- hierarquia institucional e classificação institucional não devem ser misturadas.
+- hierarquia institucional e tipo de organização não devem ser misturados.
 - endereço físico e área de atuação são conceitos diferentes e devem permanecer separados.
 - contatos e presença digital não devem ficar presos a um único campo em `persons` ou `organizations`.
 - o histórico de comunicação é parte do CRM e precisa registrar o usuário responsável pelo contato.

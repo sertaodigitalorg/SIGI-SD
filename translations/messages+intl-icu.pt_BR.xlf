@@ -365,7 +365,7 @@
 
             <trans-unit id="help.app_description">
                 <source>help.app_description</source>
-                <target><![CDATA[Esta é uma <strong>aplicação de demonstração</strong> construída com o Symfony Framework para ilustrar a maneira recomendada de se desenvolver aplicações Symfony.]]></target>
+                <target><![CDATA[Esta é a <strong>SIGI-SD</strong> Sistema Integrado de Gestão Inteligente construída para o CIT Sertão Digital com o Symfony Framework para ilustrar a maneira recomendada de se desenvolver aplicações Symfony.]]></target>
             </trans-unit>
             <trans-unit id="help.show_code">
                 <source>help.show_code</source>
@@ -432,7 +432,7 @@
             </trans-unit>
             <trans-unit id="rss.description">
                 <source>rss.description</source>
-                <target>Posts mais recentes publicados no blog Symfony Demo</target>
+                <target>Notícias, Comunicados e Observatórios mais recentes publicadas no SIGI-SD</target>
             </trans-unit>
 
             <trans-unit id="paginator.previous">

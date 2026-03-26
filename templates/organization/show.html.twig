@@ -1,0 +1,82 @@
+﻿{% extends 'base.html.twig' %}
+
+{% block title %}Detalhes da organização{% endblock %}
+
+{% block main %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">{{ organization }}</h1>
+            <p class="text-body-secondary mb-0">{{ organization.legalName }}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary" href="{{ path('organization_edit', {'id': organization.id}) }}">Editar</a>
+            <a class="btn btn-outline-primary" href="{{ path('organization_index') }}">Voltar</a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5">Dados principais</h2>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Razão social</dt>
+                        <dd class="col-sm-8">{{ organization.legalName ?: 'Não informado' }}</dd>
+                        <dt class="col-sm-4">Nome fantasia</dt>
+                        <dd class="col-sm-8">{{ organization.tradeName ?: 'Não informado' }}</dd>
+                        <dt class="col-sm-4">Sigla</dt>
+                        <dd class="col-sm-8">{{ organization.acronym ?: 'Não informada' }}</dd>
+                        <dt class="col-sm-4">CNPJ</dt>
+                        <dd class="col-sm-8">{{ organization.cnpj ?: 'Não informado' }}</dd>
+                        <dt class="col-sm-4">Tipo</dt>
+                        <dd class="col-sm-8">{{ organization.organizationType ? organization.organizationType.name : 'Não informado' }}</dd>
+                        <dt class="col-sm-4">Status</dt>
+                        <dd class="col-sm-8">{{ organization.status ?: 'Não informado' }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5">Estrutura e contexto</h2>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Organização pai</dt>
+                        <dd class="col-sm-8">{{ organization.parent ? organization.parent : 'Sem organização pai' }}</dd>
+                        <dt class="col-sm-4">Criada em</dt>
+                        <dd class="col-sm-8">{{ organization.createdAt ? organization.createdAt|date('d/m/Y H:i') : 'Não informado' }}</dd>
+                        <dt class="col-sm-4">Atualizada em</dt>
+                        <dd class="col-sm-8">{{ organization.updatedAt ? organization.updatedAt|date('d/m/Y H:i') : 'Ainda não atualizada' }}</dd>
+                        <dt class="col-sm-4">Observações</dt>
+                        <dd class="col-sm-8">{{ organization.notes ?: 'Nenhuma observação registrada.' }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="h5 mb-0">Organizações filhas</h2>
+                        {{ include('organization/_delete_form.html.twig') }}
+                    </div>
+
+                    {% if organization.children is empty %}
+                        <p class="text-body-secondary mb-0">Nenhuma organização filha vinculada.</p>
+                    {% else %}
+                        <ul class="mb-0">
+                            {% for child in organization.children %}
+                                <li>
+                                    <a href="{{ path('organization_show', {'id': child.id}) }}">{{ child }}</a>
+                                    <span class="text-body-secondary">({{ child.organizationType ? child.organizationType.name : 'Sem tipo' }})</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

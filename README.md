@@ -1,81 +1,94 @@
-Symfony Demo Application
-========================
+# SIGI-SD
 
-The "Symfony Demo Application" is a reference application created to show how
-to develop applications following the [Symfony Best Practices][1].
+Sistema Integrado de Gestão e Inteligência do Sertão Digital.
 
-You can also learn about these practices in [the official Symfony Book][5].
+O SIGI-SD é uma plataforma orientada a dados para apoiar gestão institucional, relacionamento, cobertura territorial e inteligência aplicada a organizações públicas e privadas.
 
-Requirements
-------------
+## Base tecnológica
 
-  * PHP 8.2.0 or higher;
-  * PDO-SQLite PHP extension enabled;
-  * and the [usual Symfony application requirements][2].
+- PHP 8.2+
+- Symfony
+- Doctrine ORM
+- Twig
+- MySQL
 
-Installation
-------------
+## Documentação
 
-There are 3 different ways of installing this project depending on your needs:
+A documentação principal do projeto está em `/docs`.
 
-**Option 1.** [Download Symfony CLI][4] and use the `symfony` binary installed
-on your computer to run this command:
+Documentos disponíveis:
+- `/docs/architecture.md` - arquitetura do sistema
+- `/docs/data_model.md` - modelo de dados e relacionamentos
+- `/docs/fixtures.md` - estrutura de dados iniciais
+- `/docs/dev-guide.md` - convenções de desenvolvimento
+- `/docs/api.md` - diretrizes de API
+- `/docs/security.md` - segurança e proteção de dados
+- `/docs/roadmap.md` - evolução planejada do projeto
+
+## Instalação
+
+### 1. Clonar o repositório
 
 ```bash
-symfony new --demo my_project
+git clone https://github.com/sertaodigitalorg/SIGI-SD.git
+cd SIGI-SD
 ```
 
-**Option 2.** [Download Composer][6] and use the `composer` binary installed
-on your computer to run these commands:
+### 2. Instalar dependências
 
 ```bash
-# you can create a new project based on the Symfony Demo project...
-composer create-project symfony/symfony-demo my_project
-
-# ...or you can clone the code repository and install its dependencies
-git clone https://github.com/symfony/demo.git my_project
-cd my_project/
 composer install
 ```
 
-Usage
------
+### 3. Configurar ambiente
 
-There's no need to configure anything before running the application. There are
-2 different ways of running this application depending on your needs:
+Crie o arquivo `.env.local` com a conexão do banco:
 
-**Option 1.** [Download Symfony CLI][4] and run this command:
-
-```bash
-cd my_project/
-symfony serve
+```env
+DATABASE_URL="mysql://usuario:senha@127.0.0.1:3306/sigi_sd"
 ```
 
-Then access the application in your browser at the given URL (<https://localhost:8000> by default).
-
-**Option 2.** Use a web server like Nginx or Apache to run the application
-(read the documentation about [configuring a web server for Symfony][3]).
-
-On your local machine, you can run this command to use the built-in PHP web server:
+### 4. Criar banco de dados
 
 ```bash
-cd my_project/
-php -S localhost:8000 -t public/
+php bin/console doctrine:database:create
 ```
 
-Tests
------
-
-Execute this command to run tests:
+### 5. Executar migrations
 
 ```bash
-cd my_project/
+php bin/console doctrine:migrations:migrate
+```
+
+### 6. Carregar dados iniciais
+
+```bash
+php bin/console doctrine:fixtures:load --no-interaction
+```
+
+### 7. Executar o projeto
+
+```bash
+symfony server:start
+```
+
+ou
+
+```bash
+php -S localhost:8000 -t public
+```
+
+## Testes
+
+```bash
 ./bin/phpunit
 ```
 
-[1]: https://symfony.com/doc/current/best_practices.html
-[2]: https://symfony.com/doc/current/setup.html#technical-requirements
-[3]: https://symfony.com/doc/current/setup/web_server_configuration.html
-[4]: https://symfony.com/download
-[5]: https://symfony.com/book
-[6]: https://getcomposer.org/
+## Objetivo
+
+O projeto busca consolidar uma base técnica para:
+- gestão pública digital
+- inteligência territorial
+- CRM institucional
+- integração de dados
+- governança digital

@@ -9,6 +9,7 @@ use App\Entity\ContactStatus;
 use App\Entity\ContactIssueType;
 use App\Entity\InteractionStatus;
 use App\Entity\CoverageType;
+use App\Entity\OrganizationType;
 use App\Entity\ThematicArea;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -24,6 +25,7 @@ class CatalogFixtures extends Fixture
         $this->loadContactIssueTypes($manager);
         $this->loadInteractionStatuses($manager);
         $this->loadCoverageTypes($manager);
+        $this->loadOrganizationTypes($manager);
         $this->loadThematicAreas($manager);
 
         $manager->flush();
@@ -214,6 +216,33 @@ class CatalogFixtures extends Fixture
             $entity->setDescription($description);
 
             $manager->persist($entity);
+        }
+    }
+
+    private function loadOrganizationTypes(ObjectManager $manager): void
+    {
+        $items = [
+            ['Instituição de Ciência e Tecnologia', 'Entidade dedicada à pesquisa, inovação e desenvolvimento tecnológico'],
+            ['Associação', 'Organização da sociedade civil com atuação institucional'],
+            ['Órgão Público', 'Estrutura governamental da administração pública'],
+            ['Empresa', 'Pessoa jurídica com atividade empresarial'],
+            ['Instituição de Ensino', 'Entidade voltada à educação, extensão e formação'],
+        ];
+
+        foreach ($items as [$name, $description]) {
+            $entity = new OrganizationType();
+            $entity->setName($name);
+            $entity->setDescription($description);
+
+            $manager->persist($entity);
+
+            if ($name === 'Instituição de Ciência e Tecnologia') {
+                $this->addReference('organization_type_ict', $entity);
+            }
+
+            if ($name === 'Associação') {
+                $this->addReference('organization_type_association', $entity);
+            }
         }
     }
 

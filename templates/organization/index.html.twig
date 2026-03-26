@@ -1,0 +1,52 @@
+﻿{% extends 'base.html.twig' %}
+
+{% block title %}Organizações{% endblock %}
+
+{% block main %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Organizações</h1>
+            <p class="text-body-secondary mb-0">Gerencie a hierarquia institucional e a classificação por tipo.</p>
+        </div>
+        <a class="btn btn-primary" href="{{ path('organization_new') }}">Nova organização</a>
+    </div>
+
+    {% if organizations is empty %}
+        <div class="alert alert-info">Nenhuma organização cadastrada até o momento.</div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Razão social</th>
+                        <th>Sigla</th>
+                        <th>Tipo</th>
+                        <th>Organização pai</th>
+                        <th>Status</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for organization in organizations %}
+                        <tr>
+                            <td>
+                                <strong>{{ organization.legalName }}</strong>
+                                <div class="text-body-secondary small">{{ organization.tradeName ?: 'Nome fantasia não informado' }}</div>
+                            </td>
+                            <td>{{ organization.acronym ?: 'Não informada' }}</td>
+                            <td>{{ organization.organizationType ? organization.organizationType.name : 'Não informado' }}</td>
+                            <td>{{ organization.parent ? organization.parent : 'Sem organização pai' }}</td>
+                            <td>{{ organization.status ?: 'Não informado' }}</td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    <a class="btn btn-sm btn-outline-primary" href="{{ path('organization_show', {'id': organization.id}) }}">Ver</a>
+                                    <a class="btn btn-sm btn-outline-secondary" href="{{ path('organization_edit', {'id': organization.id}) }}">Editar</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}
