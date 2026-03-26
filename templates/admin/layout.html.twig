@@ -32,4 +32,13 @@
             <li><a class="dropdown-item" href="{{ path('organization_new') }}">{{ 'menu.organization_new'|trans }}</a></li>
         </ul>
     </li>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle {{ _route in ['admin_person_index', 'admin_person_new', 'admin_person_show', 'admin_person_edit'] ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <twig:ux:icon name="tabler:user"/> {{ 'menu.people'|trans }}
+        </a>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ path('admin_person_index') }}">{{ 'menu.person_list'|trans }}</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_person_new') }}">{{ 'menu.person_new'|trans }}</a></li>
+        </ul>
+    </li>
 {% endblock %}

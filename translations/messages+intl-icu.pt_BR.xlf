@@ -303,6 +303,18 @@
                 <source>menu.organization_new</source>
                 <target>Nova organização</target>
             </trans-unit>
+            <trans-unit id="menu.people">
+                <source>menu.people</source>
+                <target>Pessoas</target>
+            </trans-unit>
+            <trans-unit id="menu.person_list">
+                <source>menu.person_list</source>
+                <target>Lista de pessoas</target>
+            </trans-unit>
+            <trans-unit id="menu.person_new">
+                <source>menu.person_new</source>
+                <target>Nova pessoa</target>
+            </trans-unit>
             <trans-unit id="menu.user">
                 <source>menu.user</source>
                 <target>Conta</target>

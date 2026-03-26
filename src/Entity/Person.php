@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\PersonRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PersonRepository::class)]
 #[ORM\Table(name: 'persons')]
@@ -16,9 +17,11 @@ class Person
     private ?int $id = null;
 
     #[ORM\Column(length: 191)]
+    #[Assert\NotBlank]
     private ?string $fullName = null;
 
     #[ORM\Column(length: 14, unique: true)]
+    #[Assert\NotBlank]
     private ?string $cpf = null;
 
     #[ORM\Column]
@@ -76,5 +79,10 @@ class Person
         $this->updatedAt = $updatedAt;
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->fullName ?? '';
     }
 }

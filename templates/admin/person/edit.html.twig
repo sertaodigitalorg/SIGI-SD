@@ -1,0 +1,12 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Editar pessoa{% endblock %}
+
+{% block main %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Editar pessoa</h1>
+        {{ include('admin/person/_delete_form.html.twig') }}
+    </div>
+
+    {{ include('admin/person/_form.html.twig', {button_label: 'Salvar alterações'}) }}
+{% endblock %}

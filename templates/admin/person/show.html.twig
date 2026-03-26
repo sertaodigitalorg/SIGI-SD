@@ -1,0 +1,46 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Detalhes da pessoa{% endblock %}
+
+{% block main %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">{{ person.fullName }}</h1>
+            <p class="text-body-secondary mb-0">CPF: {{ person.cpf }}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary" href="{{ path('admin_person_edit', {'id': person.id}) }}">Editar</a>
+            <a class="btn btn-outline-primary" href="{{ path('admin_person_index') }}">Voltar</a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5">Dados pessoais</h2>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Nome Completo</dt>
+                        <dd class="col-sm-8">{{ person.fullName ?: 'Não informado' }}</dd>
+                        <dt class="col-sm-4">CPF</dt>
+                        <dd class="col-sm-8">{{ person.cpf ?: 'Não informado' }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5">Informações do sistema</h2>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Criada em</dt>
+                        <dd class="col-sm-8">{{ person.createdAt ? person.createdAt|date('d/m/Y H:i') : 'Não informado' }}</dd>
+                        <dt class="col-sm-4">Atualizada em</dt>
+                        <dd class="col-sm-8">{{ person.updatedAt ? person.updatedAt|date('d/m/Y H:i') : 'Ainda não atualizada' }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

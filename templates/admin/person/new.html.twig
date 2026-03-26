@@ -1,0 +1,9 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Nova pessoa{% endblock %}
+
+{% block main %}
+    <h1 class="mb-4">Nova pessoa</h1>
+
+    {{ include('admin/person/_form.html.twig', {button_label: 'Criar pessoa'}) }}
+{% endblock %}

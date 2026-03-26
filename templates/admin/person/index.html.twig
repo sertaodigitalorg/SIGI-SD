@@ -1,0 +1,51 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Pessoas{% endblock %}
+
+{% block main %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Pessoas</h1>
+            <p class="text-body-secondary mb-0">Gerencie as pessoas cadastradas no sistema.</p>
+        </div>
+        <a class="btn btn-primary" href="{{ path('admin_person_new') }}">Nova pessoa</a>
+    </div>
+
+    {% if people is empty %}
+        <div class="alert alert-info">Nenhuma pessoa cadastrada até o momento.</div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome Completo</th>
+                        <th>CPF</th>
+                        <th>Data de Criação</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for person in people %}
+                        <tr>
+                            <td>{{ person.id }}</td>
+                            <td>{{ person.fullName }}</td>
+                            <td>{{ person.cpf }}</td>
+                            <td>{{ person.createdAt ? person.createdAt|date('d/m/Y H:i') : '-' }}</td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    <a class="btn btn-sm btn-outline-primary" href="{{ path('admin_person_show', {'id': person.id}) }}">Ver</a>
+                                    <a class="btn btn-sm btn-outline-secondary" href="{{ path('admin_person_edit', {'id': person.id}) }}">Editar</a>
+                                    <form method="post" action="{{ path('admin_person_delete', {'id': person.id}) }}" onsubmit="return confirm('Tem certeza que deseja excluir esta pessoa?')" style="display: inline;">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ person.id) }}">
+                                        <button class="btn btn-sm btn-outline-danger">Excluir</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}
