@@ -54,6 +54,8 @@ DATABASE_URL="mysql://usuario:senha@127.0.0.1:3306/sigi_sd"
 php bin/console doctrine:database:create
 ```
 
+Caso haja falha verifique as configurações em `.env.local` citado acima no item 3. A base de dados pode ser criada manualmente.
+
 ### 5. Executar migrations
 
 ```bash
@@ -66,7 +68,27 @@ php bin/console doctrine:migrations:migrate
 php bin/console doctrine:fixtures:load --no-interaction
 ```
 
-### 7. Executar o projeto
+### 7. Stimulus (Hotwire) suporte a ImportMap
+
+```bash
+php bin/console importmap:install
+```
+
+Depois:
+
+```bash
+php bin/console asset-map:compile
+```
+
+### 8. Copilar CSS SASS
+
+Caso solicite a copilação do sass após copilação dos assets.
+
+```bash
+php bin/console sass:build
+```
+
+### 9. Executar o projeto
 
 ```bash
 symfony server:start
