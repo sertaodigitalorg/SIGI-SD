@@ -66,6 +66,22 @@ final class PersonContactInteractionController extends AbstractController
         ]);
     }
 
+    #[Route('/person/{id}/contacts', name: 'person_contact_interaction_contacts', methods: ['GET'])]
+    public function personContacts(int $id, \App\Repository\PersonContactRepository $contactRepository): Response
+    {
+        $contacts = $contactRepository->findBy(
+            ['person' => $id],
+            ['contactType' => 'ASC', 'value' => 'ASC']
+        );
+
+        $payload = array_map(fn(\App\Entity\PersonContact $contact) => [
+            'id' => $contact->getId(),
+            'label' => sprintf('%s — %s', $contact->getContactType()?->getName() ?: '-', $contact->getValue() ?: '-'),
+        ], $contacts);
+
+        return $this->json($payload);
+    }
+
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(PersonContactInteraction $interaction): Response
     {

@@ -1,21 +1,172 @@
 {% form_theme form 'bootstrap_5_layout.html.twig' %}
 
 {{ form_start(form) }}
-    <div class="row g-3">
-        <div class="col-md-6">{{ form_row(form.organizationContact) }}</div>
-        <div class="col-md-6">{{ form_row(form.interactionStatus) }}</div>
-        <div class="col-md-6">{{ form_row(form.performedBy) }}</div>
-        <div class="col-md-6">{{ form_row(form.contactedAt) }}</div>
-        <div class="col-md-12">{{ form_row(form.subject) }}</div>
-        <div class="col-md-12">{{ form_row(form.message) }}</div>
-        <div class="col-md-3">{{ form_row(form.responseReceived) }}</div>
-        <div class="col-md-9">{{ form_row(form.responseText) }}</div>
-        <div class="col-md-6">{{ form_row(form.nextContactAt) }}</div>
-        <div class="col-md-12">{{ form_row(form.notes) }}</div>
+    <div class="row g-4">
+        {# Bloco 1: Identificação do Contato #}
+        <div class="col-12">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Identificação do Contato</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            {{ form_row(form.organization, {
+                                'attr': {'class': 'form-select form-select-lg'},
+                                'label_attr': {'class': 'form-label fw-bold'}
+                            }) }}
+                            <small class="text-muted d-block mt-1">Selecione a organização para carregar seus contatos</small>
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.organizationContact, {
+                                'attr': {'class': 'form-select form-select-lg'},
+                                'label_attr': {'class': 'form-label fw-bold'}
+                            }) }}
+                            <small class="text-muted d-block mt-1">Selecione o contato específico a ser utilizado</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Bloco 2: Dados da Interação #}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Dados da Interação</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            {{ form_row(form.interactionStatus, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.performedBy, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.contactedAt, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                        </div>
+                        <div class="col-md-6"></div>
+                        <div class="col-md-12">
+                            {{ form_row(form.subject, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                        </div>
+                        <div class="col-md-12">
+                            {{ form_row(form.message, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Bloco 3:  Acompanhamento #}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Acompanhamento</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="form-check form-check-lg">
+                                {{ form_widget(form.responseReceived) }}
+                                {{ form_label(form.responseReceived, 'Houve resposta?', {'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                            <small class="text-muted d-block mt-1">Marque se recebeu resposta do contato</small>
+                        </div>
+                        <div class="col-md-12" id="response-text-container" style="display: none;">
+                            {{ form_row(form.responseText, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.nextContactAt, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                            <small class="text-muted d-block mt-1">Data do próximo acompanhamento previsto</small>
+                        </div>
+                        <div class="col-md-6"></div>
+                        <div class="col-md-12">
+                            {{ form_row(form.notes, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Bloco 4: Botões de Ação #}
+        <div class="col-12">
+            <div class="d-flex gap-2 justify-content-between">
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="tabler-icon tabler-check"></i> Salvar
+                    </button>
+                </div>
+                <a href="{{ path('admin_organization_contact_interaction_index') }}" class="btn btn-outline-secondary btn-lg">
+                    <i class="tabler-icon tabler-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
     </div>
 
-    <div class="mt-4 d-flex gap-2">
-        <button class="btn btn-primary">{{ button_label|default('Salvar') }}</button>
-        <a class="btn btn-outline-secondary" href="{{ path('admin_organization_contact_interaction_index') }}">Voltar</a>
-    </div>
+    {{ form_rest(form) }}
 {{ form_end(form) }}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const responseCheckbox = document.querySelector('input[data-toggle-response-field]');
+        const responseContainer = document.getElementById('response-text-container');
+
+        function toggleResponseField() {
+            if (responseCheckbox.checked) {
+                responseContainer.style.display = 'block';
+            } else {
+                responseContainer.style.display = 'none';
+            }
+        }
+
+        if (responseCheckbox) {
+            responseCheckbox.addEventListener('change', toggleResponseField);
+            toggleResponseField();
+        }
+
+        const orgSelect = document.querySelector('select[data-organization-select]');
+        const contactSelect = document.querySelector('select[data-organization-contact-select]');
+        const contactUrlTemplate = '{{ path('admin_organization_contact_interaction_organization_contact_interaction_contacts', {'id': 0}) }}';
+
+        async function updateContactOptions(organizationId) {
+            if (!contactSelect) {
+                return;
+            }
+
+            if (!organizationId) {
+                contactSelect.innerHTML = '<option value="">Selecione uma organização primeiro</option>';
+                contactSelect.disabled = true;
+                return;
+            }
+
+            const fetchUrl = contactUrlTemplate.replace('/0/', `/${organizationId}/`);
+            const response = await fetch(fetchUrl);
+
+            if (!response.ok) {
+                return;
+            }
+
+            const data = await response.json();
+            contactSelect.innerHTML = '<option value="">Selecione um contato</option>';
+
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.label;
+                contactSelect.appendChild(option);
+            });
+
+            contactSelect.disabled = false;
+        }
+
+        if (orgSelect) {
+            orgSelect.addEventListener('change', function() {
+                const currentOrganization = this.value;
+                updateContactOptions(currentOrganization);
+            });
+
+            updateContactOptions(orgSelect.value);
+        }
+    });
+</script>

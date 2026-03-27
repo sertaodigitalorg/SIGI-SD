@@ -51,6 +51,22 @@ final class OrganizationContactInteractionController extends AbstractController
         ]);
     }
 
+    #[Route('/organization/{id}/contacts', name: 'organization_contact_interaction_contacts', methods: ['GET'])]
+    public function organizationContacts(int $id, \App\Repository\OrganizationContactRepository $contactRepository): Response
+    {
+        $contacts = $contactRepository->findBy(
+            ['organization' => $id],
+            ['contactType' => 'ASC', 'value' => 'ASC']
+        );
+
+        $payload = array_map(fn(\App\Entity\OrganizationContact $contact) => [
+            'id' => $contact->getId(),
+            'label' => sprintf('%s — %s', $contact->getContactType()?->getName() ?: '-', $contact->getValue() ?: '-'),
+        ], $contacts);
+
+        return $this->json($payload);
+    }
+
     #[Route('/{id}', name: 'show', methods: ['GET'])]
     public function show(OrganizationContactInteraction $interaction): Response
     {
