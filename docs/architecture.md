@@ -1,46 +1,253 @@
-# SIGI-SD - Arquitetura do Sistema
+# SIGI-SD — Arquitetura do Sistema
 
 ## Visão Geral
 
-O módulo institucional do SIGI-SD trata organizações como uma estrutura hierárquica e classificável. Isso permite representar redes, mantenedoras, unidades executoras e demais entidades relacionadas sem duplicar dados.
+O SIGI-SD é uma plataforma de gestão e inteligência voltada à transformação digital institucional, com foco em:
 
-## Camadas Relevantes
+- prefeituras
+- governos estaduais
+- câmaras municipais
+- instituições públicas e privadas
+- organizações do terceiro setor
 
-### Domínio
-- `Organization` representa a organização operacional.
-- `OrganizationType` classifica a natureza institucional da organização.
-- `parent` em `Organization` forma a hierarquia entre organizações.
+O sistema foi projetado com base em:
 
-### Persistência
-- A tabela `organizations` guarda os dados cadastrais e a referência opcional para a organização pai.
-- A tabela `organization_types` centraliza os tipos de organização reutilizáveis.
-- As chaves estrangeiras usam `ON DELETE SET NULL` para evitar perda em cascata da estrutura institucional.
+- arquitetura modular
+- separação de responsabilidades
+- escalabilidade
+- interoperabilidade
 
-### Aplicação
-- O CRUD de organizações fica em `OrganizationController`.
-- O formulário `OrganizationTypeForm` concentra as regras de entrada de dados.
-- A validação de hierarquia impede `parent = self` e bloqueia ciclos indiretos.
+---
 
-## Modelagem Institucional
+## 🧱 Camadas da Arquitetura
 
-### Hierarquia com `parent`
-- Use `parent` quando uma organização estiver subordinada, vinculada ou mantida por outra.
-- Organizações raiz ficam com `parent = null`.
-- Organizações filhas podem ser exibidas a partir da própria entidade, usando a coleção `children`.
+O sistema segue uma arquitetura baseada em camadas:
 
-### Classificação com `organizationType`
-- Use `organizationType` para indicar o tipo de organização.
-- O tipo não substitui a hierarquia: ele apenas classifica a entidade.
-- Exemplos: associação, órgão público, empresa, instituição de ensino, instituição de ciência e tecnologia.
+### 1. Presentation Layer
+- Controllers (Symfony)
+- Templates Twig
+- Interface administrativa (/admin)
 
-## Fluxo do Módulo
+### 2. Application Layer
+- Services
+- Orquestração de regras de negócio
+- Processamento de dados
 
-1. Catálogos carregam os tipos de organização.
-2. Fixtures institucionais criam organizações pai e filhas.
-3. O CRUD permite consultar, cadastrar, editar e excluir organizações.
-4. Templates exibem valores nulos com mensagens amigáveis em português.
+### 3. Domain Layer
+- Entities (Doctrine ORM)
+- Modelagem de negócio
 
-## Decisões de Arquitetura
-- Hierarquia e classificação foram separadas para evitar sobrecarga semântica em um único campo.
-- `OrganizationType` é catálogo próprio para permitir expansão sem alterar a tabela principal.
-- A validação de ciclo foi implementada na entidade para proteger qualquer ponto de entrada, não apenas o formulário.
+### 4. Infrastructure Layer
+- Banco de dados (MySQL)
+- Repositories (Doctrine)
+- Integrações externas (futuro)
+
+---
+
+## 🏛️ Módulo de Organizações
+
+### Entidade: Organization
+
+Representa qualquer estrutura institucional:
+
+- Prefeitura
+- Governo Estadual
+- Câmara Municipal
+- Secretaria
+- Empresa
+- ONG
+- Universidade
+
+### Hierarquia
+
+O sistema suporta estrutura hierárquica:
+
+```text
+Organização (pai)
+└── Sub-organizações (filhas)
+```
+
+Exemplo:
+
+```text
+Prefeitura de Sousa
+├── Secretaria de Saúde
+├── Secretaria de Educação
+└── Secretaria de Infraestrutura
+```
+
+### Classificação
+
+Entidade auxiliar:
+
+ - `OrganizationType`
+
+Define o tipo da organização:
+
+ - Prefeitura
+ - Secretaria
+ - Câmara
+ - Empresa
+ - ONG
+ - etc.
+
+## 👤 Módulo de Pessoas
+
+#### Entidade: Person
+
+Representa indivíduos que interagem com o sistema:
+
+ - gestores públicos
+ - secretários
+ - assessores
+ - representantes institucionais
+
+### 🔗 Vínculo Pessoa ↔ Organização
+
+#### Entidade: PersonOrganization
+
+Define a relação entre uma pessoa e uma organização.
+
+Permite:
+
+ - múltiplos vínculos
+ - histórico institucional
+
+#### Entidade: PersonOrganizationRole
+
+Define o papel da pessoa:
+
+ - Prefeito
+ - Secretário
+ - Diretor
+ - Coordenador
+ - Assessor
+
+## 📞 Módulo de Contatos
+
+O sistema diferencia dois tipos de contato:
+
+### 1. Contato Institucional (PJ)
+
+#### Entidade: OrganizationContact
+
+Representa canais oficiais da organização:
+
+ - e-mail institucional
+ - telefone geral
+ - WhatsApp institucional
+ - site
+ - redes sociais
+
+### 2. Contato Pessoal (PF)
+
+#### Entidade: PersonContact
+
+Representa canais diretos da pessoa:
+
+ - e-mail pessoal ou institucional
+ - telefone direto
+ - WhatsApp pessoal
+ - LinkedIn
+
+## 📊 Módulo de Interações (CRM)
+
+O sistema implementa um modelo de CRM institucional com dois fluxos:
+
+### 1. Interação Institucional (PJ)
+
+#### Entidade: OrganizationContactInteraction
+
+Registra:
+
+ - contato utilizado (OrganizationContact)
+ - data/hora do contato
+ - mensagem enviada
+ - resposta recebida
+ - próximo contato (follow-up)
+
+### 2. Interação com Pessoa (PF)
+
+#### Entidade: PersonContactInteraction
+
+Registra:
+
+ - contato direto da pessoa (PersonContact)
+ - histórico de comunicação
+ - resposta
+ - continuidade do relacionamento
+
+## 🔄 Fluxo de Relacionamento
+
+O sistema segue um fluxo natural de relacionamento:
+
+```text
+Contato institucional (genérico)
+        ↓
+Resposta da organização
+        ↓
+Identificação da pessoa
+        ↓
+Contato direto com pessoa
+        ↓
+Relacionamento contínuo
+```
+
+## 📈 Módulo de Dashboard Operacional
+
+### Objetivo
+
+Fornecer visão operacional do CRM.
+
+### Métricas principais
+ - Interações recentes (PF e PJ)
+ - Follow-ups vencidos
+ - Taxa de resposta
+ - Total de interações
+
+### Fontes de dados
+ - OrganizationContactInteraction
+ - PersonContactInteraction
+
+## 🧠 Princípios Arquiteturais
+
+ - separação entre dados institucionais e pessoais
+ - desacoplamento entre entidades
+ - escalabilidade para grandes volumes de dados
+ - suporte a múltiplos níveis organizacionais
+ - rastreabilidade completa de interações
+
+## 🚀 Escalabilidade
+
+O sistema foi projetado para suportar:
+ - milhares de organizações
+ - múltiplos contatos por organização
+ - grande volume de interações
+ - uso simultâneo por múltiplos usuários
+
+## 🔐 Segurança (visão geral)
+
+ - controle de acesso por usuário
+ - dados sensíveis protegidos
+ - separação entre área pública e administrativa
+ - auditoria futura de interações
+
+## 📌 Considerações Finais
+
+A arquitetura do SIGI-SD foi projetada para evoluir de:
+
+ - cadastro institucional
+
+para:
+
+ - plataforma de inteligência
+ - CRM público estruturado
+ - sistema de apoio à decisão
+
+## 🔮 Evoluções Futuras
+
+ - API pública
+ - integração com sistemas governamentais
+ - BI e dashboards avançados
+ - automação de comunicação
+ - notificações e alertas inteligentes
