@@ -1,0 +1,9 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Editar Contato da Pessoa{% endblock %}
+
+{% block main %}
+    <h1 class="mb-4">Editar Contato da Pessoa</h1>
+
+    {% include 'admin/person_contact/_form.html.twig' with {'form': form, 'button_label': 'Salvar'} %}
+{% endblock %}

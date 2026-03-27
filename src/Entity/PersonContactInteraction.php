@@ -172,4 +172,17 @@ class PersonContactInteraction
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        if ($this->subject) {
+            return $this->subject;
+        }
+
+        if ($this->contactedAt) {
+            return $this->contactedAt->format('d/m/Y H:i');
+        }
+
+        return 'Interação';
+    }
 }

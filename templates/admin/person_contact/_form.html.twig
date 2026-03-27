@@ -1,0 +1,44 @@
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+{{ form_start(form) }}
+    <div class="row g-3">
+        <div class="col-md-6">
+            {{ form_row(form.person) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.contactType) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.status) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.issueType) }}
+        </div>
+        <div class="col-md-12">
+            {{ form_row(form.value) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.label) }}
+        </div>
+        <div class="col-md-3">
+            {{ form_row(form.isPrimary) }}
+        </div>
+        <div class="col-md-3">
+            {{ form_row(form.isPublic) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.deactivatedAt) }}
+        </div>
+        <div class="col-md-12">
+            {{ form_row(form.deactivationReason) }}
+        </div>
+        <div class="col-md-12">
+            {{ form_row(form.notes) }}
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+        <button class="btn btn-primary">{{ button_label|default('Salvar') }}</button>
+        <a class="btn btn-outline-secondary" href="{{ path('admin_person_contact_index') }}">Voltar para lista</a>
+    </div>
+{{ form_end(form) }}

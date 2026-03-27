@@ -1,0 +1,87 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Dashboard Operacional{% endblock %}
+
+{% block main %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Dashboard Operacional</h1>
+            <p class="text-body-secondary mb-0">Monitoramento de CRM para contatos Pessoa (PF) e Institucional (PJ).</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-primary" href="{{ path('admin_person_contact_interaction_new') }}">Nova Interação com Pessoa</a>
+            <a class="btn btn-outline-primary" href="{{ path('admin_organization_contact_interaction_new') }}">Nova Interação Institucional</a>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        {% set kpis = [
+            {'label':'Total de Interações PF','value': person.totalInteractions,'class':'bg-light'},
+            {'label':'Total de Interações PJ','value': organization.totalInteractions,'class':'bg-light'},
+            {'label':'Follow-ups Vencidos PF','value': person.overdueFollowUps,'class':'bg-danger text-white'},
+            {'label':'Follow-ups Vencidos PJ','value': organization.overdueFollowUps,'class':'bg-danger text-white'},
+            {'label':'Taxa de Resposta PF','value': person.responseRate ~ '%','class':'bg-success text-white'},
+            {'label':'Taxa de Resposta PJ','value': organization.responseRate ~ '%','class':'bg-success text-white'},
+            {'label':'Taxa de Resposta Geral','value': consolidated.overallResponseRate ~ '%','class':'bg-success text-white'},
+        ] %}
+
+        {% for kpi in kpis %}
+            <div class="col-md-3 col-lg-2">
+                <div class="card {{ kpi.class }}">
+                    <div class="card-body p-3">
+                        <h6 class="text-uppercase small mb-1">{{ kpi.label }}</h6>
+                        <p class="fs-4 mb-0">{{ kpi.value }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">Interações Recentes PF</div>
+        <div class="card-body">
+            {% include 'admin/dashboard/_recent_person_interactions.table.html.twig' %}
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">Interações Recentes PJ</div>
+        <div class="card-body">
+            {% include 'admin/dashboard/_recent_organization_interactions.table.html.twig' %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">Alertas de Follow-up Vencido</div>
+        <div class="card-body">
+            {% if overdueAlerts is empty %}
+                <div class="alert alert-info">Nenhum follow-up vencido no momento.</div>
+            {% else %}
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Nome</th>
+                                <th>Contato</th>
+                                <th>Próximo Contato</th>
+                                <th>Respondeu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in overdueAlerts %}
+                                <tr class="table-danger">
+                                    <td>{{ item.type }}</td>
+                                    <td>{{ item.name ?: '-' }}</td>
+                                    <td>{{ item.contact ?: '-' }}</td>
+                                    <td>{{ item.nextContactAt ? item.nextContactAt|date('d/m/Y H:i') : '-' }}</td>
+                                    <td>{{ item.interaction.responseReceived ? 'Sim' : 'Não' }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

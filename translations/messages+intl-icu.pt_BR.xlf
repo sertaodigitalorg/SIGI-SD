@@ -275,6 +275,22 @@
                 <source>menu.choose_language</source>
                 <target>Escolha o idioma</target>
             </trans-unit>
+            <trans-unit id="menu.post_admin">
+                <source>menu.post_admin</source>
+                <target>Postagens</target>
+            </trans-unit>
+            <trans-unit id="menu.blog_index">
+                <source>menu.blog_index</source>
+                <target>Painel Público</target>
+            </trans-unit>
+            <trans-unit id="menu.admin_post_list">
+                <source>menu.admin_post_list</source>
+                <target>Lista de postagens</target>
+            </trans-unit>
+            <trans-unit id="menu.admin_create_post">
+                <source>menu.admin_create_post</source>
+                <target>Criar postagem</target>
+            </trans-unit>
             <trans-unit id="menu.post_list">
                 <source>menu.post_list</source>
                 <target>Lista de posts</target>

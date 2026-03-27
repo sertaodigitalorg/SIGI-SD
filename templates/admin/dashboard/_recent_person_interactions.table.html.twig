@@ -1,0 +1,30 @@
+{% if person.recentInteractions is empty %}
+    <div class="alert alert-info">Nenhuma interação com pessoa encontrada.</div>
+{% else %}
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Pessoa</th>
+                    <th>Contato</th>
+                    <th>Status</th>
+                    <th>Data do Contato</th>
+                    <th>Próximo Contato</th>
+                    <th>Respondeu</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in person.recentInteractions %}
+                    <tr>
+                        <td>{{ item.personContact.person.fullName ?: '-' }}</td>
+                        <td>{{ item.personContact.contactType.name ~ ' | ' ~ item.personContact.value }}</td>
+                        <td>{{ item.interactionStatus ? item.interactionStatus.name : '-' }}</td>
+                        <td>{{ item.contactedAt ? item.contactedAt|date('d/m/Y H:i') : '-' }}</td>
+                        <td>{{ item.nextContactAt ? item.nextContactAt|date('d/m/Y H:i') : '-' }}</td>
+                        <td>{{ item.responseReceived ? 'Sim' : 'Não' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}

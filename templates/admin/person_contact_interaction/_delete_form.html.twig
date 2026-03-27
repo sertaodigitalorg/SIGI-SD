@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('admin_person_contact_interaction_delete', {'id': interaction.id}) }}" onsubmit="return confirm('Tem certeza que deseja excluir esta interação?')" style="display: inline;">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ interaction.id) }}">
+    <button class="btn btn-sm btn-outline-danger">Excluir</button>
+</form>

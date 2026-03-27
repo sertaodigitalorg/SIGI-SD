@@ -1,0 +1,30 @@
+{% if organization.recentInteractions is empty %}
+    <div class="alert alert-info">Nenhuma interação institucional encontrada.</div>
+{% else %}
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Organização</th>
+                    <th>Contato</th>
+                    <th>Status</th>
+                    <th>Data do Contato</th>
+                    <th>Próximo Contato</th>
+                    <th>Respondeu</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in organization.recentInteractions %}
+                    <tr>
+                        <td>{{ item.organizationContact.organization.legalName ?: '-' }}</td>
+                        <td>{{ item.organizationContact.contactType.name ~ ' | ' ~ item.organizationContact.value }}</td>
+                        <td>{{ item.interactionStatus ? item.interactionStatus.name : '-' }}</td>
+                        <td>{{ item.contactedAt ? item.contactedAt|date('d/m/Y H:i') : '-' }}</td>
+                        <td>{{ item.nextContactAt ? item.nextContactAt|date('d/m/Y H:i') : '-' }}</td>
+                        <td>{{ item.responseReceived ? 'Sim' : 'Não' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}

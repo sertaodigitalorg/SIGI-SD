@@ -14,15 +14,22 @@
 
 {% block header_navigation_links %}
     <li class="nav-item">
-        <a class="nav-link {{ _route in ['admin_index', 'admin_post_index'] ? 'active' }}" href="{{ path('admin_post_index') }}">
-            <twig:ux:icon name="tabler:list"/> {{ 'menu.post_list'|trans }}
+        <a class="nav-link {{ _route == 'admin_dashboard_index' ? 'active' }}" href="{{ path('admin_dashboard_index') }}">
+            <twig:ux:icon name="tabler:dashboard"/> Dashboard
         </a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{{ path('blog_index') }}">
-            <twig:ux:icon name="tabler:home"/> {{ 'menu.back_to_blog'|trans }}
+
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle {{ _route in ['admin_index', 'admin_post_index'] ? 'active' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <twig:ux:icon name="tabler:list"/> {{ 'menu.post_admin'|trans }}
         </a>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ path('blog_index') }}"><twig:ux:icon name="tabler:home"/> {{ 'menu.blog_index'|trans }}</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_post_index') }}"><twig:ux:icon name="tabler:lock"/> {{ 'menu.admin_post_list'|trans }}</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_post_new') }}"><twig:ux:icon name="tabler:lock"/> {{ 'menu.admin_create_post'|trans }}</a></li>
+        </ul>
     </li>
+
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle {{ _route in ['organization_index', 'organization_new', 'organization_show', 'organization_edit'] ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <twig:ux:icon name="tabler:building"/> {{ 'menu.organizations'|trans }}
@@ -37,12 +44,16 @@
         </ul>
     </li>
     <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle {{ _route in ['admin_person_index', 'admin_person_new', 'admin_person_show', 'admin_person_edit'] ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <a class="nav-link dropdown-toggle {{ _route in ['admin_person_index', 'admin_person_new', 'admin_person_show', 'admin_person_edit', 'admin_person_contact_index', 'admin_person_contact_new'] ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <twig:ux:icon name="tabler:user"/> {{ 'menu.people'|trans }}
         </a>
         <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="{{ path('admin_person_index') }}">{{ 'menu.person_list'|trans }}</a></li>
             <li><a class="dropdown-item" href="{{ path('admin_person_new') }}">{{ 'menu.person_new'|trans }}</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_person_contact_index') }}"><twig:ux:icon name="tabler:phone"/> Contatos da Pessoa</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_person_contact_new') }}"><twig:ux:icon name="tabler:phone"/> Novo Contato da Pessoa</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_person_contact_interaction_index') }}"><twig:ux:icon name="tabler:message"/> Interações de Contato da Pessoa</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_person_contact_interaction_new') }}"><twig:ux:icon name="tabler:message"/> Nova Interação com Pessoa</a></li>
         </ul>
     </li>
 {% endblock %}
