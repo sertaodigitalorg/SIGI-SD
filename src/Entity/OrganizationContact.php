@@ -188,4 +188,9 @@ class OrganizationContact
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->value ?? '';
+    }
 }

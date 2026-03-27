@@ -28,8 +28,12 @@
             <twig:ux:icon name="tabler:building"/> {{ 'menu.organizations'|trans }}
         </a>
         <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{{ path('organization_index') }}">{{ 'menu.organization_list'|trans }}</a></li>
-            <li><a class="dropdown-item" href="{{ path('organization_new') }}">{{ 'menu.organization_new'|trans }}</a></li>
+            <li><a class="dropdown-item" href="{{ path('organization_index') }}"><twig:ux:icon name="tabler:user"/> {{ 'menu.organization_list'|trans }}</a></li>
+            <li><a class="dropdown-item" href="{{ path('organization_new') }}"><twig:ux:icon name="tabler:user"/> {{ 'menu.organization_new'|trans }}</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_organization_contact_index') }}"><twig:ux:icon name="tabler:phone"/> {{ 'menu.organization_contact_list'|trans }}</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_organization_contact_new') }}"><twig:ux:icon name="tabler:phone"/> {{ 'menu.organization_contact_new'|trans }}</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_organization_contact_interaction_index') }}"><twig:ux:icon name="tabler:message"/> {{ 'menu.organization_contact_interaction_list'|trans }}</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_organization_contact_interaction_new') }}"><twig:ux:icon name="tabler:message"/> {{ 'menu.organization_contact_interaction_new'|trans }}</a></li>
         </ul>
     </li>
     <li class="nav-item dropdown">

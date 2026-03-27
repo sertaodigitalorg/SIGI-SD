@@ -1,0 +1,60 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Detalhes da Interação Institucional{% endblock %}
+
+{% block main %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">{{ interaction.subject ?: interaction.organizationContact.value }}</h1>
+            <p class="text-body-secondary mb-0">{{ interaction.organizationContact.organization.legalName ?: 'Organização não informada' }}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary" href="{{ path('admin_organization_contact_interaction_edit', {'id': interaction.id}) }}">Editar</a>
+            <a class="btn btn-outline-primary" href="{{ path('admin_organization_contact_interaction_index') }}">Voltar</a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5">Dados da interação</h2>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Organização</dt>
+                        <dd class="col-sm-8">{{ interaction.organizationContact.organization.legalName ?: '-' }}</dd>
+                        <dt class="col-sm-4">Contato Utilizado</dt>
+                        <dd class="col-sm-8">{{ interaction.organizationContact.contactType.name ~ ' | ' ~ interaction.organizationContact.value }}</dd>
+                        <dt class="col-sm-4">Status da Interação</dt>
+                        <dd class="col-sm-8">{{ interaction.interactionStatus ? interaction.interactionStatus.name : '-' }}</dd>
+                        <dt class="col-sm-4">Realizado Por</dt>
+                        <dd class="col-sm-8">{{ interaction.performedBy ? interaction.performedBy.username : '-' }}</dd>
+                        <dt class="col-sm-4">Data do Contato</dt>
+                        <dd class="col-sm-8">{{ interaction.contactedAt ? interaction.contactedAt|date('d/m/Y H:i') : '-' }}</dd>
+                        <dt class="col-sm-4">Houve Resposta</dt>
+                        <dd class="col-sm-8">{{ interaction.responseReceived ? 'Sim' : 'Não' }}</dd>
+                        <dt class="col-sm-4">Próximo Contato</dt>
+                        <dd class="col-sm-8">{{ interaction.nextContactAt ? interaction.nextContactAt|date('d/m/Y H:i') : '-' }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5">Mensagens</h2>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Assunto</dt>
+                        <dd class="col-sm-8">{{ interaction.subject ?: '-' }}</dd>
+                        <dt class="col-sm-4">Mensagem</dt>
+                        <dd class="col-sm-8">{{ interaction.message ?: '-' }}</dd>
+                        <dt class="col-sm-4">Texto da Resposta</dt>
+                        <dd class="col-sm-8">{{ interaction.responseText ?: '-' }}</dd>
+                        <dt class="col-sm-4">Observações</dt>
+                        <dd class="col-sm-8">{{ interaction.notes ?: '-' }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

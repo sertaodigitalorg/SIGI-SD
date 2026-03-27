@@ -1,0 +1,59 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Interações Institucionais{% endblock %}
+
+{% block main %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Interações Institucionais</h1>
+            <p class="text-body-secondary mb-0">Registre a comunicação realizada com os contatos institucionais.</p>
+        </div>
+        <a class="btn btn-primary" href="{{ path('admin_organization_contact_interaction_new') }}">Nova Interação Institucional</a>
+    </div>
+
+    {% if interactions is empty %}
+        <div class="alert alert-info">Nenhuma interação registrada até o momento.</div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Organização</th>
+                        <th>Contato Utilizado</th>
+                        <th>Status da Interação</th>
+                        <th>Realizado Por</th>
+                        <th>Data do Contato</th>
+                        <th>Houve Resposta</th>
+                        <th>Próximo Contato</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in interactions %}
+                        <tr>
+                            <td>{{ item.id }}</td>
+                            <td>{{ item.organizationContact.organization.legalName ?: '-' }}</td>
+                            <td>{{ item.organizationContact.contactType.name ~ ' | ' ~ item.organizationContact.value }}</td>
+                            <td>{{ item.interactionStatus ? item.interactionStatus.name : '-' }}</td>
+                            <td>{{ item.performedBy ? item.performedBy.username : '-' }}</td>
+                            <td>{{ item.contactedAt ? item.contactedAt|date('d/m/Y H:i') : '-' }}</td>
+                            <td>{{ item.responseReceived ? 'Sim' : 'Não' }}</td>
+                            <td>{{ item.nextContactAt ? item.nextContactAt|date('d/m/Y H:i') : '-' }}</td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    <a class="btn btn-sm btn-outline-primary" href="{{ path('admin_organization_contact_interaction_show', {'id': item.id}) }}">Ver</a>
+                                    <a class="btn btn-sm btn-outline-secondary" href="{{ path('admin_organization_contact_interaction_edit', {'id': item.id}) }}">Editar</a>
+                                    <form method="post" action="{{ path('admin_organization_contact_interaction_delete', {'id': item.id}) }}" onsubmit="return confirm('Tem certeza que deseja excluir esta interação?')" style="display: inline;">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ item.id) }}">
+                                        <button class="btn btn-sm btn-outline-danger">Excluir</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}

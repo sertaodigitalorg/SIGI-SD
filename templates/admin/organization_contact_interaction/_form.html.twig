@@ -1,0 +1,21 @@
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+{{ form_start(form) }}
+    <div class="row g-3">
+        <div class="col-md-6">{{ form_row(form.organizationContact) }}</div>
+        <div class="col-md-6">{{ form_row(form.interactionStatus) }}</div>
+        <div class="col-md-6">{{ form_row(form.performedBy) }}</div>
+        <div class="col-md-6">{{ form_row(form.contactedAt) }}</div>
+        <div class="col-md-12">{{ form_row(form.subject) }}</div>
+        <div class="col-md-12">{{ form_row(form.message) }}</div>
+        <div class="col-md-3">{{ form_row(form.responseReceived) }}</div>
+        <div class="col-md-9">{{ form_row(form.responseText) }}</div>
+        <div class="col-md-6">{{ form_row(form.nextContactAt) }}</div>
+        <div class="col-md-12">{{ form_row(form.notes) }}</div>
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+        <button class="btn btn-primary">{{ button_label|default('Salvar') }}</button>
+        <a class="btn btn-outline-secondary" href="{{ path('admin_organization_contact_interaction_index') }}">Voltar</a>
+    </div>
+{{ form_end(form) }}

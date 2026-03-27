@@ -1,0 +1,60 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Detalhes do Contato Institucional{% endblock %}
+
+{% block main %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">{{ contact.value }}</h1>
+            <p class="text-body-secondary mb-0">{{ contact.organization.legalName ?: 'Organização não informada' }}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary" href="{{ path('admin_organization_contact_edit', {'id': contact.id}) }}">Editar</a>
+            <a class="btn btn-outline-primary" href="{{ path('admin_organization_contact_index') }}">Voltar</a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5">Informações do Contato</h2>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Organização</dt>
+                        <dd class="col-sm-8">{{ contact.organization.legalName ?: '-' }}</dd>
+                        <dt class="col-sm-4">Tipo de Contato</dt>
+                        <dd class="col-sm-8">{{ contact.contactType.name ?: '-' }}</dd>
+                        <dt class="col-sm-4">Valor</dt>
+                        <dd class="col-sm-8">{{ contact.value ?: '-' }}</dd>
+                        <dt class="col-sm-4">Rótulo</dt>
+                        <dd class="col-sm-8">{{ contact.label ?: '-' }}</dd>
+                        <dt class="col-sm-4">Status</dt>
+                        <dd class="col-sm-8">{{ contact.status ? contact.status.name : '-' }}</dd>
+                        <dt class="col-sm-4">Motivo do Problema</dt>
+                        <dd class="col-sm-8">{{ contact.issueType ? contact.issueType.name : '-' }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5">Configurações e Observações</h2>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Principal</dt>
+                        <dd class="col-sm-8">{{ contact.isPrimary ? 'Sim' : 'Não' }}</dd>
+                        <dt class="col-sm-4">Público</dt>
+                        <dd class="col-sm-8">{{ contact.isPublic ? 'Sim' : 'Não' }}</dd>
+                        <dt class="col-sm-4">Desativado em</dt>
+                        <dd class="col-sm-8">{{ contact.deactivatedAt ? contact.deactivatedAt|date('d/m/Y H:i') : '-' }}</dd>
+                        <dt class="col-sm-4">Motivo da Desativação</dt>
+                        <dd class="col-sm-8">{{ contact.deactivationReason ?: '-' }}</dd>
+                        <dt class="col-sm-4">Observações</dt>
+                        <dd class="col-sm-8">{{ contact.notes ?: '-' }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Contatos Institucionais{% endblock %}
+
+{% block main %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Contatos Institucionais</h1>
+            <p class="text-body-secondary mb-0">Gerencie os contatos institucionais das organizações.</p>
+        </div>
+        <a class="btn btn-primary" href="{{ path('admin_organization_contact_new') }}">Novo Contato Institucional</a>
+    </div>
+
+    {% if contacts is empty %}
+        <div class="alert alert-info">Nenhum contato institucional cadastrado até o momento.</div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Organização</th>
+                        <th>Tipo de Contato</th>
+                        <th>Valor</th>
+                        <th>Rótulo</th>
+                        <th>Status</th>
+                        <th>Principal</th>
+                        <th>Público</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contact in contacts %}
+                        <tr>
+                            <td>{{ contact.id }}</td>
+                            <td>{{ contact.organization.legalName ?: '-' }}</td>
+                            <td>{{ contact.contactType.name ?: '-' }}</td>
+                            <td>{{ contact.value ?: '-' }}</td>
+                            <td>{{ contact.label ?: '-' }}</td>
+                            <td>{{ contact.status ? contact.status.name : '-' }}</td>
+                            <td>{{ contact.isPrimary ? 'Sim' : 'Não' }}</td>
+                            <td>{{ contact.isPublic ? 'Sim' : 'Não' }}</td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    <a class="btn btn-sm btn-outline-primary" href="{{ path('admin_organization_contact_show', {'id': contact.id}) }}">Ver</a>
+                                    <a class="btn btn-sm btn-outline-secondary" href="{{ path('admin_organization_contact_edit', {'id': contact.id}) }}">Editar</a>
+                                    <form method="post" action="{{ path('admin_organization_contact_delete', {'id': contact.id}) }}" onsubmit="return confirm('Tem certeza que deseja excluir este contato?')" style="display: inline;">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ contact.id) }}">
+                                        <button class="btn btn-sm btn-outline-danger">Excluir</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -315,6 +315,26 @@
                 <source>menu.person_new</source>
                 <target>New person</target>
             </trans-unit>
+            <trans-unit id="menu.organization_contacts">
+                <source>menu.organization_contacts</source>
+                <target>Institutional Contacts</target>
+            </trans-unit>
+            <trans-unit id="menu.organization_contact_list">
+                <source>menu.organization_contact_list</source>
+                <target>Contact list</target>
+            </trans-unit>
+            <trans-unit id="menu.organization_contact_new">
+                <source>menu.organization_contact_new</source>
+                <target>New institutional contact</target>
+            </trans-unit>
+            <trans-unit id="menu.organization_contact_interaction_list">
+                <source>menu.organization_contact_interaction_list</source>
+                <target>Interaction list</target>
+            </trans-unit>
+            <trans-unit id="menu.organization_contact_interaction_new">
+                <source>menu.organization_contact_interaction_new</source>
+                <target>New institutional interaction</target>
+            </trans-unit>
             <trans-unit id="menu.user">
                 <source>menu.user</source>
                 <target>Account</target>

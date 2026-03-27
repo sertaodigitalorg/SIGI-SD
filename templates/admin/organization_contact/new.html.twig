@@ -1,0 +1,9 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Novo Contato Institucional{% endblock %}
+
+{% block main %}
+    <h1 class="mb-4">Novo Contato Institucional</h1>
+
+    {{ include('admin/organization_contact/_form.html.twig', {button_label: 'Criar Contato'}) }}
+{% endblock %}
