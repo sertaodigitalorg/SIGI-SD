@@ -1,80 +1,219 @@
-# SIGI-SD - Diretrizes de API
+# SIGI-SD — API e Padrões de Integração
 
-## Visão geral
+## Visão Geral
 
-Este documento define a direção técnica para as APIs do SIGI-SD.
+O SIGI-SD possui dois tipos principais de endpoints:
 
-As APIs devem atender principalmente a estes cenários:
-- integração com frontend
-- integração com sistemas externos
-- automação de processos
-- acesso estruturado aos dados do sistema
+1. Endpoints administrativos (uso interno via Twig)
+2. Endpoints AJAX (suporte à interface dinâmica)
+3. Estrutura futura de API REST pública
 
-## Convenção de versionamento
+---
 
-Base sugerida:
+## 🧱 Tipos de Endpoints
+
+### 1. Admin (Server Rendered)
+
+Endpoints utilizados pelo sistema interno:
 
 ```text
-/api/v1
+/admin/*
 ```
 
-Quando houver mudanças incompatíveis, uma nova versão deve ser criada sem quebrar contratos existentes.
+Exemplos:
+ - /admin/organization
+ - /admin/person
+ - /admin/organization-contact
+ - /admin/person-contact
+ - /admin/dashboard
 
-## Princípios
+### 2. AJAX (Interface Dinâmica)
 
-- URLs previsíveis e estáveis
-- respostas consistentes
-- uso claro de códigos HTTP
-- autenticação e autorização explícitas
-- paginação em listas extensas
-- validação de entrada com mensagens compreensíveis
+Endpoints utilizados para:
+ - autocomplete
+ - carregamento dependente
+ - busca dinâmica
 
-## Recursos previstos
+Formato:
 
-Exemplos de recursos que podem ser expostos por API:
-- organizações
-- pessoas
-- contatos
-- interações
-- cobertura territorial
-- áreas temáticas
+```text
+/admin/*/search
+/admin/*/{id}/relations
+```
 
-## Padrão de resposta
+### 3. API REST (Futuro)
 
-Exemplo de resposta bem-sucedida:
+Formato planejado:
+
+```text
+/api/v1/*
+```
+
+## 🔎 Endpoints AJAX Implementados
+
+### Buscar Organizações
+
+```http
+GET /admin/organization/search?q=texto
+```
+
+### Query Params:
+ - q: termo de busca
+
+### Busca por:
+ - legalName
+ - tradeName
+ - acronym
+ - cnpj
+
+### Resposta (JSON):
 
 ```json
-{
-  "data": {
+[
+  {
     "id": 1,
-    "legalName": "CENTRO DE INOVACAO E TECNOLOGIA SERTAO DIGITAL"
+    "text": "Prefeitura Municipal de Sousa"
   }
-}
+]
 ```
 
-Exemplo de resposta com erro de validação:
+### Buscar Contatos da Organização
+
+```http
+GET /admin/organization/{id}/contacts
+```
+
+### Parâmetros:
+ - id: ID da organização
+
+### Comportamento:
+ - retorna apenas contatos ativos
+ - ordena por principal primeiro
+
+### Resposta:
+
+```json
+[
+  {
+    "id": 10,
+    "text": "E-mail — contato@prefeitura.pb.gov.br"
+  },
+  {
+    "id": 11,
+    "text": "WhatsApp — (83) 99999-9999"
+  }
+]
+```
+
+## 📊 Endpoints de Dashboard (Interno)
+
+Utilizados pelo DashboardService:
+
+ - métricas PF (PersonContactInteraction)
+ - métricas PJ (OrganizationContactInteraction)
+
+Esses endpoints são internos ao sistema (não expostos publicamente).
+
+## 📦 Estrutura Padrão de Resposta
+
+### Sucesso
 
 ```json
 {
-  "message": "Falha de validação.",
-  "errors": {
-    "legalName": ["Informe a razão social."],
-    "cnpj": ["Informe o CNPJ."]
-  }
+  "success": true,
+  "data": {}
 }
 ```
 
-## Segurança
+### Erro
 
-Toda API deve considerar:
-- autenticação adequada ao contexto
-- autorização por perfil ou permissão
-- proteção contra exposição indevida de dados sensíveis
-- rastreabilidade para operações críticas
+```json
+{
+  "success": false,
+  "message": "Erro ao processar requisição"
+}
+```
 
-## Próximos passos
+## 🔐 Segurança
 
-- definir contratos por recurso
-- padronizar filtros, ordenação e paginação
-- documentar autenticação
-- publicar exemplos de endpoints operacionais
+### Admin
+- acesso restrito a usuários autenticados
+- controle por roles (ROLE_ADMIN, ROLE_USER)
+
+### AJAX
+ - protegido por sessão
+ - não expor dados sensíveis
+ - limitar resultados (ex: max 10–20 registros)
+
+### API futura
+ - autenticação via JWT ou OAuth2
+ - versionamento obrigatório (/api/v1)
+ - rate limiting
+
+## 📌 Boas Práticas
+ - nunca retornar listas completas sem filtro
+ - sempre usar paginação em endpoints públicos
+ - evitar expor IDs internos sem necessidade
+ - padronizar respostas JSON
+ - validar todos os inputs
+
+## 🚀 Estrutura da API REST (Futuro)
+
+### Organizações
+
+```http
+GET    /api/v1/organizations
+POST   /api/v1/organizations
+GET    /api/v1/organizations/{id}
+PUT    /api/v1/organizations/{id}
+DELETE /api/v1/organizations/{id}
+```
+
+### Pessoas
+
+```http
+GET    /api/v1/persons
+POST   /api/v1/persons
+GET    /api/v1/persons/{id}
+PUT    /api/v1/persons/{id}
+DELETE /api/v1/persons/{id}
+```
+
+### Contatos
+
+```http
+GET /api/v1/organization-contacts
+GET /api/v1/person-contacts
+```
+
+### Interações
+
+```http
+GET /api/v1/interactions
+POST /api/v1/interactions
+```
+
+## 🔄 Integrações Futuras
+
+O sistema está preparado para integração com:
+
+- sistemas de prefeituras
+- ERPs públicos (ex: e-Cidade)
+- plataformas de dados governamentais
+- serviços de mensageria (WhatsApp, e-mail)
+- ferramentas de BI
+
+## 📌 Considerações Finais
+
+A API do SIGI-SD foi projetada para:
+ - suportar grandes volumes de dados
+ - garantir segurança institucional
+ - permitir expansão nacional
+ - integrar com ecossistemas públicos e privados
+
+## 🔮 Evoluções Futuras
+ - API pública documentada (Swagger/OpenAPI)
+ - Webhooks para eventos
+ - Integração com chatbots
+ - Automação de follow-ups
+ - Motor de recomendação de contatos
