@@ -1,28 +1,29 @@
-# SIGI-SD - Manual de Modelagem de Dados
+# SIGI-SD — Manual de Modelagem de Dados
 
-## Visão geral
+## Visão Geral
 
-Este documento descreve a modelagem base do SIGI-SD para:
+Este documento descreve a modelagem de dados do SIGI-SD, incluindo:
 
 - identidade de pessoas físicas e jurídicas
-- vínculos institucionais e múltiplos papéis
-- estrutura geográfica do Brasil
-- endereços físicos
-- contatos e presença digital
-- histórico de comunicação e CRM
+- hierarquia organizacional
+- vínculos institucionais
+- estrutura territorial
+- endereços
+- contatos
+- histórico de comunicação
 - cobertura territorial
-- áreas temáticas de atuação
-- hierarquia e classificação institucional de organizações
+- áreas temáticas
 
-A nomenclatura das entidades e campos foi padronizada em inglês para manter consistência técnica no projeto.
+A nomenclatura técnica do sistema foi padronizada em inglês para código, entidades, tabelas e campos.  
+Os valores exibidos ao usuário devem ser mantidos em português do Brasil.
 
 ---
 
-## 1. Identity Core
+## 1. Núcleo de Identidade
 
 ### 1.1 `persons`
 
-**Descrição**
+**Descrição**  
 Armazena pessoas físicas.
 
 | Campo | Tipo | Descrição |
@@ -33,275 +34,551 @@ Armazena pessoas físicas.
 | created_at | datetime immutable | Data de criação |
 | updated_at | datetime immutable nullable | Data da última atualização |
 
-### 1.2 `organizations`
+---
 
-**Descrição**
-Armazena pessoas jurídicas, instituições, empresas, prefeituras, câmaras, universidades e organizações em geral.
+### 1.2 `organization_types`
+
+**Descrição**  
+Catálogo de tipos de organização.
 
 | Campo | Tipo | Descrição |
 |---|---|---|
 | id | int | Identificador interno |
-| legal_name | varchar(191) | Razão social / nome jurídico |
+| name | varchar(100) | Nome do tipo |
+| description | varchar nullable | Descrição |
+
+**Exemplos**
+- Prefeitura
+- Governo Estadual
+- Câmara Municipal
+- Secretaria
+- Empresa
+- ONG
+- Associação
+- Universidade
+
+---
+
+### 1.3 `organizations`
+
+**Descrição**  
+Armazena pessoas jurídicas e estruturas institucionais.
+
+| Campo | Tipo | Descrição |
+|---|---|---|
+| id | int | Identificador interno |
+| legal_name | varchar(191) | Nome jurídico / razão social |
 | trade_name | varchar(191) nullable | Nome fantasia |
-| cnpj | varchar(18) | CNPJ único |
 | acronym | varchar(50) nullable | Sigla |
-| status | varchar(50) nullable | Status institucional |
-| notes | text nullable | Observações gerais |
-| parent_id | fk organizations nullable | Organização pai na hierarquia |
+| cnpj | varchar(18) nullable | CNPJ |
+| status | varchar(50) nullable | Status organizacional |
+| notes | text nullable | Observações |
+| parent_id | fk organizations nullable | Organização pai |
 | organization_type_id | fk organization_types nullable | Tipo de organização |
 | created_at | datetime immutable | Data de criação |
 | updated_at | datetime immutable nullable | Data da última atualização |
 
-**Regras de negócio**
-- `parent_id` é opcional e define a hierarquia institucional.
-- uma organização não pode apontar para si mesma como pai.
-- a cadeia hierárquica não pode formar ciclos.
-- a remoção da organização pai deve apenas limpar o vínculo, não excluir as organizações filhas.
+**Observação**  
+A hierarquia institucional é representada por `parent_id`.
 
-**Exemplo conceitual**
+**Exemplo de hierarquia**
+- Prefeitura Municipal de Sousa
+  - Secretaria Municipal de Saúde de Sousa
+  - Secretaria Municipal de Educação de Sousa
+- Governo do Estado da Paraíba
+  - Secretaria de Estado da Educação
+  - Secretaria de Estado da Saúde
 
-```text
-Rede do Sertão
-└── Sertão Digital
-```
-
-No exemplo acima:
-- `Rede do Sertão` é uma organização raiz.
-- `Sertão Digital` é filha de `Rede do Sertão`.
-- a hierarquia é modelada por `parent_id`.
-
-### 1.3 `organization_types`
-
-**Descrição**
-Catálogo de classificação institucional das organizações.
-
-| Campo | Tipo | Descrição |
-|---|---|---|
-| id | int | Identificador interno |
-| name | varchar(100) | Nome único do tipo |
-| description | varchar(255) nullable | Descrição do tipo |
-
-**Finalidade**
-- classificar a natureza institucional da organização
-- evitar texto livre repetido em `organizations`
-- permitir expansão de tipos sem alterar a semântica da tabela principal
-
-**Exemplos**
-- Instituição de Ciência e Tecnologia
-- Associação
-- Órgão Público
-- Empresa
-- Instituição de Ensino
+---
 
 ### 1.4 `roles`
 
-**Descrição**
-Catálogo de papéis e funções exercidas por pessoas dentro de organizações.
+**Descrição**  
+Catálogo de papéis exercidos por pessoas em organizações.
 
 | Campo | Tipo | Descrição |
 |---|---|---|
 | id | int | Identificador interno |
-| name | varchar(100) | Nome do papel (único) |
-| description | varchar nullable | Descrição do papel |
+| name | varchar(100) | Nome do papel |
+| description | varchar nullable | Descrição |
+
+**Exemplos**
+- Presidente
+- Prefeito
+- Vereador
+- Secretário
+- Diretor
+- Coordenador
+- Consultor
+
+---
 
 ### 1.5 `person_organizations`
 
-**Descrição**
-Representa o vínculo principal entre uma pessoa e uma organização.
+**Descrição**  
+Vínculo principal entre pessoa e organização.
 
 | Campo | Tipo | Descrição |
 |---|---|---|
 | id | int | Identificador interno |
-| person_id | fk persons | Pessoa vinculada |
-| organization_id | fk organizations | Organização vinculada |
+| person_id | fk persons | Pessoa |
+| organization_id | fk organizations | Organização |
 | start_date | datetime immutable nullable | Início do vínculo |
 | end_date | datetime immutable nullable | Fim do vínculo |
 | status | varchar(50) nullable | Status do vínculo |
 | notes | text nullable | Observações |
 
+---
+
 ### 1.6 `person_organization_roles`
 
-**Descrição**
-Permite múltiplos papéis para a mesma pessoa na mesma organização.
+**Descrição**  
+Papéis que a pessoa exerce dentro do vínculo com a organização.
 
 | Campo | Tipo | Descrição |
 |---|---|---|
 | id | int | Identificador interno |
 | person_organization_id | fk person_organizations | Vínculo principal |
-| role_id | fk roles | Papel desempenhado |
+| role_id | fk roles | Papel |
 | start_date | datetime immutable nullable | Início do papel |
 | end_date | datetime immutable nullable | Fim do papel |
 
----
-
-## 2. Estrutura Institucional de Organizações
-
-### Hierarquia com `parent`
-- use `parent` para representar subordinação, mantença, rede ou vínculo estrutural entre organizações
-- organizações raiz ficam com `parent = null`
-- organizações filhas podem ser recuperadas pelo lado inverso da relação, como `children`
-
-### Classificação com `organizationType`
-- use `organizationType` para representar o tipo de organização
-- `organizationType` não substitui a hierarquia
-- duas organizações do mesmo tipo podem ocupar posições diferentes na hierarquia
-
-### Exemplo prático
-- `Rede do Sertão` pode ter tipo de organização `Associação`
-- `Sertão Digital` pode ter tipo de organização `Instituição de Ciência e Tecnologia`
-- `Sertão Digital.parent = Rede do Sertão`
+**Observação**  
+Uma pessoa pode ter mais de um papel na mesma organização.
 
 ---
 
-## 3. Geographic Structure
+## 2. Estrutura Territorial
 
-Hierarquia territorial adotada:
+Hierarquia adotada:
 
 ```text
 City -> Microregion -> Mesoregion -> State -> Region -> Country
 ```
 
-### 3.1 `countries`
+### 2.1 countries
+| Campo         | Tipo                          | Descrição                     |
+|---            |---                            |---                            |
+| id            | int                           | Identificador interno         |
+| name          | varchar(191)                  | Nome do país                  |
+| iso2          | varchar(2)                    | Código ISO2                   |
+| iso3          | varchar(3)                    | Código ISO3                   |
+| numeric_code  | varchar(3) nullable           | Código numérico ISO           |
+| phone_code    | varchar(10) nullable          | DDI                           |
+| currency      | varchar(10) nullable  	    | Moeda                         |
+| created_at    | datetime immutable    	    | Data de criação               |
+| updated_at    | datetime immutable nullable   | Data da última atualização    |
 
-Catálogo de países.
 
-### 3.2 `regions`
+### 2.2 regions
+| Campo      | Tipo         | Descrição              |
+|------------|--------------|------------------------|
+| id         | int          | Identificador interno  |
+| name       | varchar(191) | Nome da região         |
+| country_id | fk countries | País                   |
 
-Grandes regiões geográficas do país.
+### 2.3 states
+| Campo           | Tipo                | Descrição               |
+|----------------|---------------------|------------------------|
+| id             | int                 | Identificador interno  |
+| uf             | varchar(2)          | Sigla do estado        |
+| name           | varchar(191)        | Nome do estado         |
+| area_km2       | decimal nullable    | Área                   |
+| gdp            | decimal nullable    | PIB                    |
+| population     | int nullable        | População              |
+| size           | varchar(50) nullable| Porte                  |
+| annual_revenue | decimal nullable    | Receita anual          |
+| capital_city_id| fk cities nullable  | Cidade capital         |
+| country_id     | fk countries        | País                   |
+| region_id      | fk regions          | Região                 |
 
-### 3.3 `states`
+### 2.4 mesoregions
+| Campo                | Tipo             | Descrição                  |
+|---------------------|------------------|----------------------------|
+| id                  | int              | Identificador interno      |
+| name                | varchar(191)     | Nome da mesorregião        |
+| ibge_code           | varchar(20)      | Código IBGE                |
+| municipalities_count| int nullable     | Número de municípios       |
+| state_id            | fk states        | Estado                     |
 
-Estados da federação.
+### 2.5 microregions
+| Campo         | Tipo             | Descrição               |
+|---------------|------------------|-------------------------|
+| id            | int              | Identificador interno   |
+| name          | varchar(191)     | Nome da microrregião    |
+| ibge_code     | varchar(20)      | Código IBGE             |
+| mesoregion_id | fk mesoregions   | Mesorregião             |
 
-### 3.4 `mesoregions`
+### 2.6 cities
+| Campo            | Tipo                  | Descrição                  |
+|------------------|-----------------------|-----------------------------|
+| id               | int                   | Identificador interno       |
+| microregion_id   | fk microregions nullable | Microrregião             |
+| state_id         | fk states             | Estado                      |
+| area_km2         | decimal nullable      | Área                        |
+| gdp              | decimal nullable      | PIB                         |
+| population       | int nullable          | População                   |
+| annual_revenue   | decimal nullable      | Receita anual               |
+| tom_code         | varchar(20) nullable  | Código TOM                  |
+| ibge_code        | varchar(20) nullable  | Código IBGE                 |
+| ibge_code7       | varchar(20) nullable  | Código IBGE7                |
+| zip_code         | varchar(10) nullable  | CEP                         |
+| tom_name         | varchar(191) nullable | Nome no TOM                 |
+| ibge_name        | varchar(191)          | Nome no IBGE                |
+| size             | varchar(50) nullable  | Porte                       |
+| is_capital       | boolean               | Indica se é capital         |
 
-Mesorregiões vinculadas ao estado.
+## 3. Endereços
 
-### 3.5 `microregions`
+### 3.1 address_types
+| Campo       | Tipo             | Descrição               |
+|-------------|------------------|-------------------------|
+| id          | int              | Identificador interno   |
+| name        | varchar(100)     | Tipo de endereço        |
+| description | varchar nullable | Descrição               |
 
-Microrregiões vinculadas à mesorregião.
+**Exemplos**
+ - Residencial
+ - Comercial
+ - Fiscal
+ - Operacional
+ - Trabalho
+ - Correspondência
 
-### 3.6 `cities`
+### 3.2 addresses
+| Campo        | Tipo                     | Descrição                     |
+|--------------|--------------------------|-------------------------------|
+| id           | int                      | Identificador interno         |
+| street       | varchar(191)             | Logradouro                   |
+| number       | varchar nullable         | Número                        |
+| complement   | varchar nullable         | Complemento                   |
+| neighborhood | varchar nullable         | Bairro                        |
+| zip_code     | varchar(10) nullable     | CEP                           |
+| reference    | varchar nullable         | Referência                    |
+| latitude     | decimal nullable         | Latitude                      |
+| longitude    | decimal nullable         | Longitude                     |
+| city_id      | fk cities                | Cidade                        |
+| created_at   | datetime immutable       | Data de criação               |
+| updated_at   | datetime immutable nullable | Data da última atualização |
 
-Municípios e cidades.
+### 3.3 person_addresses
+| Campo           | Tipo              | Descrição               |
+|-----------------|-------------------|-------------------------|
+| id              | int               | Identificador interno   |
+| person_id       | fk persons        | Pessoa                  |
+| address_id      | fk addresses      | Endereço                |
+| address_type_id | fk address_types  | Tipo de endereço        |
+| is_primary      | boolean           | Endereço principal      |
 
----
+### 3.4 organization_addresses
+| Campo           | Tipo               | Descrição               |
+|-----------------|--------------------|-------------------------|
+| id              | int                | Identificador interno   |
+| organization_id | fk organizations   | Organização             |
+| address_id      | fk addresses       | Endereço                |
+| address_type_id | fk address_types   | Tipo de endereço        |
+| is_primary      | boolean            | Endereço principal      |
 
-## 4. Address Management
+## 4. Contatos
 
-### 4.1 `address_types`
-Catálogo de tipos de endereço.
+O sistema diferencia contatos institucionais (PJ) e contatos pessoais (PF).
 
-### 4.2 `addresses`
-Endereços físicos vinculáveis a pessoas e organizações.
+### 4.1 contact_types
+| Campo       | Tipo             | Descrição                              |
+|-------------|------------------|----------------------------------------|
+| id          | int              | Identificador interno                  |
+| name        | varchar(100)     | Tipo de contato                        |
+| description | varchar nullable | Descrição                              |
+| category    | varchar(50) nullable | communication / social / web / other |
 
-### 4.3 `person_addresses`
-Vínculo entre pessoa e endereço.
+**Exemplos**
+ - E-mail
+ - Telefone
+ - Celular
+ - WhatsApp
+ - Telegram
+ - Site
+ - Instagram
+ - LinkedIn
 
-### 4.4 `organization_addresses`
-Vínculo entre organização e endereço.
+### 4.2 contact_statuses
+| Campo       | Tipo             | Descrição              |
+|-------------|------------------|------------------------|
+| id          | int              | Identificador interno  |
+| name        | varchar(100)     | Status                 |
+| description | varchar nullable | Descrição              |
 
----
+**Exemplos**
+ - Ativo
+ - Inativo
+ - Inválido
+ - Retornado
+ - Sem Resposta
+ - Bloqueado
 
-## 5. Contacts and Digital Presence
+### 4.3 contact_issue_types
+| Campo       | Tipo             | Descrição              |
+|-------------|------------------|------------------------|
+| id          | int              | Identificador interno  |
+| name        | varchar(100)     | Motivo do problema     |
+| description | varchar nullable | Descrição              |
 
-### 5.1 `contact_types`
-Catálogo extensível de canais de contato e presença digital.
+**Exemplos**
+ - E-mail Retornado
+ - Telefone Incorreto
+ - Pessoa Errada
+ - Número Não Encontrado
+ - Contato Duplicado
 
-### 5.2 `contact_statuses`
-Estado atual do contato.
+### 4.4 organization_contacts
 
-### 5.3 `contact_issue_types`
-Motivo do problema ou invalidação do contato.
+**Descrição**
+Contato genérico/institucional da organização.
 
-### 5.4 `person_contacts`
-Contatos de pessoa física.
+| Campo                | Tipo                         | Descrição                     |
+|----------------------|------------------------------|-------------------------------|
+| id                   | int                          | Identificador interno         |
+| organization_id      | fk organizations             | Organização                   |
+| contact_type_id      | fk contact_types             | Tipo de contato               |
+| status_id            | fk contact_statuses nullable | Status                        |
+| issue_type_id        | fk contact_issue_types nullable | Problema                   |
+| value                | varchar(191)                 | Valor do contato              |
+| label                | varchar(100) nullable        | Rótulo                        |
+| is_primary           | boolean                      | Principal                     |
+| is_public            | boolean                      | Público                       |
+| deactivated_at       | datetime immutable nullable  | Data de desativação           |
+| deactivation_reason  | text nullable                | Motivo da desativação         |
+| notes                | text nullable                | Observações                   |
 
-### 5.5 `organization_contacts`
-Contatos de pessoa jurídica.
+**Exemplos**
+ - e-mail geral da prefeitura
+ - e-mail do gabinete
+ - WhatsApp institucional
+ - site oficial
 
----
+### 4.5 person_contacts
 
-## 6. Communication History / CRM
+**Descrição**
+Contato direto da pessoa.
 
-### 6.1 `interaction_statuses`
-Resultado de uma interação específica.
+| Campo                | Tipo                         | Descrição                     |
+|----------------------|------------------------------|-------------------------------|
+| id                   | int                          | Identificador interno         |
+| person_id            | fk persons                   | Pessoa                        |
+| contact_type_id      | fk contact_types             | Tipo de contato               |
+| status_id            | fk contact_statuses nullable | Status                        |
+| issue_type_id        | fk contact_issue_types nullable | Problema                   |
+| value                | varchar(191)                 | Valor do contato              |
+| label                | varchar(100) nullable        | Rótulo                        |
+| is_primary           | boolean                      | Principal                     |
+| is_public            | boolean                      | Público                       |
+| deactivated_at       | datetime immutable nullable  | Data de desativação           |
+| deactivation_reason  | text nullable                | Motivo da desativação         |
+| notes                | text nullable                | Observações                   |
 
-### 6.2 `person_contact_interactions`
-Histórico de interações realizadas sobre contatos de pessoas físicas.
+## 5. Histórico de Interações (CRM)
 
-### 6.3 `organization_contact_interactions`
-Histórico de interações realizadas sobre contatos de organizações.
+### 5.1 interaction_statuses
+| Campo       | Tipo             | Descrição                    |
+|-------------|------------------|------------------------------|
+| id          | int              | Identificador interno        |
+| name        | varchar(100)     | Status da interação          |
+| description | varchar nullable | Descrição                    |
 
----
+**Exemplos**
+ - Enviado
+ - Entregue
+ - Lido
+ - Respondido
+ - Sem Resposta
+ - Encerrado
 
-## 7. Territorial Coverage
+### 5.2 organization_contact_interactions
 
-### 7.1 `coverage_types`
-Tipo de cobertura ou atuação territorial.
+**Descrição**
+Histórico de comunicação com contato institucional genérico.
 
-### 7.2 `person_coverages`
-Território de atuação da pessoa física.
+| Campo                   | Tipo                          | Descrição                     |
+|--------------------------|-------------------------------|-------------------------------|
+| id                       | int                           | Identificador interno         |
+| organization_contact_id  | fk organization_contacts      | Contato institucional         |
+| interaction_status_id    | fk interaction_statuses nullable | Status da interação        |
+| performed_by             | fk users nullable             | Usuário que realizou          |
+| contacted_at             | datetime immutable            | Data/hora do contato          |
+| subject                  | varchar(191) nullable         | Assunto                       |
+| message                  | text nullable                 | Mensagem/resumo               |
+| response_received        | boolean                       | Houve resposta                |
+| response_text            | text nullable                 | Texto da resposta             |
+| next_contact_at          | datetime immutable nullable   | Próximo contato               |
+| notes                    | text nullable                 | Observações                   |
 
-### 7.3 `organization_coverages`
-Território de atuação da organização.
+**Fluxo típico**
 
----
+ - contato inicial com prefeitura, secretaria ou gabinete
+ - refinamento posterior para uma pessoa
 
-## 8. Thematic Areas of Activity
+### 5.3 person_contact_interactions
 
-### 8.1 `thematic_areas`
-Catálogo hierárquico de áreas temáticas de atuação.
+**Descrição**
+Histórico de comunicação com contato direto da pessoa.
 
-### 8.2 `person_thematic_areas`
-Áreas temáticas em que a pessoa atua.
+| Campo                  | Tipo                          | Descrição                     |
+|-------------------------|-------------------------------|-------------------------------|
+| id                      | int                           | Identificador interno         |
+| person_contact_id       | fk person_contacts            | Contato da pessoa             |
+| interaction_status_id   | fk interaction_statuses nullable | Status da interação        |
+| performed_by            | fk users nullable             | Usuário que realizou          |
+| contacted_at            | datetime immutable            | Data/hora do contato          |
+| subject                 | varchar(191) nullable         | Assunto                       |
+| message                 | text nullable                 | Mensagem/resumo               |
+| response_received       | boolean                       | Houve resposta                |
+| response_text           | text nullable                 | Texto da resposta             |
+| next_contact_at         | datetime immutable nullable   | Próximo contato               |
+| notes                   | text nullable                 | Observações                   |
 
-### 8.3 `organization_thematic_areas`
-Áreas temáticas em que a organização atua.
+## 6. Cobertura Territorial
 
----
+### 6.1 coverage_types
+| Campo       | Tipo             | Descrição              |
+|-------------|------------------|------------------------|
+| id          | int              | Identificador interno  |
+| name        | varchar(100)     | Tipo de cobertura      |
+| description | varchar nullable | Descrição              |
 
-## 9. Ordem recomendada de carga de dados
+**Exemplos**
 
+Institucional
+Comercial
+Educacional
+Técnica
+Política
+Social
+Operacional
+
+### 6.2 person_coverages
+| Campo            | Tipo                       | Descrição                 |
+|------------------|----------------------------|---------------------------|
+| id               | int                        | Identificador interno     |
+| person_id        | fk persons                 | Pessoa                    |
+| coverage_type_id | fk coverage_types          | Tipo                      |
+| region_id        | fk regions nullable        | Região                    |
+| state_id         | fk states nullable         | Estado                    |
+| mesoregion_id    | fk mesoregions nullable    | Mesorregião               |
+| microregion_id   | fk microregions nullable   | Microrregião              |
+| city_id          | fk cities nullable         | Cidade                    |
+| notes            | text nullable              | Observações               |
+| is_primary       | boolean                    | Cobertura principal       |
+
+### 6.3 organization_coverages
+| Campo            | Tipo                       | Descrição                 |
+|------------------|----------------------------|---------------------------|
+| id               | int                        | Identificador interno     |
+| organization_id  | fk organizations           | Organização               |
+| coverage_type_id | fk coverage_types          | Tipo                      |
+| region_id        | fk regions nullable        | Região                    |
+| state_id         | fk states nullable         | Estado                    |
+| mesoregion_id    | fk mesoregions nullable    | Mesorregião               |
+| microregion_id   | fk microregions nullable   | Microrregião              |
+| city_id          | fk cities nullable         | Cidade                    |
+| notes            | text nullable              | Observações               |
+| is_primary       | boolean                    | Cobertura principal       |
+
+## 7. Áreas Temáticas
+
+### 7.1 thematic_areas
+| Campo       | Tipo                         | Descrição            |
+|-------------|------------------------------|----------------------|
+| id          | int                          | Identificador interno|
+| name        | varchar(150)                 | Área temática        |
+| description | varchar nullable             | Descrição            |
+| parent_id   | fk thematic_areas nullable   | Área pai             |
+
+### 7.2 person_thematic_areas
+| Campo            | Tipo                | Descrição            |
+|------------------|---------------------|----------------------|
+| id               | int                 | Identificador interno|
+| person_id        | fk persons          | Pessoa               |
+| thematic_area_id | fk thematic_areas   | Área temática        |
+| notes            | text nullable       | Observações          |
+| is_primary       | boolean             | Área principal       |
+
+### 7.3 organization_thematic_areas
+| Campo            | Tipo                | Descrição            |
+|------------------|---------------------|----------------------|
+| id               | int                 | Identificador interno|
+| organization_id  | fk organizations    | Organização          |
+| thematic_area_id | fk thematic_areas   | Área temática        |
+| notes            | text nullable       | Observações          |
+| is_primary       | boolean             | Área principal       |
+
+## 8. Fluxo Conceitual do CRM
+
+O SIGI-SD adota dois níveis de relacionamento:
+
+### Etapa 1 — contato institucional (PJ)
+ - fala-se com a organização de forma genérica
+ - exemplo: e-mail do gabinete, prefeitura, secretaria
+
+### Etapa 2 — contato pessoal (PF)
+ - identifica-se a pessoa correta
+ - continua-se o relacionamento com contato direto
+
+Fluxo:
+
+```text
+Organization
+  -> OrganizationContact
+    -> OrganizationContactInteraction
+        ↓
+      Person
+        -> PersonContact
+          -> PersonContactInteraction
+```
+
+## 9. Dashboard Operacional
+
+As métricas do dashboard são derivadas de:
+
+ - `organization_contact_interactions`
+ - `person_contact_interactions`
+
+Indicadores iniciais:
+
+ - interações recentes
+ - follow-ups vencidos
+ - taxa de resposta PF
+ - taxa de resposta PJ
+ - taxa de resposta geral
+
+## 10. Ordem Recomendada de Carga Inicial
 1. countries
 2. regions
 3. states
 4. mesoregions
 5. microregions
 6. cities
-7. roles
-8. address_types
-9. contact_types
-10. contact_statuses
-11. contact_issue_types
-12. interaction_statuses
-13. coverage_types
-14. organization_types
+7. organization_types
+8. roles
+9. address_types
+10. contact_types
+11. contact_statuses
+12. contact_issue_types
+13. interaction_statuses
+14. coverage_types
 15. thematic_areas
-16. persons
+16. users
 17. organizations
-18. person_organizations
-19. person_organization_roles
-20. addresses
-21. person_addresses
-22. organization_addresses
-23. person_contacts
-24. organization_contacts
-25. person_contact_interactions
-26. organization_contact_interactions
-27. person_coverages
-28. organization_coverages
-29. person_thematic_areas
-30. organization_thematic_areas
+18. persons
+19. person_organizations
+20. person_organization_roles
+21. organization_contacts
 
----
+## 11. Considerações Finais
 
-## 10. Observações finais
+A modelagem do SIGI-SD foi projetada para:
 
-- `parent` e `organizationType` têm responsabilidades diferentes e complementares.
-- hierarquia institucional e tipo de organização não devem ser misturados.
-- endereço físico e área de atuação são conceitos diferentes e devem permanecer separados.
-- contatos e presença digital não devem ficar presos a um único campo em `persons` ou `organizations`.
-- o histórico de comunicação é parte do CRM e precisa registrar o usuário responsável pelo contato.
-- papéis devem ser vinculados ao relacionamento entre pessoa e organização, permitindo múltiplos papéis simultâneos.
-- áreas temáticas e cobertura territorial devem ser separadas para permitir filtros inteligentes.
+ - suportar crescimento institucional
+ - organizar relacionamento com organizações e pessoas
+ - permitir CRM escalável
+ - manter separação entre contato genérico e contato pessoal
+ - sustentar dashboards e inteligência operacional
