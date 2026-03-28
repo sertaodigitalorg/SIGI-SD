@@ -74,6 +74,7 @@
                             <small class="text-muted d-block mt-1">Marque se recebeu resposta do contato</small>
                         </div>
                         <div class="col-md-12" id="response-text-container" style="display: none;">
+                            {{ form_row(form.responseType, {'label_attr': {'class': 'form-label fw-bold'}}) }}
                             {{ form_row(form.responseText, {'label_attr': {'class': 'form-label fw-bold'}}) }}
                         </div>
                         <div class="col-md-6">
@@ -94,7 +95,7 @@
             <div class="d-flex gap-2 justify-content-between">
                 <div class="d-flex gap-2">
                     <button type="submit" class="btn btn-primary btn-lg">
-                        <i class="tabler-icon tabler-check"></i> Salvar
+                        <i class="tabler-icon tabler-check"></i> {{ button_label|default('Salvar') }}
                     </button>
                 </div>
                 <a href="{{ path('admin_organization_contact_interaction_index') }}" class="btn btn-outline-secondary btn-lg">

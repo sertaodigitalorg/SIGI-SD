@@ -2,10 +2,11 @@
 
 namespace App\Form;
 
-use App\Entity\PersonContactInteraction;
+use App\Entity\InteractionStatus;
 use App\Entity\Person;
 use App\Entity\PersonContact;
-use App\Entity\InteractionStatus;
+use App\Entity\PersonContactInteraction;
+use App\Entity\ResponseType;
 use App\Entity\User;
 use App\Repository\PersonContactRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -87,6 +88,17 @@ class PersonContactInteractionType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'data-toggle-response-field' => true,
+                ],
+            ])
+            ->add('responseType', EntityType::class, [
+                'class' => ResponseType::class,
+                'choice_label' => 'name',
+                'label' => 'Tipo de Resposta',
+                'required' => false,
+                'placeholder' => 'Selecione tipo de resposta',
+                'attr' => [
+                    'class' => 'form-select',
+                    'data-response-field' => true,
                 ],
             ])
             ->add('responseText', TextareaType::class, [

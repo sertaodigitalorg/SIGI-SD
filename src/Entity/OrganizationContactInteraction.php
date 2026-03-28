@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\InteractionThread;
+use App\Entity\ResponseType;
 use App\Repository\OrganizationContactInteractionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -22,6 +24,14 @@ class OrganizationContactInteraction
     #[ORM\ManyToOne(targetEntity: InteractionStatus::class)]
     #[ORM\JoinColumn(nullable: true)]
     private ?InteractionStatus $interactionStatus = null;
+
+    #[ORM\ManyToOne(targetEntity: InteractionThread::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?InteractionThread $thread = null;
+
+    #[ORM\ManyToOne(targetEntity: ResponseType::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?ResponseType $responseType = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $contactedAt = null;
@@ -73,6 +83,30 @@ class OrganizationContactInteraction
     public function setInteractionStatus(?InteractionStatus $interactionStatus): static
     {
         $this->interactionStatus = $interactionStatus;
+
+        return $this;
+    }
+
+    public function getThread(): ?InteractionThread
+    {
+        return $this->thread;
+    }
+
+    public function setThread(?InteractionThread $thread): static
+    {
+        $this->thread = $thread;
+
+        return $this;
+    }
+
+    public function getResponseType(): ?ResponseType
+    {
+        return $this->responseType;
+    }
+
+    public function setResponseType(?ResponseType $responseType): static
+    {
+        $this->responseType = $responseType;
 
         return $this;
     }

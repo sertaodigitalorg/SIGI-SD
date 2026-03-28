@@ -2,10 +2,11 @@
 
 namespace App\Form;
 
-use App\Entity\OrganizationContactInteraction;
+use App\Entity\InteractionStatus;
 use App\Entity\Organization;
 use App\Entity\OrganizationContact;
-use App\Entity\InteractionStatus;
+use App\Entity\OrganizationContactInteraction;
+use App\Entity\ResponseType;
 use App\Entity\User;
 use App\Form\Modifier\OrganizationContactModifier;
 use App\Repository\OrganizationContactRepository;
@@ -87,6 +88,17 @@ class OrganizationContactInteractionType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'data-toggle-response-field' => true,
+                ],
+            ])
+            ->add('responseType', EntityType::class, [
+                'class' => ResponseType::class,
+                'choice_label' => 'name',
+                'label' => 'Tipo de Resposta',
+                'required' => false,
+                'placeholder' => 'Selecione tipo de resposta',
+                'attr' => [
+                    'class' => 'form-select',
+                    'data-response-field' => true,
                 ],
             ])
             ->add('responseText', TextareaType::class, [

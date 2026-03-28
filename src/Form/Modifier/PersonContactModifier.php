@@ -18,7 +18,7 @@ class PersonContactModifier
     ) {
     }
 
-    public function addPersonContactField(FormInterface $form, ?Person $person = null): void
+    public function addPersonContactField(FormInterface $form, ?Person $person = null, ?PersonContact $personContact = null): void
     {
         $contacts = [];
 
@@ -26,7 +26,12 @@ class PersonContactModifier
             $contacts = $this->repository->findBy(['person' => $person], ['contactType' => 'ASC', 'value' => 'ASC']);
         }
 
-        $form->add('personContact', EntityType::class, [
+        // Garantir que o personContact atual está na lista de choices
+        if ($personContact && !in_array($personContact, $contacts, true)) {
+            $contacts[] = $personContact;
+        }
+
+        $options = [
             'class' => PersonContact::class,
             'choices' => $contacts,
             'choice_label' => function (PersonContact $contact) {
@@ -40,7 +45,13 @@ class PersonContactModifier
                 'data-person-contact-select' => true,
             ],
             'disabled' => null === $person,
-        ]);
+        ];
+
+        if ($personContact) {
+            $options['data'] = $personContact;
+        }
+
+        $form->add('personContact', EntityType::class, $options);
     }
 
     public static function addPersonContactListener(FormBuilderInterface $form, PersonContactRepository $repository): void
@@ -50,13 +61,33 @@ class PersonContactModifier
             $data = $event->getData();
 
             $person = $data?->getPersonContact()?->getPerson();
-            
-            if ($person && $form->has('person')) {
-                $form->get('person')->setData($person);
+            $personContact = $data?->getPersonContact();
+
+            // Remover e recriar o campo person com o valor correto
+            if ($form->has('person')) {
+                $form->remove('person');
             }
 
+            $form->add('person', EntityType::class, [
+                'class' => Person::class,
+                'choice_label' => 'fullName',
+                'label' => 'Pessoa',
+                'placeholder' => 'Selecione uma pessoa',
+                'data' => $person,
+                'query_builder' => function ($repo) {
+                    return $repo->createQueryBuilder('p')
+                        ->orderBy('p.fullName', 'ASC');
+                },
+                'required' => true,
+                'attr' => [
+                    'class' => 'form-select',
+                    'data-person-select' => true,
+                ],
+                'mapped' => false,
+            ]);
+
             $modifier = new self($repository);
-            $modifier->addPersonContactField($form, $person);
+            $modifier->addPersonContactField($form, $person, $personContact);
         });
 
         $form->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($repository): void {
@@ -65,13 +96,19 @@ class PersonContactModifier
 
             $personId = $data['person'] ?? null;
             $person = null;
+            $personContact = null;
 
             if ($personId) {
                 $person = $repository->getEntityManager()->getRepository(Person::class)->find($personId);
             }
 
+            $personContactId = $data['personContact'] ?? null;
+            if ($personContactId && $person) {
+                $personContact = $repository->find($personContactId);
+            }
+
             $modifier = new self($repository);
-            $modifier->addPersonContactField($form, $person);
+            $modifier->addPersonContactField($form, $person, $personContact);
         });
     }
 }

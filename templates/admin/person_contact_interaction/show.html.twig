@@ -9,6 +9,7 @@
             <p class="text-body-secondary mb-0">{{ interaction.personContact.person.fullName ?: 'Pessoa não informada' }}</p>
         </div>
         <div class="d-flex gap-2">
+            <a class="btn btn-outline-success" href="{{ path('admin_person_contact_interaction_respond', {'id': interaction.id}) }}">Responder / Continuar conversa</a>
             <a class="btn btn-outline-secondary" href="{{ path('admin_person_contact_interaction_edit', {'id': interaction.id}) }}">Editar</a>
             <a class="btn btn-outline-primary" href="{{ path('admin_person_contact_interaction_index') }}">Voltar para lista</a>
         </div>
@@ -46,6 +47,10 @@
                     <dl class="row mb-0">
                         <dt class="col-sm-4">Houve Resposta</dt>
                         <dd class="col-sm-8">{{ interaction.responseReceived ? 'Sim' : 'Não' }}</dd>
+                        <dt class="col-sm-4">Tipo de Resposta</dt>
+                        <dd class="col-sm-8">{{ interaction.responseType ? interaction.responseType.name : '-' }}</dd>
+                        <dt class="col-sm-4">Thread</dt>
+                        <dd class="col-sm-8">{{ interaction.thread ? (interaction.thread.subject ?: ('Thread #' ~ interaction.thread.id)) : '-' }}</dd>
                         <dt class="col-sm-4">Texto da Resposta</dt>
                         <dd class="col-sm-8">{{ interaction.responseText ?: '-' }}</dd>
                         <dt class="col-sm-4">Próximo Contato</dt>
@@ -56,5 +61,40 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="mt-5">
+        <h2 class="h5">Histórico da Conversa</h2>
+
+        {% if interactionsHistory is not empty %}
+            <div class="table-responsive mt-3">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Status</th>
+                            <th>Assunto</th>
+                            <th>Houve Resposta</th>
+                            <th>Próximo Contato</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in interactionsHistory %}
+                            <tr>
+                                <td>{{ item.contactedAt ? item.contactedAt|date('d/m/Y H:i') : '-' }}</td>
+                                <td>{{ item.interactionStatus ? item.interactionStatus.name : '-' }}</td>
+                                <td>{{ item.subject ?: '-' }}</td>
+                                <td>{{ item.responseReceived ? 'Sim' : 'Não' }}</td>
+                                <td>{{ item.nextContactAt ? item.nextContactAt|date('d/m/Y H:i') : '-' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info mt-3">
+                Esta interação ainda não pertence a uma conversa.
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

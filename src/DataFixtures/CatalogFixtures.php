@@ -8,6 +8,7 @@ use App\Entity\ContactType;
 use App\Entity\ContactStatus;
 use App\Entity\ContactIssueType;
 use App\Entity\InteractionStatus;
+use App\Entity\ResponseType;
 use App\Entity\CoverageType;
 use App\Entity\OrganizationType;
 use App\Entity\ThematicArea;
@@ -24,6 +25,7 @@ class CatalogFixtures extends Fixture
         $this->loadContactStatuses($manager);
         $this->loadContactIssueTypes($manager);
         $this->loadInteractionStatuses($manager);
+        $this->loadResponseTypes($manager);
         $this->loadCoverageTypes($manager);
         $this->loadOrganizationTypes($manager);
         $this->loadThematicAreas($manager);
@@ -191,6 +193,31 @@ class CatalogFixtures extends Fixture
 
         foreach ($items as [$name, $description]) {
             $entity = new InteractionStatus();
+            $entity->setName($name);
+            $entity->setDescription($description);
+
+            $manager->persist($entity);
+        }
+    }
+
+    private function loadResponseTypes(ObjectManager $manager): void
+    {
+        $items = [
+            ['Confirmação de Recebimento', 'Confirmação de que o contato recebeu a mensagem'],
+            ['Pedido de Mais Informações', 'Solicitação de informações adicionais ao emissor'],
+            ['Encaminhamento Interno', 'Encaminhamento para outro membro ou área interna'],
+            ['Aceite de Reunião', 'Confirmação de agendamento de reunião'],
+            ['Sem Interesse', 'Indicação de que não tem interesse no momento'],
+            ['Aguardando Retorno Interno', 'Necessidade de retorno interno antes de prosseguir'],
+            ['Resposta Inconclusiva', 'Resposta recebida mas sem posicionamento definitivo'],
+            ['Contato Inválido', 'Contato que não é mais válido ou não foi encontrado'],
+            ['Solicitou Novo Contato', 'Solicitação de outro contato para continuidade'],
+            ['Proposta Aceita', 'Manifestação de aceitação de proposta'],
+            ['Proposta Recusada', 'Manifestação de recusa de proposta'],
+        ];
+
+        foreach ($items as [$name, $description]) {
+            $entity = new ResponseType();
             $entity->setName($name);
             $entity->setDescription($description);
 

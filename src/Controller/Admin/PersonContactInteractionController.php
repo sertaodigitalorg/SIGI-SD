@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\InteractionThread;
 use App\Entity\PersonContactInteraction;
 use App\Form\PersonContactInteractionType;
 use App\Repository\PersonContactInteractionRepository;
@@ -83,10 +84,20 @@ final class PersonContactInteractionController extends AbstractController
     }
 
     #[Route('/{id}', name: 'show', methods: ['GET'])]
-    public function show(PersonContactInteraction $interaction): Response
+    public function show(PersonContactInteraction $interaction, PersonContactInteractionRepository $repository): Response
     {
+        $interactionsHistory = [];
+
+        if ($interaction->getThread()) {
+            $interactionsHistory = $repository->findBy(
+                ['thread' => $interaction->getThread()],
+                ['contactedAt' => 'ASC']
+            );
+        }
+
         return $this->render('admin/person_contact_interaction/show.html.twig', [
             'interaction' => $interaction,
+            'interactionsHistory' => $interactionsHistory,
         ]);
     }
 
@@ -111,6 +122,53 @@ final class PersonContactInteractionController extends AbstractController
         return $this->render('admin/person_contact_interaction/edit.html.twig', [
             'interaction' => $interaction,
             'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}/respond', name: 'respond', methods: ['GET', 'POST'])]
+    public function respond(Request $request, PersonContactInteraction $interaction, EntityManagerInterface $entityManager): Response
+    {
+        $thread = $interaction->getThread();
+
+        if (!$thread) {
+            $thread = new InteractionThread();
+            $thread->setSubject($interaction->getSubject());
+            $thread->setStatus($interaction->getInteractionStatus()?->getName());
+
+            $entityManager->persist($thread);
+
+            $interaction->setThread($thread);
+            $entityManager->flush();
+        }
+
+        $newInteraction = new PersonContactInteraction();
+        $newInteraction->setPersonContact($interaction->getPersonContact());
+        $newInteraction->setThread($thread);
+        $newInteraction->setSubject($interaction->getSubject());
+        $newInteraction->setNextContactAt($interaction->getNextContactAt());
+        $newInteraction->setInteractionStatus($interaction->getInteractionStatus());
+        $newInteraction->setContactedAt(new \DateTimeImmutable());
+
+        $form = $this->createForm(PersonContactInteractionType::class, $newInteraction);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            if (!$newInteraction->getPerformedBy() && $this->getUser()) {
+                $newInteraction->setPerformedBy($this->getUser());
+            }
+
+            $entityManager->persist($newInteraction);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Resposta cadastrada com sucesso.');
+
+            return $this->redirectToRoute('admin_person_contact_interaction_show', ['id' => $newInteraction->getId()]);
+        }
+
+        return $this->render('admin/person_contact_interaction/respond.html.twig', [
+            'interaction' => $interaction,
+            'form' => $form,
+            'thread' => $thread,
         ]);
     }
 

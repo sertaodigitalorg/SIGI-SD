@@ -18,7 +18,7 @@ class OrganizationContactModifier
     ) {
     }
 
-    public function addOrganizationContactField(FormInterface $form, ?Organization $organization = null): void
+    public function addOrganizationContactField(FormInterface $form, ?Organization $organization = null, ?OrganizationContact $organizationContact = null): void
     {
         $contacts = [];
 
@@ -26,7 +26,12 @@ class OrganizationContactModifier
             $contacts = $this->repository->findBy(['organization' => $organization], ['contactType' => 'ASC', 'value' => 'ASC']);
         }
 
-        $form->add('organizationContact', EntityType::class, [
+        // Garantir que o organizationContact atual está na lista de choices
+        if ($organizationContact && !in_array($organizationContact, $contacts, true)) {
+            $contacts[] = $organizationContact;
+        }
+
+        $options = [
             'class' => OrganizationContact::class,
             'choices' => $contacts,
             'choice_label' => function (OrganizationContact $contact) {
@@ -40,7 +45,13 @@ class OrganizationContactModifier
                 'data-organization-contact-select' => true,
             ],
             'disabled' => null === $organization,
-        ]);
+        ];
+
+        if ($organizationContact) {
+            $options['data'] = $organizationContact;
+        }
+
+        $form->add('organizationContact', EntityType::class, $options);
     }
 
     public static function addOrganizationContactListener(FormBuilderInterface $form, OrganizationContactRepository $repository): void
@@ -50,13 +61,33 @@ class OrganizationContactModifier
             $form = $event->getForm();
 
             $organization = $data?->getOrganizationContact()?->getOrganization();
+            $organizationContact = $data?->getOrganizationContact();
 
-            if ($organization && $form->has('organization')) {
-                $form->get('organization')->setData($organization);
+            // Remover e recriar o campo organization com o valor correto
+            if ($form->has('organization')) {
+                $form->remove('organization');
             }
 
+            $form->add('organization', EntityType::class, [
+                'class' => Organization::class,
+                'choice_label' => 'legalName',
+                'label' => 'Organização',
+                'placeholder' => 'Selecione uma organização',
+                'data' => $organization,
+                'query_builder' => function ($repo) {
+                    return $repo->createQueryBuilder('o')
+                        ->orderBy('o.legalName', 'ASC');
+                },
+                'required' => true,
+                'attr' => [
+                    'class' => 'form-select',
+                    'data-organization-select' => true,
+                ],
+                'mapped' => false,
+            ]);
+
             $modifier = new self($repository);
-            $modifier->addOrganizationContactField($form, $organization);
+            $modifier->addOrganizationContactField($form, $organization, $organizationContact);
         });
 
         $form->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($repository): void {
@@ -65,13 +96,19 @@ class OrganizationContactModifier
 
             $organizationId = $data['organization'] ?? null;
             $organization = null;
+            $organizationContact = null;
 
             if ($organizationId) {
                 $organization = $repository->getEntityManager()->getRepository(Organization::class)->find($organizationId);
             }
 
+            $organizationContactId = $data['organizationContact'] ?? null;
+            if ($organizationContactId && $organization) {
+                $organizationContact = $repository->find($organizationContactId);
+            }
+
             $modifier = new self($repository);
-            $modifier->addOrganizationContactField($form, $organization);
+            $modifier->addOrganizationContactField($form, $organization, $organizationContact);
         });
     }
 }

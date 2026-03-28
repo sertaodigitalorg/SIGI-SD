@@ -1,0 +1,9 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Responder / Continuar conversa{% endblock %}
+
+{% block main %}
+    <h1 class="mb-4">Responder / Continuar conversa</h1>
+
+    {{ include('admin/organization_contact_interaction/_form.html.twig', {button_label: 'Salvar resposta'}) }}
+{% endblock %}

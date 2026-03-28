@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\InteractionThread;
 use App\Entity\OrganizationContactInteraction;
 use App\Form\OrganizationContactInteractionType;
 use App\Repository\OrganizationContactInteractionRepository;
@@ -68,10 +69,67 @@ final class OrganizationContactInteractionController extends AbstractController
     }
 
     #[Route('/{id}', name: 'show', methods: ['GET'])]
-    public function show(OrganizationContactInteraction $interaction): Response
+    public function show(OrganizationContactInteraction $interaction, OrganizationContactInteractionRepository $repository): Response
     {
+        $interactionsHistory = [];
+
+        if ($interaction->getThread()) {
+            $interactionsHistory = $repository->findBy(
+                ['thread' => $interaction->getThread()],
+                ['contactedAt' => 'ASC']
+            );
+        }
+
         return $this->render('admin/organization_contact_interaction/show.html.twig', [
             'interaction' => $interaction,
+            'interactionsHistory' => $interactionsHistory,
+        ]);
+    }
+
+    #[Route('/{id}/respond', name: 'respond', methods: ['GET', 'POST'])]
+    public function respond(Request $request, OrganizationContactInteraction $interaction, EntityManagerInterface $entityManager): Response
+    {
+        $thread = $interaction->getThread();
+
+        if (!$thread) {
+            $thread = new InteractionThread();
+            $thread->setSubject($interaction->getSubject());
+            $thread->setStatus($interaction->getInteractionStatus()?->getName());
+
+            $entityManager->persist($thread);
+
+            $interaction->setThread($thread);
+            $entityManager->flush();
+        }
+
+        $newInteraction = new OrganizationContactInteraction();
+        $newInteraction->setOrganizationContact($interaction->getOrganizationContact());
+        $newInteraction->setThread($thread);
+        $newInteraction->setSubject($interaction->getSubject());
+        $newInteraction->setNextContactAt($interaction->getNextContactAt());
+        $newInteraction->setInteractionStatus($interaction->getInteractionStatus());
+        $newInteraction->setContactedAt(new \DateTimeImmutable());
+
+        $form = $this->createForm(OrganizationContactInteractionType::class, $newInteraction);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            if (!$newInteraction->getPerformedBy() && $this->getUser()) {
+                $newInteraction->setPerformedBy($this->getUser());
+            }
+
+            $entityManager->persist($newInteraction);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Resposta cadastrada com sucesso.');
+
+            return $this->redirectToRoute('admin_organization_contact_interaction_show', ['id' => $newInteraction->getId()]);
+        }
+
+        return $this->render('admin/organization_contact_interaction/respond.html.twig', [
+            'interaction' => $interaction,
+            'form' => $form,
+            'thread' => $thread,
         ]);
     }
 
