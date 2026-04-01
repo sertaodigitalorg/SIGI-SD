@@ -33,7 +33,12 @@ final class OrganizationTypeForm extends AbstractType
                 'required' => false,
             ])
             ->add('cnpj', TextType::class, [
-                'label' => 'CNPJ',
+                'label' => 'CNPJ (opcional)',
+                'required' => false,
+                'help' => 'Preencha apenas se a organização possuir CNPJ próprio.',
+                'attr' => [
+                    'placeholder' => '00.000.000/0000-00',
+                ],
             ])
             ->add('organizationType', EntityType::class, [
                 'class' => OrganizationType::class,

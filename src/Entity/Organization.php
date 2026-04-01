@@ -33,8 +33,11 @@ class Organization implements \Stringable
     #[ORM\Column(length: 191, nullable: true)]
     private ?string $tradeName = null;
 
-    #[ORM\Column(length: 18, unique: true)]
-    #[Assert\NotBlank(message: 'Informe o CNPJ.')]
+    #[ORM\Column(type: 'string', length: 18, nullable: true, unique: true)]
+    #[Assert\Regex(
+        pattern: '/^\d{2}\.\d{3}\.\d{3}\/\d{4}\-\d{2}$/',
+        message: 'CNPJ inválido',
+    )]
     private ?string $cnpj = null;
 
     #[ORM\Column(length: 50, nullable: true)]
@@ -108,8 +111,12 @@ class Organization implements \Stringable
         return $this->cnpj;
     }
 
-    public function setCnpj(string $cnpj): static
+    public function setCnpj(?string $cnpj): static
     {
+        if ($cnpj !== null && trim($cnpj) === '') {
+            $cnpj = null;
+        }
+
         $this->cnpj = $cnpj;
 
         return $this;
