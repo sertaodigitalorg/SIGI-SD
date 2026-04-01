@@ -20,8 +20,11 @@ class Person
     #[Assert\NotBlank]
     private ?string $fullName = null;
 
-    #[ORM\Column(length: 14, unique: true)]
-    #[Assert\NotBlank]
+    #[ORM\Column(type: 'string', length: 14, nullable: true, unique: true)]
+    #[Assert\Regex(
+        pattern: '/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/',
+        message: 'CPF inválido',
+    )]
     private ?string $cpf = null;
 
     #[ORM\Column]
@@ -57,8 +60,13 @@ class Person
         return $this->cpf;
     }
 
-    public function setCpf(string $cpf): static
+    public function setCpf(?string $cpf): static
     {
+        // Normalize empty string to null to ensure optional behavior
+        if ($cpf !== null && trim($cpf) === '') {
+            $cpf = null;
+        }
+
         $this->cpf = $cpf;
 
         return $this;

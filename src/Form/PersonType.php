@@ -17,7 +17,12 @@ class PersonType extends AbstractType
                 'label' => 'Nome Completo',
             ])
             ->add('cpf', TextType::class, [
-                'label' => 'CPF',
+                'required' => false,
+                'label' => 'CPF (opcional)',
+                'help' => 'Preencha o CPF apenas quando disponível.',
+                'attr' => [
+                    'placeholder' => '000.000.000-00',
+                ],
             ])
         ;
     }
