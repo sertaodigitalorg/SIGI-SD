@@ -3,6 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Person;
+use App\Entity\PersonOrganization;
+use App\Entity\PersonOrganizationRole;
 use App\Form\PersonType;
 use App\Repository\PersonRepository;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
@@ -33,8 +35,47 @@ final class PersonController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Custom validation: if role is provided but organization is not
+            $organization = $form->get('organization')->getData();
+            $role = $form->get('role')->getData();
+            if ($role && !$organization) {
+                $form->get('role')->addError(new \Symfony\Component\Form\FormError('Selecione uma organização para definir o papel.'));
+                return $this->render('admin/person/new.html.twig', [
+                    'person' => $person,
+                    'form' => $form,
+                ]);
+            }
+
             $person->setUpdatedAt(new \DateTimeImmutable());
             $entityManager->persist($person);
+
+            // Handle optional organization link
+            if ($organization) {
+                $startDate = $form->get('startDate')->getData();
+                $status = $form->get('status')->getData();
+
+                $personOrganization = new PersonOrganization();
+                $personOrganization->setPerson($person);
+                $personOrganization->setOrganization($organization);
+                if ($startDate) {
+                    $personOrganization->setStartDate(\DateTimeImmutable::createFromMutable($startDate));
+                }
+                if ($status) {
+                    $personOrganization->setStatus($status);
+                }
+
+                $entityManager->persist($personOrganization);
+
+                // Handle optional role
+                if ($role) {
+                    $personRole = new PersonOrganizationRole();
+                    $personRole->setPersonOrganization($personOrganization);
+                    $personRole->setRole($role);
+
+                    $entityManager->persist($personRole);
+                }
+            }
+
             $entityManager->flush();
 
             $this->addFlash('success', 'Pessoa criada com sucesso.');

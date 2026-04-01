@@ -10,6 +10,25 @@
         </div>
     </div>
 
+    <fieldset class="mt-4">
+        <legend>Vínculo Institucional (opcional)</legend>
+        <p class="text-muted small">Preencha apenas se desejar vincular a pessoa a uma organização neste momento.</p>
+        <div class="row g-3">
+            <div class="col-md-6">
+                {{ form_row(form.organization) }}
+            </div>
+            <div class="col-md-6">
+                {{ form_row(form.role) }}
+            </div>
+            <div class="col-md-6">
+                {{ form_row(form.startDate) }}
+            </div>
+            <div class="col-md-6">
+                {{ form_row(form.status) }}
+            </div>
+        </div>
+    </fieldset>
+
     <div class="mt-4 d-flex gap-2">
         <button class="btn btn-primary">{{ button_label|default('Salvar') }}</button>
         <a class="btn btn-outline-secondary" href="{{ path('admin_person_index') }}">Voltar</a>
