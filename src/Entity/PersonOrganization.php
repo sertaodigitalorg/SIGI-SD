@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PersonOrganizationRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -22,6 +24,14 @@ class PersonOrganization
     #[ORM\ManyToOne(targetEntity: Organization::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?Organization $organization = null;
+
+    #[ORM\OneToMany(mappedBy: 'personOrganization', targetEntity: PersonOrganizationRole::class, orphanRemoval: true, cascade: ['persist'])]
+    private Collection $personOrganizationRoles;
+
+    public function __construct()
+    {
+        $this->personOrganizationRoles = new ArrayCollection();
+    }
 
     #[ORM\Column]
     private ?\DateTimeImmutable $startDate = null;
@@ -60,6 +70,35 @@ class PersonOrganization
     public function setOrganization(?Organization $organization): static
     {
         $this->organization = $organization;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PersonOrganizationRole>
+     */
+    public function getPersonOrganizationRoles(): Collection
+    {
+        return $this->personOrganizationRoles;
+    }
+
+    public function addPersonOrganizationRole(PersonOrganizationRole $personOrganizationRole): static
+    {
+        if (!$this->personOrganizationRoles->contains($personOrganizationRole)) {
+            $this->personOrganizationRoles->add($personOrganizationRole);
+            $personOrganizationRole->setPersonOrganization($this);
+        }
+
+        return $this;
+    }
+
+    public function removePersonOrganizationRole(PersonOrganizationRole $personOrganizationRole): static
+    {
+        if ($this->personOrganizationRoles->removeElement($personOrganizationRole)) {
+            if ($personOrganizationRole->getPersonOrganization() === $this) {
+                $personOrganizationRole->setPersonOrganization(null);
+            }
+        }
 
         return $this;
     }

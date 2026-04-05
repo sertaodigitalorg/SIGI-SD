@@ -5,7 +5,9 @@ namespace App\Controller\Admin;
 use App\Entity\Person;
 use App\Entity\PersonOrganization;
 use App\Entity\PersonOrganizationRole;
+use App\Form\PersonOrganizationType;
 use App\Form\PersonType;
+use App\Repository\PersonOrganizationRepository;
 use App\Repository\PersonRepository;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -90,10 +92,41 @@ final class PersonController extends AbstractController
     }
 
     #[Route('/{id}', name: 'show', methods: ['GET'])]
-    public function show(Person $person): Response
+    public function show(Person $person, PersonOrganizationRepository $personOrganizationRepository): Response
     {
+        $personOrganizations = $personOrganizationRepository->findByPersonWithRelations($person);
+
         return $this->render('admin/person/show.html.twig', [
             'person' => $person,
+            'personOrganizations' => $personOrganizations,
+        ]);
+    }
+
+    #[Route('/{id}/add-organization', name: 'add_organization', methods: ['GET', 'POST'])]
+    public function addOrganization(Request $request, Person $person, EntityManagerInterface $entityManager): Response
+    {
+        $personOrganization = new PersonOrganization();
+        $personOrganization->setPerson($person);
+
+        $form = $this->createForm(PersonOrganizationType::class, $personOrganization);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            if (!$personOrganization->getStartDate()) {
+                $personOrganization->setStartDate(new \DateTimeImmutable());
+            }
+
+            $entityManager->persist($personOrganization);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Vínculo institucional adicionado com sucesso.');
+
+            return $this->redirectToRoute('admin_person_show', ['id' => $person->getId()], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('admin/person/add_organization.html.twig', [
+            'person' => $person,
+            'form' => $form->createView(),
         ]);
     }
 

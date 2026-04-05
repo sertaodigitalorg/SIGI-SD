@@ -1,0 +1,31 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Adicionar vínculo institucional{% endblock %}
+
+{% block main %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Adicionar vínculo institucional</h1>
+            <p class="text-body-secondary mb-0">Crie um novo vínculo entre esta pessoa e uma organização.</p>
+        </div>
+        <a class="btn btn-outline-secondary" href="{{ path('admin_person_show', {'id': person.id}) }}">Voltar</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            {{ form_start(form) }}
+                <div class="row g-3">
+                    <div class="col-12">{{ form_row(form.organization) }}</div>
+                    <div class="col-md-6">{{ form_row(form.startDate) }}</div>
+                    <div class="col-md-6">{{ form_row(form.status) }}</div>
+                    <div class="col-12">{{ form_row(form.notes) }}</div>
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <button class="btn btn-primary">Salvar vínculo</button>
+                    <a class="btn btn-outline-secondary" href="{{ path('admin_person_show', {'id': person.id}) }}">Cancelar</a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
