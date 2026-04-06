@@ -1,5 +1,5 @@
 {% if organization.recentInteractions is empty %}
-    <div class="alert alert-info">Nenhuma interação institucional encontrada.</div>
+    <div class="alert alert-info">Nenhuma interação recente encontrada.</div>
 {% else %}
     <div class="table-responsive">
         <table class="table table-striped align-middle">
@@ -10,7 +10,9 @@
                     <th>Status</th>
                     <th>Data do Contato</th>
                     <th>Próximo Contato</th>
+                    <th>Responsável</th>
                     <th>Respondeu</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -21,7 +23,14 @@
                         <td>{{ item.interactionStatus ? item.interactionStatus.name : '-' }}</td>
                         <td>{{ item.contactedAt ? item.contactedAt|date('d/m/Y H:i') : '-' }}</td>
                         <td>{{ item.nextContactAt ? item.nextContactAt|date('d/m/Y H:i') : '-' }}</td>
+                        <td>{{ item.performedBy ? item.performedBy.fullName : '-' }}</td>
                         <td>{{ item.responseReceived ? 'Sim' : 'Não' }}</td>
+                        <td>
+                            <a href="{{ path('admin_organization_contact_interaction_show', {'id': item.id}) }}" class="btn btn-sm btn-primary">Visualizar</a>
+                            {% if item.thread %}
+                                <a href="{{ path('admin_organization_contact_interaction_respond', {'id': item.id}) }}" class="btn btn-sm btn-secondary ms-1">Continuar conversa</a>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

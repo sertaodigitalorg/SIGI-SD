@@ -71,21 +71,27 @@ class DashboardService
         $alerts = [];
 
         foreach ($personOverdue as $interaction) {
+            $daysLate = $interaction->getNextContactAt() ? $now->diff($interaction->getNextContactAt())->days : 0;
             $alerts[] = [
                 'type' => 'PF',
                 'name' => $interaction->getPersonContact()?->getPerson()?->getFullName() ?: '-',
                 'contact' => sprintf('%s | %s', $interaction->getPersonContact()?->getContactType()?->getName() ?: '-', $interaction->getPersonContact()?->getValue() ?: '-'),
                 'nextContactAt' => $interaction->getNextContactAt(),
+                'daysLate' => $daysLate,
+                'performedBy' => $interaction->getPerformedBy()?->getFullName() ?: '-',
                 'interaction' => $interaction,
             ];
         }
 
         foreach ($orgOverdue as $interaction) {
+            $daysLate = $interaction->getNextContactAt() ? $now->diff($interaction->getNextContactAt())->days : 0;
             $alerts[] = [
                 'type' => 'PJ',
                 'name' => $interaction->getOrganizationContact()?->getOrganization()?->getLegalName() ?: '-',
                 'contact' => sprintf('%s | %s', $interaction->getOrganizationContact()?->getContactType()?->getName() ?: '-', $interaction->getOrganizationContact()?->getValue() ?: '-'),
                 'nextContactAt' => $interaction->getNextContactAt(),
+                'daysLate' => $daysLate,
+                'performedBy' => $interaction->getPerformedBy()?->getFullName() ?: '-',
                 'interaction' => $interaction,
             ];
         }

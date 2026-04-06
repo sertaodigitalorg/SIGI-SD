@@ -55,7 +55,7 @@
         <div class="card-header">Alertas de Follow-up Vencido</div>
         <div class="card-body">
             {% if overdueAlerts is empty %}
-                <div class="alert alert-info">Nenhum follow-up vencido no momento.</div>
+                <div class="alert alert-info">Nenhum follow-up pendente encontrado.</div>
             {% else %}
                 <div class="table-responsive">
                     <table class="table table-striped align-middle">
@@ -65,7 +65,10 @@
                                 <th>Nome</th>
                                 <th>Contato</th>
                                 <th>Próximo Contato</th>
+                                <th>Dias de atraso</th>
+                                <th>Responsável</th>
                                 <th>Respondeu</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -75,7 +78,23 @@
                                     <td>{{ item.name ?: '-' }}</td>
                                     <td>{{ item.contact ?: '-' }}</td>
                                     <td>{{ item.nextContactAt ? item.nextContactAt|date('d/m/Y H:i') : '-' }}</td>
+                                    <td>
+                                        {% if item.daysLate == 0 %}
+                                            Hoje
+                                        {% elseif item.daysLate >= 1 and item.daysLate <= 3 %}
+                                            {{ item.daysLate }} dias
+                                        {% else %}
+                                            {{ item.daysLate }} dias (Crítico)
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ item.performedBy }}</td>
                                     <td>{{ item.interaction.responseReceived ? 'Sim' : 'Não' }}</td>
+                                    <td>
+                                        <a href="{{ item.type == 'PF' ? path('admin_person_contact_interaction_show', {'id': item.interaction.id}) : path('admin_organization_contact_interaction_show', {'id': item.interaction.id}) }}" class="btn btn-sm btn-primary">Visualizar</a>
+                                        {% if item.interaction.thread %}
+                                            <a href="{{ item.type == 'PF' ? path('admin_person_contact_interaction_respond', {'id': item.interaction.id}) : path('admin_organization_contact_interaction_respond', {'id': item.interaction.id}) }}" class="btn btn-sm btn-secondary ms-1">Continuar conversa</a>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>

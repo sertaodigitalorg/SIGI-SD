@@ -76,6 +76,7 @@
                             <th>Assunto</th>
                             <th>Houve Resposta</th>
                             <th>Próximo Contato</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -83,9 +84,18 @@
                             <tr>
                                 <td>{{ item.contactedAt ? item.contactedAt|date('d/m/Y H:i') : '-' }}</td>
                                 <td>{{ item.interactionStatus ? item.interactionStatus.name : '-' }}</td>
-                                <td>{{ item.subject ?: '-' }}</td>
+                                <td>
+                                    {% if item.subject %}
+                                        <a href="{{ path('admin_organization_contact_interaction_show', {'id': item.id}) }}">{{ item.subject }}</a>
+                                    {% else %}
+                                        <a href="{{ path('admin_organization_contact_interaction_show', {'id': item.id}) }}">Interação #{{ item.id }}</a>
+                                    {% endif %}
+                                </td>
                                 <td>{{ item.responseReceived ? 'Sim' : 'Não' }}</td>
                                 <td>{{ item.nextContactAt ? item.nextContactAt|date('d/m/Y H:i') : '-' }}</td>
+                                <td>
+                                    <a href="{{ path('admin_organization_contact_interaction_show', {'id': item.id}) }}" class="btn btn-sm btn-primary">Visualizar</a>
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
