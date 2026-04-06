@@ -81,3 +81,6 @@ phpstan.neon
 
 # Embedded web-server pid file
 /.web-server-pid
+.env.prod
+.env.test
+.env.dev
