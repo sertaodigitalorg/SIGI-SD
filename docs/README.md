@@ -1,25 +1,25 @@
-# Documentação do SIGI-SD
+# Documentacao do SIGI-SD
 
-Este diretório reúne a documentação técnica principal do projeto.
+O SIGI-SD, Sistema de Inteligencia Geral de Interacoes, e a plataforma tecnologica da Central Publica Digital do Sertao Digital.
 
-## Estrutura
+Use esta area para registrar arquitetura, infraestrutura, integracoes, operacao, LGPD, IA local, chatbot, agents e skills.
 
-- `architecture.md` - visão arquitetural, camadas e decisões estruturais
-- `data_model.md` - modelo de dados, relacionamentos e regras de modelagem
-- `fixtures.md` - organização e carga de dados iniciais
-- `dev-guide.md` - padrões de desenvolvimento e convenções do projeto
-- `api.md` - diretrizes para APIs e integrações
-- `security.md` - princípios de segurança, acesso e proteção de dados
-- `roadmap.md` - evolução funcional e técnica planejada
+## Documentos principais
 
-## Objetivo
+- `arquitetura/visao-geral.md`
+- `arquitetura/camadas.md`
+- `arquitetura/modulos.md`
+- `infraestrutura/visao-geral.md`
+- `docker/docker-compose.md`
+- `wsl/ambiente-wsl.md`
+- `ia/ia-embarcada.md`
+- `chatbot/botpress.md`
+- `integracoes/padrao-adapters.md`
+- `lgpd/lgpd-by-design.md`
+- `operacao/operacao-atendimento.md`
 
-A documentação existe para garantir:
-- padronização
-- clareza arquitetural
-- facilidade de manutenção
-- onboarding mais rápido
+## Limites
 
-## Regra de manutenção
-
-Sempre que houver evolução relevante no domínio, nas entidades, nas integrações ou nos fluxos do sistema, a documentação correspondente deve ser atualizada neste diretório.
+- Analytics, BI, dashboards e indicadores pertencem a Plataforma 360.
+- Sistemas transacionais de gestao publica pertencem aos GRPs, como e-Cidade e i-Educar.
+- O SIGI-SD nao possui modulo de workflow.

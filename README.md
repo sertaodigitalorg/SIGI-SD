@@ -1,116 +1,67 @@
 # SIGI-SD
 
-Sistema Integrado de Gestão e Inteligência do Sertão Digital.
+Sistema de Inteligencia Geral de Interacoes.
 
-O SIGI-SD é uma plataforma orientada a dados para apoiar gestão institucional, relacionamento, cobertura territorial e inteligência aplicada a organizações públicas e privadas.
+O SIGI-SD e a plataforma tecnologica da Central Publica Digital do Sertao Digital. Ele centraliza interacoes multicanal, atendimento, CRM operacional, chatbot, IA conversacional, protocolos, ouvidoria, agendamentos e integracoes com sistemas governamentais.
 
-## Base tecnológica
+O SIGI-SD nao e uma plataforma de analytics. BI, dashboards e indicadores pertencem a Plataforma 360. O SIGI-SD tambem nao e um GRP: e-Cidade, i-Educar, Amadeus LMS e outros sistemas transacionais devem ser integrados por APIs, conectores e adaptadores.
 
-- PHP 8.2+
-- Symfony
-- Doctrine ORM
-- Twig
-- MySQL
+## Estrutura
 
-## Documentação
-
-A documentação principal do projeto está em `/docs`.
-
-Documentos disponíveis:
-- `/docs/architecture.md` - arquitetura do sistema
-- `/docs/data_model.md` - modelo de dados e relacionamentos
-- `/docs/fixtures.md` - estrutura de dados iniciais
-- `/docs/dev-guide.md` - convenções de desenvolvimento
-- `/docs/api.md` - diretrizes de API
-- `/docs/security.md` - segurança e proteção de dados
-- `/docs/roadmap.md` - evolução planejada do projeto
-
-## Instalação
-
-### 1. Clonar o repositório
-
-```bash
-git clone https://github.com/sertaodigitalorg/SIGI-SD.git
-cd SIGI-SD
+```text
+apps/
+  backend-symfony/   Backend principal Symfony
+  chatwoot/          Espaco para configuracoes do CRM multiatendimento
+  evolution-api/     Espaco para configuracoes da integracao WhatsApp
+  botpress/          Espaco para configuracoes do chatbot
+  ollama/            Espaco para IA local
+  qdrant/            Espaco para banco vetorial
+docker/
+  postgres/
+  redis/
+  traefik/
+  portainer/
+docs/
+scripts/
 ```
 
-### 2. Instalar dependências
+## Subir o ambiente
+
+Copie o arquivo de exemplo e ajuste os segredos locais:
 
 ```bash
+cp .env.example .env
+docker compose up -d
+```
+
+Ou use o Makefile:
+
+```bash
+make up
+make ps
+make logs
+```
+
+## Servicos locais
+
+- API Symfony: http://api.sigi.localhost
+- Chatwoot: http://chat.sigi.localhost
+- Evolution API: http://whatsapp.sigi.localhost
+- Botpress: http://bot.sigi.localhost
+- Ollama: http://ia.sigi.localhost
+- Qdrant: http://qdrant.sigi.localhost
+- Portainer: http://portainer.sigi.localhost
+
+## Backend Symfony
+
+O sistema Symfony que ja funcionava foi movido para `apps/backend-symfony`. Para executar comandos diretamente nele:
+
+```bash
+cd apps/backend-symfony
 composer install
-```
-
-### 3. Configurar ambiente
-
-Crie o arquivo `.env.local` com a conexão do banco:
-
-```env
-DATABASE_URL="mysql://usuario:senha@127.0.0.1:3306/sigi_sd"
-```
-
-### 4. Criar banco de dados
-
-```bash
-php bin/console doctrine:database:create
-```
-
-Caso haja falha verifique as configurações em `.env.local` citado acima no item 3. A base de dados pode ser criada manualmente.
-
-### 5. Executar migrations
-
-```bash
 php bin/console doctrine:migrations:migrate
 ```
 
-### 6. Carregar dados iniciais
+## Documentacao
 
-```bash
-php bin/console doctrine:fixtures:load --no-interaction
-```
-
-### 7. Stimulus (Hotwire) suporte a ImportMap
-
-```bash
-php bin/console importmap:install
-```
-
-Depois:
-
-```bash
-php bin/console asset-map:compile
-```
-
-### 8. Copilar CSS SASS
-
-Caso solicite a copilação do sass após copilação dos assets.
-
-```bash
-php bin/console sass:build
-```
-
-### 9. Executar o projeto
-
-```bash
-symfony server:start
-```
-
-ou
-
-```bash
-php -S localhost:8000 -t public
-```
-
-## Testes
-
-```bash
-./bin/phpunit
-```
-
-## Objetivo
-
-O projeto busca consolidar uma base técnica para:
-- gestão pública digital
-- inteligência territorial
-- CRM institucional
-- integração de dados
-- governança digital
+A documentacao principal esta em `docs/`, com visao arquitetural, infraestrutura, Docker, WSL2, IA local, chatbot, integracoes GovTech, LGPD, agents e skills.

@@ -1,5 +1,19 @@
 .php-version
 
+# Monorepo SIGI-SD
+/apps/backend-symfony/.env.local
+/apps/backend-symfony/.env.local.php
+/apps/backend-symfony/.env.*.local
+/apps/backend-symfony/config/secrets/prod/prod.decrypt.private.php
+/apps/backend-symfony/public/bundles/
+/apps/backend-symfony/public/assets/
+/apps/backend-symfony/assets/vendor/
+/apps/backend-symfony/var/
+/apps/backend-symfony/vendor/
+/apps/backend-symfony/.php-cs-fixer.cache
+/apps/backend-symfony/phpstan.neon
+/apps/backend-symfony/phpunit.xml
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
