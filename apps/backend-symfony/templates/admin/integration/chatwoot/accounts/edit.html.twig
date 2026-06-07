@@ -1,0 +1,12 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Editar conta Chatwoot{% endblock %}
+
+{% block main %}
+    <div class="mb-4">
+        <h1 class="mb-1">Editar conta Chatwoot</h1>
+        <p class="text-body-secondary mb-0">Os campos sensíveis ficam vazios por segurança. Preencha somente para substituir.</p>
+    </div>
+
+    {{ include('admin/integration/chatwoot/accounts/_form.html.twig', {'button_label': 'Atualizar'}) }}
+{% endblock %}

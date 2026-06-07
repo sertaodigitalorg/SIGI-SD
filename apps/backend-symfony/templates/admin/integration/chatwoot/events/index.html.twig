@@ -1,0 +1,82 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Eventos Recebidos{% endblock %}
+
+{% block main %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Eventos Recebidos</h1>
+            <p class="text-body-secondary mb-0">Eventos técnicos recebidos pelo webhook do Chatwoot.</p>
+        </div>
+        <a class="btn btn-outline-secondary" href="{{ path('admin_chatwoot_account_index') }}">Contas Chatwoot</a>
+    </div>
+
+    <form class="row g-3 align-items-end mb-4" method="get">
+        <div class="col-md-3">
+            <label class="form-label" for="status">Status de Processamento</label>
+            <select class="form-select" id="status" name="status">
+                <option value="">Todos</option>
+                {% for status in statuses %}
+                    <option value="{{ status }}" {{ filters.status == status ? 'selected' }}>{{ status }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label" for="eventType">Tipo de evento</label>
+            <select class="form-select" id="eventType" name="eventType">
+                <option value="">Todos</option>
+                {% for event_type in event_types %}
+                    <option value="{{ event_type }}" {{ filters.eventType == event_type ? 'selected' }}>{{ event_type }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label" for="account">Conta Chatwoot</label>
+            <select class="form-select" id="account" name="account">
+                <option value="">Todas</option>
+                {% for account in accounts %}
+                    <option value="{{ account.id }}" {{ filters.account == account.id ? 'selected' }}>{{ account.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button class="btn btn-primary" type="submit">Filtrar</button>
+            <a class="btn btn-outline-secondary" href="{{ path('admin_chatwoot_event_index') }}">Limpar</a>
+        </div>
+    </form>
+
+    {% if events is empty %}
+        <div class="alert alert-info">Nenhum evento recebido com os filtros atuais.</div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Recebido em</th>
+                        <th>Conta</th>
+                        <th>Evento</th>
+                        <th>Conversa</th>
+                        <th>Status de Processamento</th>
+                        <th>Erro</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in events %}
+                        <tr>
+                            <td>{{ event.createdAt ? event.createdAt|date('d/m/Y H:i:s') : '-' }}</td>
+                            <td>{{ event.chatwootAccount ? event.chatwootAccount.name : '-' }}</td>
+                            <td>{{ event.eventType ?: 'Não identificado' }}</td>
+                            <td>{{ event.externalConversationId ?: '-' }}</td>
+                            <td><span class="badge text-bg-secondary">{{ event.processingStatus }}</span></td>
+                            <td>{{ event.errorMessage ?: '-' }}</td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-primary" href="{{ path('admin_chatwoot_event_show', {'id': event.id}) }}">Ver</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Evento Chatwoot{% endblock %}
+
+{% block main %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Evento Chatwoot</h1>
+            <p class="text-body-secondary mb-0">Detalhes técnicos do evento recebido.</p>
+        </div>
+        <a class="btn btn-outline-secondary" href="{{ path('admin_chatwoot_event_index') }}">Voltar</a>
+    </div>
+
+    <div class="table-responsive mb-4">
+        <table class="table table-striped align-middle">
+            <tbody>
+                <tr>
+                    <th class="w-25">Conta Chatwoot</th>
+                    <td>{{ event.chatwootAccount ? event.chatwootAccount.name : '-' }}</td>
+                </tr>
+                <tr>
+                    <th>Evento</th>
+                    <td>{{ event.eventType ?: 'Não identificado' }}</td>
+                </tr>
+                <tr>
+                    <th>Conversa externa</th>
+                    <td>{{ event.externalConversationId ?: '-' }}</td>
+                </tr>
+                <tr>
+                    <th>Mensagem externa</th>
+                    <td>{{ event.externalMessageId ?: '-' }}</td>
+                </tr>
+                <tr>
+                    <th>Status de Processamento</th>
+                    <td>{{ event.processingStatus }}</td>
+                </tr>
+                <tr>
+                    <th>Hash do payload</th>
+                    <td><code>{{ event.payloadHash }}</code></td>
+                </tr>
+                <tr>
+                    <th>Recebido em</th>
+                    <td>{{ event.createdAt ? event.createdAt|date('d/m/Y H:i:s') : '-' }}</td>
+                </tr>
+                <tr>
+                    <th>Processado em</th>
+                    <td>{{ event.processedAt ? event.processedAt|date('d/m/Y H:i:s') : '-' }}</td>
+                </tr>
+                <tr>
+                    <th>Erro</th>
+                    <td>{{ event.errorMessage ?: '-' }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2 class="h4">Payload</h2>
+    {% if is_granted('ROLE_ADMIN') %}
+        <pre class="bg-body-tertiary border rounded p-3 overflow-auto"><code>{{ event.rawPayload|json_encode(constant('JSON_PRETTY_PRINT')) }}</code></pre>
+    {% else %}
+        <div class="alert alert-warning">Payload bruto restrito a administradores.</div>
+    {% endif %}
+{% endblock %}

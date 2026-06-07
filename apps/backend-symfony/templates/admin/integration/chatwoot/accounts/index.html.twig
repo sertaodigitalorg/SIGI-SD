@@ -1,0 +1,65 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Contas Chatwoot{% endblock %}
+
+{% block main %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Integração Chatwoot</h1>
+            <p class="text-body-secondary mb-0">Contas Chatwoot configuradas para receber eventos no SIGI-SD.</p>
+        </div>
+        <a class="btn btn-primary" href="{{ path('admin_chatwoot_account_new') }}">Nova conta</a>
+    </div>
+
+    <h2 class="h4 mb-3">Contas Chatwoot</h2>
+
+    {% if accounts is empty %}
+        <div class="alert alert-info">Nenhuma conta Chatwoot cadastrada até o momento.</div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>URL base</th>
+                        <th>Status</th>
+                        <th>Atualizado em</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for account in accounts %}
+                        <tr>
+                            <td>
+                                <strong>{{ account.name }}</strong>
+                                <div class="text-body-secondary small">
+                                    Webhook: {{ path('admin_chatwoot_webhook_receive', {'accountId': account.id}) }}
+                                </div>
+                            </td>
+                            <td>{{ account.baseUrl }}</td>
+                            <td>
+                                <span class="badge {{ account.active ? 'text-bg-success' : 'text-bg-secondary' }}">
+                                    {{ account.active ? 'Ativa' : 'Inativa' }}
+                                </span>
+                            </td>
+                            <td>{{ account.updatedAt ? account.updatedAt|date('d/m/Y H:i') : 'Não atualizado' }}</td>
+                            <td class="text-end">
+                                <div class="d-inline-flex flex-wrap justify-content-end gap-2">
+                                    <form method="post" action="{{ path('admin_chatwoot_account_test', {'id': account.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('test_chatwoot_account' ~ account.id) }}">
+                                        <button class="btn btn-sm btn-outline-primary">Testar conexão</button>
+                                    </form>
+                                    <form method="post" action="{{ path('admin_chatwoot_account_toggle', {'id': account.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('toggle_chatwoot_account' ~ account.id) }}">
+                                        <button class="btn btn-sm btn-outline-warning">{{ account.active ? 'Desativar' : 'Ativar' }}</button>
+                                    </form>
+                                    <a class="btn btn-sm btn-outline-secondary" href="{{ path('admin_chatwoot_account_edit', {'id': account.id}) }}">Editar</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}

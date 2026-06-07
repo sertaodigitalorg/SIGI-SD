@@ -166,6 +166,7 @@ IA e chatbot:
 
 Integracoes:
 
+- [Chatwoot x SIGI-SD](docs/integracoes/chatwoot-sigi.md)
 - [Padrao de adapters](docs/integracoes/padrao-adapters.md)
 - [e-Cidade](docs/integracoes/e-cidade.md)
 - [i-Educar](docs/integracoes/i-educar.md)

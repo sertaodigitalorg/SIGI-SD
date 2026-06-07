@@ -15,6 +15,7 @@ Use esta area para registrar arquitetura, infraestrutura, integracoes, operacao,
 - `wsl/ambiente-wsl.md`
 - `ia/ia-embarcada.md`
 - `chatbot/botpress.md`
+- `integracoes/chatwoot-sigi.md`
 - `integracoes/padrao-adapters.md`
 - `lgpd/lgpd-by-design.md`
 - `operacao/operacao-atendimento.md`
@@ -51,6 +52,7 @@ IA e chatbot:
 
 Integracoes:
 
+- [Chatwoot x SIGI-SD](integracoes/chatwoot-sigi.md)
 - [Padrao de adapters](integracoes/padrao-adapters.md)
 - [e-Cidade](integracoes/e-cidade.md)
 - [i-Educar](integracoes/i-educar.md)

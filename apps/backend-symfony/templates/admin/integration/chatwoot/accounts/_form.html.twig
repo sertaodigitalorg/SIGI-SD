@@ -1,0 +1,26 @@
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+{{ form_start(form) }}
+    <div class="row g-3">
+        <div class="col-md-6">
+            {{ form_row(form.name) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.baseUrl) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.apiToken) }}
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.webhookSecret) }}
+        </div>
+        <div class="col-12">
+            {{ form_row(form.isActive) }}
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+        <button class="btn btn-primary">{{ button_label|default('Salvar') }}</button>
+        <a class="btn btn-outline-secondary" href="{{ path('admin_chatwoot_account_index') }}">Voltar</a>
+    </div>
+{{ form_end(form) }}

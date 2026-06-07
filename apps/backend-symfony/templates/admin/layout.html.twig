@@ -56,4 +56,13 @@
             <li><a class="dropdown-item" href="{{ path('admin_person_contact_interaction_new') }}"><twig:ux:icon name="tabler:message"/> Nova Interação com Pessoa</a></li>
         </ul>
     </li>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle {{ _route starts with 'admin_chatwoot_' ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <twig:ux:icon name="tabler:messages"/> Integração Chatwoot
+        </a>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ path('admin_chatwoot_account_index') }}"><twig:ux:icon name="tabler:settings"/> Contas Chatwoot</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_chatwoot_event_index') }}"><twig:ux:icon name="tabler:inbox"/> Eventos Recebidos</a></li>
+        </ul>
+    </li>
 {% endblock %}

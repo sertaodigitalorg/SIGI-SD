@@ -1,0 +1,12 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Nova conta Chatwoot{% endblock %}
+
+{% block main %}
+    <div class="mb-4">
+        <h1 class="mb-1">Nova conta Chatwoot</h1>
+        <p class="text-body-secondary mb-0">Cadastre uma integração para receber webhooks do Chatwoot.</p>
+    </div>
+
+    {{ include('admin/integration/chatwoot/accounts/_form.html.twig', {'button_label': 'Salvar'}) }}
+{% endblock %}

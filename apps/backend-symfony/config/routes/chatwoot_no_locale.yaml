@@ -1,0 +1,39 @@
+admin_chatwoot_account_index_no_locale:
+    path: /admin/integrations/chatwoot/accounts
+    controller: App\Controller\Admin\Integration\Chatwoot\ChatwootAccountController::index
+    methods: [GET]
+
+admin_chatwoot_account_new_no_locale:
+    path: /admin/integrations/chatwoot/accounts/new
+    controller: App\Controller\Admin\Integration\Chatwoot\ChatwootAccountController::new
+    methods: [GET, POST]
+
+admin_chatwoot_account_edit_no_locale:
+    path: /admin/integrations/chatwoot/accounts/{id}/edit
+    controller: App\Controller\Admin\Integration\Chatwoot\ChatwootAccountController::edit
+    methods: [GET, POST]
+
+admin_chatwoot_account_test_no_locale:
+    path: /admin/integrations/chatwoot/accounts/{id}/test
+    controller: App\Controller\Admin\Integration\Chatwoot\ChatwootAccountController::test
+    methods: [POST]
+
+admin_chatwoot_account_toggle_no_locale:
+    path: /admin/integrations/chatwoot/accounts/{id}/toggle
+    controller: App\Controller\Admin\Integration\Chatwoot\ChatwootAccountController::toggle
+    methods: [POST]
+
+admin_chatwoot_webhook_receive_no_locale:
+    path: /admin/integrations/chatwoot/webhook/{accountId}
+    controller: App\Controller\Admin\Integration\Chatwoot\ChatwootWebhookController::receive
+    methods: [POST]
+
+admin_chatwoot_event_index_no_locale:
+    path: /admin/integrations/chatwoot/events
+    controller: App\Controller\Admin\Integration\Chatwoot\ChatwootEventController::index
+    methods: [GET]
+
+admin_chatwoot_event_show_no_locale:
+    path: /admin/integrations/chatwoot/events/{id}
+    controller: App\Controller\Admin\Integration\Chatwoot\ChatwootEventController::show
+    methods: [GET]
