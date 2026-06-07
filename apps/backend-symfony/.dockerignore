@@ -1,0 +1,12 @@
+.git
+.phpunit.cache
+var/cache/*
+var/log/*
+var/share/*
+vendor/
+data/*.sqlite
+.env.local
+.env.*.local
+.php-cs-fixer.cache
+phpstan.neon
+phpunit.xml

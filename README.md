@@ -51,6 +51,7 @@ make logs
 - Ollama: http://ia.sigi.localhost
 - Qdrant: http://qdrant.sigi.localhost
 - Portainer: http://portainer.sigi.localhost
+- Dashboard Traefik: http://localhost:18080
 
 ## Backend Symfony
 

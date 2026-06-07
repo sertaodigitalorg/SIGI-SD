@@ -4,7 +4,7 @@ O ambiente de desenvolvimento do SIGI-SD foi preparado para WSL2 no Windows com 
 
 Servicos:
 
-- PostgreSQL: banco relacional.
+- PostgreSQL com pgvector: banco relacional e suporte a extensao `vector` usada pelo Chatwoot.
 - Redis: cache e fila.
 - Traefik: proxy reverso.
 - Portainer: gestao de containers.

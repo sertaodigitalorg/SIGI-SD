@@ -1,6 +1,7 @@
 .php-version
 
 # Monorepo SIGI-SD
+/.env
 /apps/backend-symfony/.env.local
 /apps/backend-symfony/.env.local.php
 /apps/backend-symfony/.env.*.local

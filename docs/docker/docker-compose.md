@@ -30,3 +30,5 @@ Todos os servicos usam `sigi-network`.
 - `ia.sigi.localhost`
 - `qdrant.sigi.localhost`
 - `portainer.sigi.localhost`
+
+O dashboard local do Traefik fica em `http://localhost:18080`.
