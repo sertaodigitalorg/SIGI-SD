@@ -35,6 +35,21 @@ Para testar os endpoints principais:
 make health
 ```
 
+## Subir servicos individuais
+
+Use estes comandos quando nao quiser subir tudo:
+
+```bash
+make up-api        # Symfony + Postgres + Redis + Traefik
+make up-ia         # Ollama + Qdrant + Traefik
+make up-chat       # Chatwoot + Postgres + Redis + Traefik
+make up-whatsapp   # Evolution API + Postgres + Redis + Traefik
+make up-bot        # Botpress + Traefik
+make up-db         # Postgres + Redis
+make up-proxy      # Traefik
+make up-portainer  # Portainer + Traefik
+```
+
 ## Pre-requisitos
 
 - Windows com WSL2.
@@ -72,6 +87,16 @@ sudo apt install -y make curl
 - `make build`: constroi imagens.
 - `make rebuild`: constroi e sobe.
 - `make health`: testa endpoints principais.
+- `make up-api` ou `make up-symfony`: sobe Symfony e dependencias basicas.
+- `make up-ia` ou `make up-ai`: sobe Ollama e Qdrant.
+- `make up-chat` ou `make up-chatwoot`: sobe Chatwoot.
+- `make up-whatsapp` ou `make up-evolution`: sobe Evolution API.
+- `make up-bot` ou `make up-botpress`: sobe Botpress.
+- `make up-db`: sobe Postgres e Redis.
+- `make up-proxy`: sobe Traefik.
+- `make up-portainer`: sobe Portainer.
+- `make stop-api`, `make stop-ia`, `make stop-chat`, `make stop-whatsapp`, `make stop-bot`: para servicos especificos.
+- `make logs-api`, `make logs-ia`, `make logs-chat`, `make logs-whatsapp`, `make logs-bot`, `make logs-proxy`: acompanha logs especificos.
 - `make shell-api`: abre shell no container Symfony.
 - `make composer-install`: instala dependencias do Symfony.
 - `make migrate`: executa migrations do Symfony.

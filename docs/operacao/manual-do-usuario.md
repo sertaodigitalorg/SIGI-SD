@@ -85,7 +85,116 @@ Todos os servicos devem aparecer como `Up`.
 - Portainer: http://portainer.sigi.localhost
 - Dashboard Traefik: http://localhost:18080
 
-## 6. Primeiro acesso ao Chatwoot
+## 6. Subir apenas uma parte da aplicacao
+
+Nem sempre e necessario subir tudo. Use os comandos individuais:
+
+Subir apenas Symfony:
+
+```bash
+make up-api
+```
+
+Tambem funciona:
+
+```bash
+make up-symfony
+```
+
+Esse comando sobe `symfony-api`, `postgres`, `redis` e `traefik`.
+
+Subir apenas IA local:
+
+```bash
+make up-ia
+```
+
+Tambem funciona:
+
+```bash
+make up-ai
+```
+
+Esse comando sobe `ollama`, `qdrant` e `traefik`.
+
+Subir apenas Chatwoot:
+
+```bash
+make up-chat
+```
+
+Tambem funciona:
+
+```bash
+make up-chatwoot
+```
+
+Esse comando sobe `chatwoot`, `postgres`, `redis` e `traefik`.
+
+Subir apenas WhatsApp/Evolution API:
+
+```bash
+make up-whatsapp
+```
+
+Tambem funciona:
+
+```bash
+make up-evolution
+```
+
+Subir apenas Botpress:
+
+```bash
+make up-bot
+```
+
+Tambem funciona:
+
+```bash
+make up-botpress
+```
+
+Subir apenas bancos:
+
+```bash
+make up-db
+```
+
+Subir apenas proxy:
+
+```bash
+make up-proxy
+```
+
+Subir apenas Portainer:
+
+```bash
+make up-portainer
+```
+
+Parar servicos especificos:
+
+```bash
+make stop-api
+make stop-ia
+make stop-chat
+make stop-whatsapp
+make stop-bot
+```
+
+Ver logs especificos:
+
+```bash
+make logs-api
+make logs-ia
+make logs-chat
+make logs-whatsapp
+make logs-bot
+make logs-proxy
+```
+
+## 7. Primeiro acesso ao Chatwoot
 
 Abra:
 
@@ -101,7 +210,7 @@ O Chatwoot deve redirecionar para:
 
 Siga o onboarding na tela para criar a instalacao inicial, usuario administrador e configuracoes basicas.
 
-## 7. Verificar saude dos endpoints
+## 8. Verificar saude dos endpoints
 
 Execute:
 
@@ -118,7 +227,7 @@ Resultados esperados:
 - `ia.sigi.localhost/api/version`: JSON com versao do Ollama.
 - `qdrant.sigi.localhost/collections`: JSON com `status: ok`.
 
-## 8. Ver logs
+## 9. Ver logs
 
 Todos os logs:
 
@@ -134,7 +243,7 @@ docker compose logs -f chatwoot
 docker compose logs -f traefik
 ```
 
-## 9. Rodar comandos Symfony
+## 10. Rodar comandos Symfony
 
 Abrir shell no container:
 
@@ -158,7 +267,7 @@ make migrate
 make cache-clear
 ```
 
-## 10. Parar ou reiniciar
+## 11. Parar ou reiniciar
 
 Parar containers:
 
@@ -172,7 +281,7 @@ Reiniciar tudo:
 make restart
 ```
 
-## 11. Problemas comuns
+## 12. Problemas comuns
 
 Porta `80` ocupada:
 
@@ -200,7 +309,7 @@ docker compose exec symfony-api php bin/console sass:build
 docker compose restart symfony-api
 ```
 
-## 12. Atualizar depois de mudancas no projeto
+## 13. Atualizar depois de mudancas no projeto
 
 Quando arquivos Docker ou dependencias mudarem:
 
@@ -210,7 +319,7 @@ make ps
 make health
 ```
 
-## 13. Encerramento seguro
+## 14. Encerramento seguro
 
 Para encerrar o ambiente local:
 
