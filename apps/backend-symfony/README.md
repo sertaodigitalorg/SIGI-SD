@@ -1,8 +1,8 @@
-# Backend Symfony do SIGI-SD
+# Admin Hub Symfony do SIGI-SD
 
 Este diretorio contem o sistema Symfony existente, movido da raiz do repositorio para `apps/backend-symfony`.
 
-O backend e a API principal do SIGI-SD e deve concentrar regras de interacao, atendimento, protocolos, ouvidoria, agendamentos, integracoes GovTech, auditoria, LGPD e suporte a IA conversacional.
+O backend Symfony e o Admin Hub do SIGI-SD. Ele deve concentrar a administracao geral da plataforma, regras de interacao, atendimento, protocolos, ouvidoria, agendamentos, integracoes GovTech, auditoria, LGPD e suporte a IA conversacional.
 
 ## Execucao local
 
@@ -17,7 +17,7 @@ php -S localhost:8000 -t public
 Na raiz do repositorio:
 
 ```bash
-docker compose up -d symfony-api
+docker compose up -d symfony-admin
 ```
 
 ## Modularizacao

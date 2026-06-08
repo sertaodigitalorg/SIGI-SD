@@ -40,14 +40,15 @@ make health
 Use estes comandos quando nao quiser subir tudo:
 
 ```bash
-make up-api        # Symfony + Postgres + Redis + Traefik
+make up-admin      # Symfony Admin Hub + Postgres + Redis + Traefik
 make up-ia         # Ollama + Qdrant + Traefik
-make up-chat       # Chatwoot + Postgres + Redis + Traefik
+make up-chat       # Chatwoot web + worker + Postgres + Redis + Traefik
 make up-whatsapp   # Evolution API + Postgres + Redis + Traefik
 make up-bot        # Botpress + Traefik
 make up-db         # Postgres + Redis
 make up-proxy      # Traefik
 make up-portainer  # Portainer + Traefik
+make up-pgadmin    # pgAdmin + Postgres + Traefik
 ```
 
 ## Pre-requisitos
@@ -66,13 +67,14 @@ sudo apt install -y make curl
 
 ## Servicos locais
 
-- API Symfony: http://api.sigi.localhost
+- Admin Hub Symfony: http://admin.sigi.localhost
 - Chatwoot: http://chat.sigi.localhost
 - Evolution API: http://whatsapp.sigi.localhost
 - Botpress: http://bot.sigi.localhost
 - Ollama: http://ia.sigi.localhost
 - Qdrant: http://qdrant.sigi.localhost
 - Portainer: http://portainer.sigi.localhost
+- pgAdmin: http://pgadmin.sigi.localhost
 - Dashboard Traefik: http://localhost:18080
 
 ## Comandos Make
@@ -87,17 +89,18 @@ sudo apt install -y make curl
 - `make build`: constroi imagens.
 - `make rebuild`: constroi e sobe.
 - `make health`: testa endpoints principais.
-- `make up-api` ou `make up-symfony`: sobe Symfony e dependencias basicas.
+- `make up-admin` ou `make up-symfony`: sobe Symfony Admin Hub e dependencias basicas.
 - `make up-ia` ou `make up-ai`: sobe Ollama e Qdrant.
-- `make up-chat` ou `make up-chatwoot`: sobe Chatwoot.
+- `make up-chat` ou `make up-chatwoot`: sobe Chatwoot web, worker Sidekiq e dependencias.
 - `make up-whatsapp` ou `make up-evolution`: sobe Evolution API.
 - `make up-bot` ou `make up-botpress`: sobe Botpress.
 - `make up-db`: sobe Postgres e Redis.
 - `make up-proxy`: sobe Traefik.
 - `make up-portainer`: sobe Portainer.
-- `make stop-api`, `make stop-ia`, `make stop-chat`, `make stop-whatsapp`, `make stop-bot`: para servicos especificos.
-- `make logs-api`, `make logs-ia`, `make logs-chat`, `make logs-whatsapp`, `make logs-bot`, `make logs-proxy`: acompanha logs especificos.
-- `make shell-api`: abre shell no container Symfony.
+- `make up-pgadmin`: sobe pgAdmin, Postgres e Traefik.
+- `make stop-admin`, `make stop-ia`, `make stop-chat`, `make stop-whatsapp`, `make stop-bot`: para servicos especificos.
+- `make logs-admin`, `make logs-ia`, `make logs-chat`, `make logs-whatsapp`, `make logs-bot`, `make logs-proxy`: acompanha logs especificos.
+- `make shell-admin`: abre shell no container Symfony.
 - `make composer-install`: instala dependencias do Symfony.
 - `make migrate`: executa migrations do Symfony.
 - `make cache-clear`: limpa cache do Symfony.
@@ -106,7 +109,7 @@ sudo apt install -y make curl
 
 ```text
 apps/
-  backend-symfony/   Backend principal Symfony
+  backend-symfony/   Admin Hub Symfony e backend principal
   chatwoot/          Espaco para configuracoes do CRM multiatendimento
   evolution-api/     Espaco para configuracoes da integracao WhatsApp
   botpress/          Espaco para configuracoes do chatbot
@@ -121,14 +124,31 @@ docs/
 scripts/
 ```
 
-## Backend Symfony
+## pgAdmin
 
-O sistema Symfony que ja funcionava foi movido para `apps/backend-symfony`.
+O pgAdmin fica em `http://pgadmin.sigi.localhost`.
+
+Credenciais padrao de desenvolvimento:
+
+- E-mail: `admin@sigi.dev.br`
+- Senha: `sigi_pgadmin_dev`
+
+Para cadastrar o servidor PostgreSQL no pgAdmin, use:
+
+- Host: `postgres`
+- Porta: `5432`
+- Banco principal: `sigi_sd`
+- Usuario: valor de `POSTGRES_USER`
+- Senha: valor de `POSTGRES_PASSWORD`
+
+## Admin Hub Symfony
+
+O sistema Symfony que ja funcionava foi movido para `apps/backend-symfony` e responde como hub administrativo em `http://admin.sigi.localhost`.
 
 Comandos dentro do container:
 
 ```bash
-make shell-api
+make shell-admin
 php bin/console --version
 php bin/console doctrine:migrations:migrate
 php bin/console cache:clear

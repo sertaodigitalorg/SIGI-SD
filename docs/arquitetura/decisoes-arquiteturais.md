@@ -15,3 +15,12 @@ Sistemas como e-Cidade, i-Educar e Amadeus LMS continuam sendo sistemas transaci
 ## ADR-004: Sem modulo de workflow
 
 O SIGI-SD pode registrar status, encaminhamentos e tramitacao simples, mas nao deve se transformar em motor de workflow.
+
+## ADR-005: Chatwoot web separado do worker
+
+O Chatwoot deve rodar com processo web e processo worker separados no Docker Compose.
+
+- `chatwoot`: Rails/Puma para interface e API web.
+- `chatwoot-worker`: Sidekiq para jobs, cron, IMAP, SMTP assincrono, auto-respostas e filas.
+
+Essa separacao e obrigatoria para recebimento automatico de e-mails via IMAP. Sem o worker, a interface continua acessivel, mas mensagens recebidas no provedor de e-mail nao sao processadas como conversas.

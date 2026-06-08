@@ -56,6 +56,49 @@ O SIGI-SD nao substitui o Chatwoot. O Chatwoot nao substitui o SIGI-SD. Ambos de
 
 Observacao de implementacao: o ambiente Docker atual do projeto tambem usa PostgreSQL para os servicos de infraestrutura. Se este modulo for implementado no banco atual do container, adaptar tipos Doctrine e migrations sem alterar a decisao funcional da integracao.
 
+## Operacao Docker do Chatwoot
+
+No ambiente local, o Chatwoot roda em dois containers:
+
+- `sigi-chatwoot`: processo web Rails/Puma.
+- `sigi-chatwoot-worker`: processo Sidekiq.
+
+O worker e necessario para:
+
+- buscar mensagens por IMAP;
+- processar filas do Chatwoot;
+- executar jobs agendados;
+- disparar auto-respostas;
+- processar broadcasts/eventos em background.
+
+Para e-mail Titan, a configuracao recomendada e:
+
+```text
+Incoming server: imap.titan.email
+Port: 993
+Encryption method: SSL/TLS
+Outgoing server: smtp.titan.email
+Port: 465
+Encryption method: SSL/TLS
+Username: endereco completo do e-mail
+```
+
+Comandos uteis:
+
+```bash
+docker compose ps chatwoot chatwoot-worker
+docker compose logs -f chatwoot chatwoot-worker
+docker exec -it sigi-chatwoot bundle exec rails c
+```
+
+Teste manual de IMAP para a inbox `1`:
+
+```bash
+docker exec -it sigi-chatwoot bundle exec rails runner "Inboxes::FetchImapEmailsJob.new.perform(Inbox.find(1).channel, 24)"
+```
+
+Se o teste manual cria conversas, mas novos e-mails nao chegam automaticamente, verificar se `chatwoot-worker` esta `Up` e se o log contem `trigger_imap_email_inboxes_job`.
+
 ## Modelo CRM existente
 
 O SIGI-SD ja possui o nucleo CRM baseado em:
@@ -1076,7 +1119,7 @@ https://seu-dominio/admin/integrations/chatwoot/webhook/{accountId}
 Em ambiente local com Traefik, o endpoint do Symfony pode ser acessado por:
 
 ```text
-http://api.sigi.localhost/admin/integrations/chatwoot/webhook/{accountId}
+http://admin.sigi.localhost/admin/integrations/chatwoot/webhook/{accountId}
 ```
 
 Configure um dos headers aceitos:
@@ -1181,7 +1224,7 @@ make migrate
 Ou dentro do container Symfony:
 
 ```bash
-make shell-api
+make shell-admin
 php bin/console doctrine:migrations:migrate
 ```
 

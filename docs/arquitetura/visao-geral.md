@@ -37,17 +37,36 @@ GRPs:
 ```mermaid
 flowchart TD
     CPD[Central Publica Digital] --> SIGI[SIGI-SD]
-    SIGI --> CHAT[Chatwoot]
+    SIGI --> CHAT[Chatwoot Web]
+    CHAT --> CHATWORKER[Chatwoot Worker Sidekiq]
     SIGI --> BOT[Botpress]
-    SIGI --> API[Symfony API]
+    SIGI --> API[Symfony Admin Hub]
     SIGI --> EVO[Evolution API]
     SIGI --> OLLAMA[Ollama]
     SIGI --> QDRANT[Qdrant]
     API --> PG[PostgreSQL]
     API --> REDIS[Redis]
+    CHATWORKER --> PG
+    CHATWORKER --> REDIS
+    CHATWORKER --> IMAP[IMAP/SMTP Titan]
     API --> GRP[Integracoes GRP]
     GRP --> ECIDADE[e-Cidade]
     GRP --> IEDUCAR[i-Educar]
     GRP --> AMADEUS[Amadeus LMS]
     SIGI --> P360[Plataforma 360 para analytics]
 ```
+
+## Chatwoot na arquitetura operacional
+
+## Admin Hub Symfony
+
+O Symfony e o hub administrativo do SIGI-SD e responde em `http://admin.sigi.localhost`. Ele concentra a administracao da plataforma, os cadastros internos e os pontos de integracao com aplicacoes como Chatwoot, Evolution API, Botpress e servicos de IA.
+
+O Admin Hub usa o banco legado `sigi_sd`, preservando a continuidade do sistema Symfony que ja existia.
+
+O Chatwoot e dividido em dois processos no ambiente Docker:
+
+- `chatwoot`: aplicacao web Rails/Puma, interface de atendimento e configuracoes.
+- `chatwoot-worker`: Sidekiq, filas, jobs agendados, recebimento por IMAP, auto-respostas e tarefas em background.
+
+O recebimento de e-mails por IMAP nao acontece apenas com o processo web. A caixa pode estar configurada corretamente em `imap.titan.email:993` com SSL/TLS e ainda assim nao gerar conversas se o worker nao estiver em execucao.

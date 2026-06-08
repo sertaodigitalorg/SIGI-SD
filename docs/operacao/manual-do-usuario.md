@@ -76,13 +76,14 @@ Todos os servicos devem aparecer como `Up`.
 
 ## 5. Acessar os servicos
 
-- API Symfony: http://api.sigi.localhost
+- Admin Hub Symfony: http://admin.sigi.localhost
 - Chatwoot: http://chat.sigi.localhost
 - Evolution API: http://whatsapp.sigi.localhost
 - Botpress: http://bot.sigi.localhost
 - Ollama: http://ia.sigi.localhost
 - Qdrant: http://qdrant.sigi.localhost
 - Portainer: http://portainer.sigi.localhost
+- pgAdmin: http://pgadmin.sigi.localhost
 - Dashboard Traefik: http://localhost:18080
 
 ## 6. Subir apenas uma parte da aplicacao
@@ -92,7 +93,7 @@ Nem sempre e necessario subir tudo. Use os comandos individuais:
 Subir apenas Symfony:
 
 ```bash
-make up-api
+make up-admin
 ```
 
 Tambem funciona:
@@ -101,7 +102,7 @@ Tambem funciona:
 make up-symfony
 ```
 
-Esse comando sobe `symfony-api`, `postgres`, `redis` e `traefik`.
+Esse comando sobe `symfony-admin`, `postgres`, `redis` e `traefik`.
 
 Subir apenas IA local:
 
@@ -129,7 +130,7 @@ Tambem funciona:
 make up-chatwoot
 ```
 
-Esse comando sobe `chatwoot`, `postgres`, `redis` e `traefik`.
+Esse comando sobe `chatwoot`, `chatwoot-worker`, `postgres`, `redis` e `traefik`.
 
 Subir apenas WhatsApp/Evolution API:
 
@@ -173,10 +174,18 @@ Subir apenas Portainer:
 make up-portainer
 ```
 
+Subir apenas pgAdmin:
+
+```bash
+make up-pgadmin
+```
+
+Esse comando sobe `pgadmin`, `postgres` e `traefik`.
+
 Parar servicos especificos:
 
 ```bash
-make stop-api
+make stop-admin
 make stop-ia
 make stop-chat
 make stop-whatsapp
@@ -186,7 +195,7 @@ make stop-bot
 Ver logs especificos:
 
 ```bash
-make logs-api
+make logs-admin
 make logs-ia
 make logs-chat
 make logs-whatsapp
@@ -210,7 +219,72 @@ O Chatwoot deve redirecionar para:
 
 Siga o onboarding na tela para criar a instalacao inicial, usuario administrador e configuracoes basicas.
 
-## 8. Verificar saude dos endpoints
+### Recebimento de e-mails no Chatwoot
+
+O Chatwoot precisa de dois processos:
+
+- `chatwoot`: interface web.
+- `chatwoot-worker`: Sidekiq, jobs em background, IMAP, auto-respostas e filas.
+
+Se o e-mail estiver configurado por IMAP e as mensagens nao chegarem na caixa de entrada, confira primeiro se o worker esta rodando:
+
+```bash
+docker compose ps chatwoot chatwoot-worker
+docker compose logs -f chatwoot-worker
+```
+
+O log do worker deve listar o agendador:
+
+```text
+trigger_imap_email_inboxes_job
+```
+
+Para abrir o console Rails:
+
+```bash
+docker exec -it sigi-chatwoot bundle exec rails c
+```
+
+Para testar manualmente a busca IMAP da inbox `1` pelo WSL:
+
+```bash
+docker exec -it sigi-chatwoot bundle exec rails runner "Inboxes::FetchImapEmailsJob.new.perform(Inbox.find(1).channel, 24)"
+```
+
+Configuracao Titan usada para caixas de e-mail:
+
+```text
+Incoming server: imap.titan.email
+Port: 993
+Encryption method: SSL/TLS
+Outgoing server: smtp.titan.email
+Port: 465
+Encryption method: SSL/TLS
+Username: endereco completo do e-mail
+```
+
+## 8. Primeiro acesso ao pgAdmin
+
+Abra:
+
+```text
+http://pgadmin.sigi.localhost
+```
+
+Credenciais padrao de desenvolvimento:
+
+- E-mail: `admin@sigi.dev.br`
+- Senha: `sigi_pgadmin_dev`
+
+Para cadastrar o PostgreSQL no pgAdmin, crie um servidor com:
+
+- Host: `postgres`
+- Porta: `5432`
+- Banco principal: `sigi_sd`
+- Usuario: valor de `POSTGRES_USER`
+- Senha: valor de `POSTGRES_PASSWORD`
+
+## 9. Verificar saude dos endpoints
 
 Execute:
 
@@ -220,14 +294,15 @@ make health
 
 Resultados esperados:
 
-- `api.sigi.localhost`: HTTP 200.
+- `admin.sigi.localhost`: HTTP 200.
 - `chat.sigi.localhost`: HTTP 302 para onboarding ou dashboard.
 - `bot.sigi.localhost`: HTTP 302 para `/admin`.
 - `whatsapp.sigi.localhost`: HTTP 200.
+- `pgadmin.sigi.localhost`: HTTP 200 ou HTTP 302 para tela de login.
 - `ia.sigi.localhost/api/version`: JSON com versao do Ollama.
 - `qdrant.sigi.localhost/collections`: JSON com `status: ok`.
 
-## 9. Ver logs
+## 10. Ver logs
 
 Todos os logs:
 
@@ -238,17 +313,17 @@ make logs
 Logs de um servico especifico:
 
 ```bash
-docker compose logs -f symfony-api
-docker compose logs -f chatwoot
+docker compose logs -f symfony-admin
+docker compose logs -f chatwoot chatwoot-worker
 docker compose logs -f traefik
 ```
 
-## 10. Rodar comandos Symfony
+## 11. Rodar comandos Symfony
 
 Abrir shell no container:
 
 ```bash
-make shell-api
+make shell-admin
 ```
 
 Comandos comuns:
@@ -267,7 +342,7 @@ make migrate
 make cache-clear
 ```
 
-## 11. Parar ou reiniciar
+## 12. Parar ou reiniciar
 
 Parar containers:
 
@@ -281,7 +356,7 @@ Reiniciar tudo:
 make restart
 ```
 
-## 12. Problemas comuns
+## 13. Problemas comuns
 
 Porta `80` ocupada:
 
@@ -302,14 +377,27 @@ docker compose logs postgres
 
 O Postgres usado pelo projeto e `pgvector/pgvector:pg16`, necessario para a extensao `vector` do Chatwoot.
 
+E-mails do Chatwoot nao chegam na conversa:
+
+```bash
+docker compose ps chatwoot chatwoot-worker
+docker compose logs -f chatwoot-worker
+```
+
+Se `chatwoot-worker` nao estiver `Up`, rode:
+
+```bash
+make up-chat
+```
+
 Symfony mostra erro de CSS/Sass:
 
 ```bash
-docker compose exec symfony-api php bin/console sass:build
-docker compose restart symfony-api
+docker compose exec symfony-admin php bin/console sass:build
+docker compose restart symfony-admin
 ```
 
-## 13. Atualizar depois de mudancas no projeto
+## 14. Atualizar depois de mudancas no projeto
 
 Quando arquivos Docker ou dependencias mudarem:
 
@@ -319,7 +407,7 @@ make ps
 make health
 ```
 
-## 14. Encerramento seguro
+## 15. Encerramento seguro
 
 Para encerrar o ambiente local:
 

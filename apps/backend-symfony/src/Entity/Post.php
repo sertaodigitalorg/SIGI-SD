@@ -45,7 +45,7 @@ class Post
     #[ORM\Column(type: Types::STRING, length: 191)]
     private ?string $slug = null;
 
-    #[ORM\Column(type: Types::STRING, length: 191)]
+    #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank(message: 'post.blank_summary')]
     private ?string $summary = null;
 

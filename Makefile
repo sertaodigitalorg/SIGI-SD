@@ -1,5 +1,5 @@
 COMPOSE=docker compose
-API=symfony-api
+ADMIN=symfony-admin
 IA_SERVICES=ollama qdrant
 BASE_SERVICES=postgres redis traefik
 
@@ -15,8 +15,8 @@ help:
 	@echo "  make build              Constroi as imagens"
 	@echo "  make rebuild            Reconstroi e sobe toda a aplicacao"
 	@echo "  make health             Testa endpoints principais"
-	@echo "  make up-api             Sobe apenas Symfony e dependencias basicas"
-	@echo "  make up-symfony         Alias para make up-api"
+	@echo "  make up-admin           Sobe apenas Symfony Admin Hub e dependencias basicas"
+	@echo "  make up-symfony         Alias para make up-admin"
 	@echo "  make up-ia              Sobe apenas IA local (Ollama + Qdrant)"
 	@echo "  make up-ai              Alias para make up-ia"
 	@echo "  make up-chat            Sobe apenas Chatwoot e dependencias basicas"
@@ -28,16 +28,17 @@ help:
 	@echo "  make up-db              Sobe apenas Postgres e Redis"
 	@echo "  make up-proxy           Sobe apenas Traefik"
 	@echo "  make up-portainer       Sobe apenas Portainer e Traefik"
-	@echo "  make stop-api           Para Symfony"
+	@echo "  make up-pgadmin         Sobe apenas pgAdmin e Postgres"
+	@echo "  make stop-admin         Para Symfony Admin Hub"
 	@echo "  make stop-ia            Para Ollama e Qdrant"
 	@echo "  make stop-chat          Para Chatwoot"
-	@echo "  make logs-api           Logs do Symfony"
+	@echo "  make logs-admin         Logs do Symfony Admin Hub"
 	@echo "  make logs-ia            Logs de Ollama e Qdrant"
 	@echo "  make logs-chat          Logs do Chatwoot"
 	@echo "  make logs-whatsapp      Logs da Evolution API"
 	@echo "  make logs-bot           Logs do Botpress"
 	@echo "  make logs-proxy         Logs do Traefik"
-	@echo "  make shell-api          Abre shell no Symfony"
+	@echo "  make shell-admin        Abre shell no Symfony Admin Hub"
 	@echo "  make composer-install   Instala dependencias do Symfony"
 	@echo "  make migrate            Executa migrations do Symfony"
 	@echo "  make cache-clear        Limpa cache do Symfony"
@@ -71,19 +72,20 @@ status:
 	$(COMPOSE) ps
 
 health:
-	@curl -I -sS http://api.sigi.localhost | head -n 1
+	@curl -I -sS http://admin.sigi.localhost | head -n 1
 	@curl -I -sS http://chat.sigi.localhost | head -n 1
 	@curl -I -sS http://bot.sigi.localhost | head -n 1
 	@curl -I -sS http://whatsapp.sigi.localhost | head -n 1
+	@curl -I -sS http://pgadmin.sigi.localhost | head -n 1
 	@curl -sS http://ia.sigi.localhost/api/version
 	@echo
 	@curl -sS http://qdrant.sigi.localhost/collections
 	@echo
 
-up-api:
-	$(COMPOSE) up -d postgres redis traefik $(API)
+up-admin:
+	$(COMPOSE) up -d postgres redis traefik $(ADMIN)
 
-up-symfony: up-api
+up-symfony: up-admin
 
 up-ia:
 	$(COMPOSE) up -d traefik $(IA_SERVICES)
@@ -91,7 +93,7 @@ up-ia:
 up-ai: up-ia
 
 up-chat:
-	$(COMPOSE) up -d postgres redis traefik chatwoot
+	$(COMPOSE) up -d postgres redis traefik chatwoot chatwoot-worker
 
 up-chatwoot: up-chat
 
@@ -115,10 +117,13 @@ up-proxy:
 up-portainer:
 	$(COMPOSE) up -d traefik portainer
 
-stop-api:
-	$(COMPOSE) stop $(API)
+up-pgadmin:
+	$(COMPOSE) up -d postgres traefik pgadmin
 
-stop-symfony: stop-api
+stop-admin:
+	$(COMPOSE) stop $(ADMIN)
+
+stop-symfony: stop-admin
 
 stop-ia:
 	$(COMPOSE) stop $(IA_SERVICES)
@@ -126,7 +131,7 @@ stop-ia:
 stop-ai: stop-ia
 
 stop-chat:
-	$(COMPOSE) stop chatwoot
+	$(COMPOSE) stop chatwoot chatwoot-worker
 
 stop-chatwoot: stop-chat
 
@@ -136,10 +141,10 @@ stop-whatsapp:
 stop-bot:
 	$(COMPOSE) stop botpress
 
-logs-api:
-	$(COMPOSE) logs -f $(API)
+logs-admin:
+	$(COMPOSE) logs -f $(ADMIN)
 
-logs-symfony: logs-api
+logs-symfony: logs-admin
 
 logs-ia:
 	$(COMPOSE) logs -f $(IA_SERVICES)
@@ -147,7 +152,7 @@ logs-ia:
 logs-ai: logs-ia
 
 logs-chat:
-	$(COMPOSE) logs -f chatwoot
+	$(COMPOSE) logs -f chatwoot chatwoot-worker
 
 logs-whatsapp:
 	$(COMPOSE) logs -f evolution-api
@@ -158,14 +163,16 @@ logs-bot:
 logs-proxy:
 	$(COMPOSE) logs -f traefik
 
-shell-api:
-	$(COMPOSE) exec $(API) bash
+shell-admin:
+	$(COMPOSE) exec $(ADMIN) bash
+
+shell-symfony: shell-admin
 
 composer-install:
-	$(COMPOSE) exec $(API) composer install
+	$(COMPOSE) exec $(ADMIN) composer install
 
 migrate:
-	$(COMPOSE) exec $(API) php bin/console doctrine:migrations:migrate
+	$(COMPOSE) exec $(ADMIN) php bin/console doctrine:migrations:migrate
 
 cache-clear:
-	$(COMPOSE) exec $(API) php bin/console cache:clear
+	$(COMPOSE) exec $(ADMIN) php bin/console cache:clear

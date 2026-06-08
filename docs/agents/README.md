@@ -5,7 +5,7 @@ Os agents ficam em `.github/agents` e orientam revisoes especializadas do SIGI-S
 Agents disponiveis:
 
 - `sigi-architect.agent.md`
-- `symfony-api.agent.md`
+- `symfony-admin.agent.md`
 - `docker-wsl.agent.md`
 - `chatbot-ai.agent.md`
 - `govtech-integrations.agent.md`

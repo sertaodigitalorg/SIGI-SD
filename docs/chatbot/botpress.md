@@ -8,4 +8,4 @@ Responsabilidades:
 - Identificacao de intencoes.
 - Coleta inicial de dados.
 - Transferencia para atendimento humano no Chatwoot.
-- Integracao com a API Symfony para protocolos, catalogo de servicos e consultas autorizadas.
+- Integracao com a Admin Hub Symfony para protocolos, catalogo de servicos e consultas autorizadas.

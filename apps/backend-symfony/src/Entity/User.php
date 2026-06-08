@@ -27,7 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @author Javier Eguiluz <javier.eguiluz@gmail.com>
  */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: 'user')]
+#[ORM\Table(name: 'users')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     // We can use constants for roles to find usages all over the application rather

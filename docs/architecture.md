@@ -251,3 +251,12 @@ para:
  - BI e dashboards avançados
  - automação de comunicação
  - notificações e alertas inteligentes
+
+## Chatwoot e workers
+
+Na operacao Docker atual, o Chatwoot deve rodar com dois processos:
+
+- `chatwoot`: Rails/Puma para interface web.
+- `chatwoot-worker`: Sidekiq para filas, jobs agendados, IMAP, SMTP assincrono e auto-respostas.
+
+O recebimento automatico por IMAP depende do worker. Se somente o processo web estiver ativo, a interface abre, mas e-mails recebidos no provedor podem nao ser convertidos em conversas.
