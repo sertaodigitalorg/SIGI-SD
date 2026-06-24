@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Repository\AttendanceProtocolRepository;
 use App\Repository\OrganizationContactInteractionRepository;
 use App\Repository\PersonContactInteractionRepository;
 
@@ -9,7 +10,8 @@ class DashboardService
 {
     public function __construct(
         private OrganizationContactInteractionRepository $organizationRepository,
-        private PersonContactInteractionRepository $personRepository
+        private PersonContactInteractionRepository $personRepository,
+        private AttendanceProtocolRepository $attendanceProtocolRepository,
     ) {
     }
 
@@ -99,5 +101,30 @@ class DashboardService
         usort($alerts, static fn ($a, $b) => $a['nextContactAt'] <=> $b['nextContactAt']);
 
         return array_slice($alerts, 0, $limit);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getAttendanceMetrics(): array
+    {
+        $todayStart = new \DateTimeImmutable('today');
+        $todayEnd = $todayStart->setTime(23, 59, 59);
+
+        return [
+            'total' => $this->attendanceProtocolRepository->countByStatus(),
+            'open' => $this->attendanceProtocolRepository->countByStatus('open'),
+            'pending' => $this->attendanceProtocolRepository->countByStatus('pending'),
+            'resolved' => $this->attendanceProtocolRepository->countByStatus('resolved'),
+            'protocols' => $this->attendanceProtocolRepository->countByStatus(),
+            'today' => $this->attendanceProtocolRepository->countCreatedBetween($todayStart, $todayEnd),
+            'highPriority' => $this->attendanceProtocolRepository->countHighPriority(),
+            'byChannel' => $this->attendanceProtocolRepository->countGroupedBy('sourceChannel'),
+            'byStatus' => $this->attendanceProtocolRepository->countGroupedBy('status'),
+            'byTeam' => $this->attendanceProtocolRepository->countGroupedBy('responsibleTeam'),
+            'byAgent' => $this->attendanceProtocolRepository->countGroupedBy('responsibleAgent'),
+            'byPriority' => $this->attendanceProtocolRepository->countGroupedBy('priority'),
+            'byLabel' => $this->attendanceProtocolRepository->countByLabel(),
+        ];
     }
 }
