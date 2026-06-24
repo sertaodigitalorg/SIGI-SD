@@ -23,3 +23,31 @@ docker compose up -d symfony-admin
 ## Modularizacao
 
 A base modular futura esta em `src/Modules`. A aplicacao existente continua disponivel em `src/Controller`, `src/Entity`, `src/Form`, `src/Repository`, `templates` e demais diretorios atuais para permitir evolucao incremental.
+
+## Central SIGI e Chatwoot
+
+- `/admin`: Hub/Central SIGI, pagina principal do admin.
+- `/admin/atendimentos`: protocolos sincronizados do Chatwoot.
+- `/admin/atendimentos/dashboard`: indicadores de atendimento.
+- `/admin/atendimentos/configuracao`: regra do sequencial diario ou global.
+
+Sincronizacao:
+
+```bash
+php bin/console sigi:chatwoot:sync --limit=50
+```
+
+Variaveis principais:
+
+```env
+CHATWOOT_BASE_URL=
+CHATWOOT_ACCOUNT_ID=
+CHATWOOT_API_TOKEN=
+CHATWOOT_INBOX_ID=
+SIGI_CHATWOOT_URL=
+SIGI_BOTPRESS_URL=
+SIGI_TYPEBOT_URL=
+SIGI_PORTAINER_URL=
+SIGI_BI_URL=
+SIGI_DOCS_URL=
+```

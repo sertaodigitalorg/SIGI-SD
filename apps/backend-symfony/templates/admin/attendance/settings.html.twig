@@ -1,0 +1,30 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Configuracao de Protocolo{% endblock %}
+
+{% block main %}
+    <div class="mb-4">
+        <h1 class="mb-1">Configuracao de Protocolo</h1>
+        <p class="text-body-secondary mb-0">Defina como o sequencial do protocolo SIGI deve ser calculado.</p>
+    </div>
+
+    <form class="card" method="post">
+        <div class="card-body">
+            <input type="hidden" name="_token" value="{{ csrf_token('protocol_settings') }}">
+
+            <div class="mb-3">
+                <label class="form-label" for="sequence_scope">Sequencia</label>
+                <select class="form-select" id="sequence_scope" name="sequence_scope">
+                    <option value="daily" {{ settings.sequenceScope == 'daily' ? 'selected' }}>Reiniciar por dia</option>
+                    <option value="global" {{ settings.sequenceScope == 'global' ? 'selected' }}>Sequencia global continua</option>
+                </select>
+            </div>
+
+            <button class="btn btn-primary" type="submit">
+                <twig:ux:icon name="tabler:device-floppy"/> Salvar configuracao
+            </button>
+        </div>
+    </form>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}

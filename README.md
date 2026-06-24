@@ -145,6 +145,8 @@ Para cadastrar o servidor PostgreSQL no pgAdmin, use:
 
 O sistema Symfony que ja funcionava foi movido para `apps/backend-symfony` e responde como hub administrativo em `http://admin.sigi.localhost`.
 
+A pagina principal do admin agora e a Central SIGI, acessivel pelo menu `Central SIGI` ou por `/admin`. Ela centraliza indicadores resumidos, links para Dashboard, protocolos e ferramentas do ecossistema.
+
 Comandos dentro do container:
 
 ```bash
@@ -153,6 +155,32 @@ php bin/console --version
 php bin/console doctrine:migrations:migrate
 php bin/console cache:clear
 ```
+
+### Sincronizacao Chatwoot e protocolos
+
+Configure no `.env`:
+
+```env
+CHATWOOT_BASE_URL=http://chat.sigi.localhost
+CHATWOOT_ACCOUNT_ID=1
+CHATWOOT_API_TOKEN=token-do-chatwoot
+CHATWOOT_INBOX_ID=
+SIGI_CHATWOOT_URL=http://chat.sigi.localhost
+SIGI_BOTPRESS_URL=http://bot.sigi.localhost
+SIGI_TYPEBOT_URL=
+SIGI_PORTAINER_URL=http://portainer.sigi.localhost
+SIGI_BI_URL=
+SIGI_DOCS_URL=
+```
+
+Rode a sincronizacao manual:
+
+```bash
+make shell-admin
+php bin/console sigi:chatwoot:sync --limit=50
+```
+
+Para validar, abra `/admin/atendimentos`: cada conversa importada deve ter protocolo no formato `YYYYMMDD000001` e botao `Abrir no Chatwoot`. A regra do sequencial fica em `/admin/atendimentos/configuracao`.
 
 ## Documentacao
 

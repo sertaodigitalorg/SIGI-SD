@@ -1235,3 +1235,84 @@ php bin/console doctrine:migrations:migrate
 - Fase 4: vincular conversas a `Organization`, `Person`, `OrganizationContact` ou `PersonContact`.
 - Fase 5: registrar interacoes CRM e follow-ups.
 - Fase 6: evoluir para IA local, RAG, agents e skills.
+
+## Fase 2/3 - Protocolos e dashboard operacional implementados
+
+Esta etapa adiciona a camada operacional de atendimentos sincronizados do Chatwoot.
+
+### Tabelas
+
+- `protocol_settings`: guarda a regra do sequencial do protocolo (`daily` ou `global`).
+- `attendance_protocols`: guarda protocolo, conversa Chatwoot, contato, canal, assunto, status, labels, time, agente, prioridade e timestamps.
+
+O protocolo segue o formato:
+
+```text
+YYYYMMDD000001
+```
+
+Exemplo:
+
+```text
+20260624000001
+```
+
+### Variaveis de ambiente
+
+```env
+CHATWOOT_BASE_URL=http://chat.sigi.localhost
+CHATWOOT_ACCOUNT_ID=1
+CHATWOOT_API_TOKEN=token-do-chatwoot
+CHATWOOT_INBOX_ID=
+SIGI_CHATWOOT_URL=http://chat.sigi.localhost
+SIGI_BOTPRESS_URL=http://bot.sigi.localhost
+SIGI_TYPEBOT_URL=
+SIGI_PORTAINER_URL=http://portainer.sigi.localhost
+SIGI_BI_URL=
+SIGI_DOCS_URL=
+```
+
+Tokens devem ficar somente no backend. O frontend usa apenas URLs publicas de navegacao.
+
+### Sincronizacao
+
+Dentro do container Symfony:
+
+```bash
+php bin/console sigi:chatwoot:sync --limit=50
+```
+
+Opcoes:
+
+- `--status=all`: status consultado no Chatwoot.
+- `--no-note`: sincroniza sem criar nota privada.
+
+O webhook existente tambem processa eventos recebidos e tenta gerar ou atualizar o protocolo quando houver conversa identificavel no payload.
+
+### Nota privada no Chatwoot
+
+Quando um protocolo novo e gerado, o SIGI-SD tenta criar uma nota privada na conversa:
+
+```text
+Protocolo SIGI gerado automaticamente: YYYYMMDD000001
+```
+
+A coluna `protocol_note_sent` evita duplicidade.
+
+### Telas administrativas
+
+- `/admin`: Central SIGI como pagina principal do admin.
+- `/admin/atendimentos`: lista de protocolos e atendimentos.
+- `/admin/atendimentos/dashboard`: indicadores operacionais.
+- `/admin/atendimentos/configuracao`: regra do sequencial.
+- `/admin/dashboard`: dashboard geral com bloco de atendimentos Chatwoot.
+
+### Validacao
+
+1. Configure `CHATWOOT_BASE_URL`, `CHATWOOT_ACCOUNT_ID` e `CHATWOOT_API_TOKEN`.
+2. Execute `php bin/console doctrine:migrations:migrate`.
+3. Rode `php bin/console sigi:chatwoot:sync --limit=10`.
+4. Abra `/admin/atendimentos`.
+5. Confirme que cada conversa tem protocolo salvo.
+6. Clique em `Abrir no Chatwoot` e confira a conversa original.
+7. No Chatwoot, confirme a nota privada do protocolo quando a API estiver configurada.

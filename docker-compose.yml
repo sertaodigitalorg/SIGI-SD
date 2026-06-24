@@ -83,6 +83,16 @@ services:
       APP_SECRET: ${APP_SECRET:-troque-este-segredo}
       DATABASE_URL: ${DATABASE_URL:-postgresql://sigi:sigi_dev_password@postgres:5432/sigi_sd?serverVersion=16&charset=utf8}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      CHATWOOT_BASE_URL: ${CHATWOOT_BASE_URL:-http://chat.sigi.localhost}
+      CHATWOOT_ACCOUNT_ID: ${CHATWOOT_ACCOUNT_ID:-}
+      CHATWOOT_API_TOKEN: ${CHATWOOT_API_TOKEN:-}
+      CHATWOOT_INBOX_ID: ${CHATWOOT_INBOX_ID:-}
+      SIGI_CHATWOOT_URL: ${SIGI_CHATWOOT_URL:-http://chat.sigi.localhost}
+      SIGI_BOTPRESS_URL: ${SIGI_BOTPRESS_URL:-http://bot.sigi.localhost}
+      SIGI_TYPEBOT_URL: ${SIGI_TYPEBOT_URL:-}
+      SIGI_PORTAINER_URL: ${SIGI_PORTAINER_URL:-http://portainer.sigi.localhost}
+      SIGI_BI_URL: ${SIGI_BI_URL:-}
+      SIGI_DOCS_URL: ${SIGI_DOCS_URL:-}
     depends_on:
       - postgres
       - redis

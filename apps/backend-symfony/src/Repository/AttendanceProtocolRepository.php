@@ -64,7 +64,7 @@ final class AttendanceProtocolRepository extends ServiceEntityRepository
         }
 
         if (($filters['label'] ?? '') !== '') {
-            $queryBuilder->andWhere('LOWER(CAST(protocol.labels AS string)) LIKE :label')->setParameter('label', '%'.mb_strtolower((string) $filters['label']).'%');
+            $queryBuilder->andWhere('LOWER(protocol.labelsText) LIKE :label')->setParameter('label', '%'.mb_strtolower((string) $filters['label']).'%');
         }
 
         if (($filters['from'] ?? '') !== '') {
@@ -140,7 +140,13 @@ final class AttendanceProtocolRepository extends ServiceEntityRepository
     {
         $totals = [];
         foreach ($this->createQueryBuilder('protocol')->select('protocol.labels')->getQuery()->getScalarResult() as $row) {
-            foreach (($row['labels'] ?? []) as $label) {
+            $labels = $row['labels'] ?? [];
+            if (is_string($labels)) {
+                $decoded = json_decode($labels, true);
+                $labels = is_array($decoded) ? $decoded : [];
+            }
+
+            foreach ($labels as $label) {
                 if (!is_scalar($label) || '' === trim((string) $label)) {
                     continue;
                 }

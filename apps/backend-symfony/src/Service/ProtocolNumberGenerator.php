@@ -17,13 +17,14 @@ final readonly class ProtocolNumberGenerator
     public function assign(AttendanceProtocol $protocol, ?\DateTimeImmutable $date = null): void
     {
         $date ??= new \DateTimeImmutable();
+        $sequenceDate = new \DateTimeImmutable($date->format('Y-m-d'));
         $settings = $this->settingsRepository->getOrCreate();
         $scope = $settings->getSequenceScope();
-        $sequenceNumber = $this->protocolRepository->getNextSequenceNumber($scope, $date);
+        $sequenceNumber = $this->protocolRepository->getNextSequenceNumber($scope, $sequenceDate);
 
         $protocol
             ->setSequenceScope($scope)
-            ->setSequenceDate($date)
+            ->setSequenceDate($sequenceDate)
             ->setSequenceNumber($sequenceNumber)
             ->setProtocolCode(sprintf('%s%06d', $date->format('Ymd'), $sequenceNumber));
     }

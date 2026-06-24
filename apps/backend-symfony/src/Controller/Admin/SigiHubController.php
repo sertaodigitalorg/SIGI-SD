@@ -10,10 +10,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/hub-sigi', name: 'admin_sigi_hub')]
 #[IsGranted(User::ROLE_ADMIN)]
 final class SigiHubController extends AbstractController
 {
+    #[Route('/admin', name: 'admin_index', methods: ['GET'])]
+    #[Route('/admin/hub-sigi', name: 'admin_sigi_hub', methods: ['GET'])]
     public function __invoke(DashboardService $dashboardService, ChatwootRuntimeConfig $runtimeConfig): Response
     {
         return $this->render('admin/hub/index.html.twig', [

@@ -46,7 +46,7 @@
                                     </li>
                                     {% if is_granted('ROLE_ADMIN') %}
                                         <li class="nav-item">
-                                            <a class="nav-link" href="{{ path('admin_dashboard_index') }}">
+                                            <a class="nav-link" href="{{ path('admin_index') }}">
                                                 <twig:ux:icon name="tabler:lock"/> {{ 'menu.admin'|trans }}
                                             </a>
                                         </li>

@@ -22,12 +22,14 @@ final class DashboardController extends AbstractController
         $person = $this->dashboardService->getPersonMetrics();
         $consolidated = $this->dashboardService->getConsolidatedMetrics();
         $overdueAlerts = $this->dashboardService->getOverdueAlerts(20);
+        $attendance = $this->dashboardService->getAttendanceMetrics();
 
         return $this->render('admin/dashboard/index.html.twig', [
             'organization' => $organization,
             'person' => $person,
             'consolidated' => $consolidated,
             'overdueAlerts' => $overdueAlerts,
+            'attendance' => $attendance,
         ]);
     }
 }

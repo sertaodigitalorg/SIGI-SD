@@ -62,6 +62,9 @@ class AttendanceProtocol
     #[ORM\Column(type: Types::JSON)]
     private array $labels = [];
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $labelsText = null;
+
     #[ORM\Column(length: 191, nullable: true)]
     private ?string $responsibleTeam = null;
 
@@ -248,8 +251,14 @@ class AttendanceProtocol
             static fn (mixed $label): ?string => is_scalar($label) && '' !== trim((string) $label) ? trim((string) $label) : null,
             $labels
         ))));
+        $this->labelsText = '' === implode(' ', $this->labels) ? null : implode(' ', $this->labels);
 
         return $this;
+    }
+
+    public function getLabelsText(): ?string
+    {
+        return $this->labelsText;
     }
 
     public function getResponsibleTeam(): ?string

@@ -18,6 +18,12 @@ homepage:
         template: default/homepage.html.twig
         _locale: '%app.locale%'
 
+admin_index_no_locale:
+    path: /admin
+    controller: App\Controller\Admin\SigiHubController
+    defaults:
+        _locale: '%app.locale%'
+
 controllers:
     resource: routing.controllers
     prefix: /{_locale}

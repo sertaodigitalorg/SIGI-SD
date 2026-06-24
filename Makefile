@@ -42,6 +42,7 @@ help:
 	@echo "  make composer-install   Instala dependencias do Symfony"
 	@echo "  make migrate            Executa migrations do Symfony"
 	@echo "  make cache-clear        Limpa cache do Symfony"
+	@echo "  make sync-chatwoot      Importa conversas recentes do Chatwoot para o SIGI"
 
 setup:
 	@if [ ! -f .env ]; then cp .env.example .env; fi
@@ -176,3 +177,6 @@ migrate:
 
 cache-clear:
 	$(COMPOSE) exec $(ADMIN) php bin/console cache:clear
+
+sync-chatwoot:
+	$(COMPOSE) exec $(ADMIN) php bin/console sigi:chatwoot:sync --limit=50
