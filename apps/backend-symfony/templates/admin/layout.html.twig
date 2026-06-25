@@ -7,46 +7,48 @@
     {{ importmap(['app', 'admin']) }}
 {% endblock %}
 
+{% block body %}
+    <div id="main" class="w-100">
+        {{ include('default/_flash_messages.html.twig') }}
+
+        {% block main %}{% endblock %}
+    </div>
+{% endblock %}
+
 {% block header_navigation_links %}
     <li class="nav-item">
         <a class="nav-link {{ _route in ['admin_index', 'admin_sigi_hub'] ? 'active' }}" href="{{ path('admin_index') }}">
-            <twig:ux:icon name="tabler:home"/> Central SIGI
+            <twig:ux:icon name="tabler:home"/> Inicio
         </a>
     </li>
 
     <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle {{ _route in ['admin_dashboard_index', 'admin_attendance_dashboard', 'admin_attendance_index', 'admin_attendance_settings'] ? 'active' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <twig:ux:icon name="tabler:dashboard"/> Operacao
+        <a class="nav-link dropdown-toggle {{ _route starts with 'admin_attendance_' or _route == 'admin_dashboard_index' ? 'active' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <twig:ux:icon name="tabler:messages"/> Atendimento
         </a>
         <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ path('admin_attendance_index') }}"><twig:ux:icon name="tabler:list"/> Protocolos</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_attendance_dashboard') }}"><twig:ux:icon name="tabler:dashboard"/> Dashboard de atendimentos</a></li>
             <li><a class="dropdown-item" href="{{ path('admin_dashboard_index') }}"><twig:ux:icon name="tabler:dashboard"/> Dashboard geral</a></li>
-            <li><a class="dropdown-item" href="{{ path('admin_attendance_dashboard') }}"><twig:ux:icon name="tabler:messages"/> Dashboard de atendimentos</a></li>
-            <li><a class="dropdown-item" href="{{ path('admin_attendance_index') }}"><twig:ux:icon name="tabler:list"/> Protocolos e atendimentos</a></li>
-            <li><a class="dropdown-item" href="{{ path('admin_attendance_settings') }}"><twig:ux:icon name="tabler:settings"/> Configuracao de protocolo</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{{ path('admin_attendance_settings') }}"><twig:ux:icon name="tabler:settings"/> Configurar protocolos</a></li>
         </ul>
     </li>
 
     <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle {{ _route in ['organization_index', 'organization_new', 'organization_show', 'organization_edit', 'admin_organization_contact_index', 'admin_organization_contact_new', 'admin_organization_contact_interaction_index', 'admin_organization_contact_interaction_new'] ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <twig:ux:icon name="tabler:users-group"/> Organizacoes
+        <a class="nav-link dropdown-toggle {{ _route starts with 'admin_person_' or _route starts with 'admin_organization_' or _route starts with 'organization_' ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <twig:ux:icon name="tabler:users-group"/> CRM
         </a>
         <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{{ path('organization_index') }}"><twig:ux:icon name="tabler:user"/> Lista de organizacoes</a></li>
-            <li><a class="dropdown-item" href="{{ path('organization_new') }}"><twig:ux:icon name="tabler:user"/> Nova organizacao</a></li>
-            <li><a class="dropdown-item" href="{{ path('admin_organization_contact_index') }}"><twig:ux:icon name="tabler:user"/> Contatos institucionais</a></li>
-            <li><a class="dropdown-item" href="{{ path('admin_organization_contact_interaction_index') }}"><twig:ux:icon name="tabler:message"/> Interacoes institucionais</a></li>
-        </ul>
-    </li>
-
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle {{ _route starts with 'admin_person_' ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <twig:ux:icon name="tabler:user"/> Pessoas
-        </a>
-        <ul class="dropdown-menu">
+            <li><h6 class="dropdown-header">Pessoas</h6></li>
             <li><a class="dropdown-item" href="{{ path('admin_person_index') }}">Lista de pessoas</a></li>
-            <li><a class="dropdown-item" href="{{ path('admin_person_new') }}">Nova pessoa</a></li>
-            <li><a class="dropdown-item" href="{{ path('admin_person_contact_index') }}"><twig:ux:icon name="tabler:user"/> Contatos da pessoa</a></li>
-            <li><a class="dropdown-item" href="{{ path('admin_person_contact_interaction_index') }}"><twig:ux:icon name="tabler:message"/> Interacoes com pessoas</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_person_contact_index') }}">Contatos de pessoas</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_person_contact_interaction_index') }}">Interacoes com pessoas</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><h6 class="dropdown-header">Organizacoes</h6></li>
+            <li><a class="dropdown-item" href="{{ path('organization_index') }}">Lista de organizacoes</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_organization_contact_index') }}">Contatos institucionais</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_organization_contact_interaction_index') }}">Interacoes institucionais</a></li>
         </ul>
     </li>
 
@@ -55,7 +57,7 @@
             <twig:ux:icon name="tabler:messages"/> Chatwoot
         </a>
         <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{{ path('admin_chatwoot_account_index') }}"><twig:ux:icon name="tabler:settings"/> Contas Chatwoot</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_chatwoot_account_index') }}"><twig:ux:icon name="tabler:settings"/> Contas</a></li>
             <li><a class="dropdown-item" href="{{ path('admin_chatwoot_event_index') }}"><twig:ux:icon name="tabler:messages"/> Eventos recebidos</a></li>
             <li><a class="dropdown-item" href="{{ path('admin_attendance_index') }}"><twig:ux:icon name="tabler:list"/> Protocolos importados</a></li>
         </ul>
@@ -63,12 +65,12 @@
 
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle {{ _route starts with 'admin_post_' or _route == 'blog_index' ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <twig:ux:icon name="tabler:list"/> Conteudo
+            <twig:ux:icon name="tabler:settings"/> Sistema
         </a>
         <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="{{ path('blog_index') }}"><twig:ux:icon name="tabler:home"/> Blog publico</a></li>
-            <li><a class="dropdown-item" href="{{ path('admin_post_index') }}"><twig:ux:icon name="tabler:lock"/> Posts</a></li>
-            <li><a class="dropdown-item" href="{{ path('admin_post_new') }}"><twig:ux:icon name="tabler:lock"/> Novo post</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_post_index') }}"><twig:ux:icon name="tabler:list"/> Posts</a></li>
+            <li><a class="dropdown-item" href="{{ path('admin_post_new') }}"><twig:ux:icon name="tabler:pencil"/> Novo post</a></li>
         </ul>
     </li>
 {% endblock %}

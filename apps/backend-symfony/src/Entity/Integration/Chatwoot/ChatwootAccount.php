@@ -26,6 +26,12 @@ class ChatwootAccount implements \Stringable
     #[Assert\Url(message: 'Informe uma URL valida para o Chatwoot.')]
     private ?string $baseUrl = null;
 
+    #[ORM\Column(length: 64, nullable: true)]
+    private ?string $accountId = null;
+
+    #[ORM\Column(length: 64, nullable: true)]
+    private ?string $inboxId = null;
+
     #[ORM\Column(length: 512)]
     #[Assert\NotBlank(message: 'Informe o token de API do Chatwoot.')]
     private ?string $apiToken = null;
@@ -81,6 +87,30 @@ class ChatwootAccount implements \Stringable
     public function setBaseUrl(string $baseUrl): static
     {
         $this->baseUrl = rtrim(trim($baseUrl), '/');
+
+        return $this;
+    }
+
+    public function getAccountId(): ?string
+    {
+        return $this->accountId;
+    }
+
+    public function setAccountId(?string $accountId): static
+    {
+        $this->accountId = $this->normalizeNullableString($accountId);
+
+        return $this;
+    }
+
+    public function getInboxId(): ?string
+    {
+        return $this->inboxId;
+    }
+
+    public function setInboxId(?string $inboxId): static
+    {
+        $this->inboxId = $this->normalizeNullableString($inboxId);
 
         return $this;
     }
@@ -175,5 +205,16 @@ class ChatwootAccount implements \Stringable
     public function __toString(): string
     {
         return (string) $this->name;
+    }
+
+    private function normalizeNullableString(?string $value): ?string
+    {
+        if (null === $value) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        return '' === $value ? null : $value;
     }
 }

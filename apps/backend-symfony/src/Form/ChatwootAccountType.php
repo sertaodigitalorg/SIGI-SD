@@ -25,6 +25,16 @@ final class ChatwootAccountType extends AbstractType
                 'label' => 'URL base',
                 'help' => 'Exemplo: https://chat.sigi.localhost',
             ])
+            ->add('accountId', TextType::class, [
+                'label' => 'ID da conta no Chatwoot',
+                'required' => false,
+                'help' => 'Numero que aparece na URL do Chatwoot: /app/accounts/{id}.',
+            ])
+            ->add('inboxId', TextType::class, [
+                'label' => 'Inbox ID opcional',
+                'required' => false,
+                'help' => 'Use apenas se quiser limitar a sincronizacao a uma inbox.',
+            ])
             ->add('apiToken', PasswordType::class, [
                 'label' => 'API token',
                 'required' => $requireSecrets,

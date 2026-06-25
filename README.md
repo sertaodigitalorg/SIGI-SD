@@ -158,13 +158,16 @@ php bin/console cache:clear
 
 ### Sincronizacao Chatwoot e protocolos
 
-Configure no `.env`:
+Configure a conta ativa em `Admin > Chatwoot > Contas`:
+
+- URL base do Chatwoot, por exemplo `http://chat.sigi.localhost`.
+- ID da conta no Chatwoot, o numero que aparece em `/app/accounts/{id}`.
+- API token do Chatwoot.
+- Inbox ID, quando quiser restringir a sincronizacao a uma caixa especifica.
+
+As variaveis abaixo alimentam os links publicos do Hub SIGI:
 
 ```env
-CHATWOOT_BASE_URL=http://chat.sigi.localhost
-CHATWOOT_ACCOUNT_ID=1
-CHATWOOT_API_TOKEN=token-do-chatwoot
-CHATWOOT_INBOX_ID=
 SIGI_CHATWOOT_URL=http://chat.sigi.localhost
 SIGI_BOTPRESS_URL=http://bot.sigi.localhost
 SIGI_TYPEBOT_URL=
@@ -172,6 +175,8 @@ SIGI_PORTAINER_URL=http://portainer.sigi.localhost
 SIGI_BI_URL=
 SIGI_DOCS_URL=
 ```
+
+O token do Chatwoot deve ficar salvo somente na conta configurada no admin. O backend ainda aceita variaveis `CHATWOOT_*` como fallback operacional, mas elas nao sao necessarias quando a conta ativa esta cadastrada.
 
 Rode a sincronizacao manual:
 

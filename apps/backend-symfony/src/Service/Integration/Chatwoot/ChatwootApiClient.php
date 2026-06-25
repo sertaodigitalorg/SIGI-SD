@@ -60,8 +60,8 @@ final class ChatwootApiClient
             'status' => $status,
         ];
 
-        if (null !== $this->runtimeConfig->getInboxId()) {
-            $query['inbox_id'] = $this->runtimeConfig->getInboxId();
+        if (null !== $this->runtimeConfig->getInboxId($account)) {
+            $query['inbox_id'] = $this->runtimeConfig->getInboxId($account);
         }
 
         $payload = $this->request($account, 'GET', 'conversations', [
@@ -126,11 +126,11 @@ final class ChatwootApiClient
     private function request(?ChatwootAccount $account, string $method, string $path, array $options = []): array
     {
         $baseUrl = $this->runtimeConfig->getBaseUrl($account);
-        $accountId = $this->runtimeConfig->getAccountId();
+        $accountId = $this->runtimeConfig->getAccountId($account);
         $apiToken = $this->runtimeConfig->getApiToken($account);
 
         if (null === $baseUrl || null === $accountId || null === $apiToken) {
-            throw new \RuntimeException('Configure CHATWOOT_BASE_URL, CHATWOOT_ACCOUNT_ID e CHATWOOT_API_TOKEN para usar a API do Chatwoot.');
+            throw new \RuntimeException('Configure URL base, ID da conta e API token na conta Chatwoot ativa do SIGI.');
         }
 
         $url = sprintf('%s/api/v1/accounts/%s/%s', $baseUrl, rawurlencode($accountId), ltrim($path, '/'));

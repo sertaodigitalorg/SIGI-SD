@@ -8,7 +8,10 @@
             <h1 class="mb-1">Integração Chatwoot</h1>
             <p class="text-body-secondary mb-0">Contas Chatwoot configuradas para receber eventos no SIGI-SD.</p>
         </div>
-        <a class="btn btn-primary" href="{{ path('admin_chatwoot_account_new') }}">Nova conta</a>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary" href="{{ path('admin_attendance_index') }}">Ver protocolos</a>
+            <a class="btn btn-primary" href="{{ path('admin_chatwoot_account_new') }}">Nova conta</a>
+        </div>
     </div>
 
     <h2 class="h4 mb-3">Contas Chatwoot</h2>
@@ -22,6 +25,7 @@
                     <tr>
                         <th>Nome</th>
                         <th>URL base</th>
+                        <th>Conta Chatwoot</th>
                         <th>Status</th>
                         <th>Atualizado em</th>
                         <th class="text-end">Ações</th>
@@ -38,6 +42,12 @@
                             </td>
                             <td>{{ account.baseUrl }}</td>
                             <td>
+                                {{ account.accountId ?: '-' }}
+                                {% if account.inboxId %}
+                                    <div class="text-body-secondary small">Inbox {{ account.inboxId }}</div>
+                                {% endif %}
+                            </td>
+                            <td>
                                 <span class="badge {{ account.active ? 'text-bg-success' : 'text-bg-secondary' }}">
                                     {{ account.active ? 'Ativa' : 'Inativa' }}
                                 </span>
@@ -48,6 +58,10 @@
                                     <form method="post" action="{{ path('admin_chatwoot_account_test', {'id': account.id}) }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token('test_chatwoot_account' ~ account.id) }}">
                                         <button class="btn btn-sm btn-outline-primary">Testar conexão</button>
+                                    </form>
+                                    <form method="post" action="{{ path('admin_chatwoot_account_sync', {'id': account.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('sync_chatwoot_account' ~ account.id) }}">
+                                        <button class="btn btn-sm btn-success">Sincronizar</button>
                                     </form>
                                     <form method="post" action="{{ path('admin_chatwoot_account_toggle', {'id': account.id}) }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token('toggle_chatwoot_account' ~ account.id) }}">

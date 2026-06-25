@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Form\ChatwootAccountType;
 use App\Repository\Integration\Chatwoot\ChatwootAccountRepository;
 use App\Service\Integration\Chatwoot\ChatwootApiClient;
+use App\Service\Integration\Chatwoot\ChatwootConversationSyncService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -94,6 +95,35 @@ final class ChatwootAccountController extends AbstractController
             $this->addFlash('success', 'Conexao com Chatwoot validada com sucesso.');
         } else {
             $this->addFlash('danger', 'Nao foi possivel validar a conexao com Chatwoot.');
+        }
+
+        return $this->redirectToRoute('admin_chatwoot_account_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/sync', name: 'admin_chatwoot_account_sync', methods: ['POST'])]
+    public function sync(
+        Request $request,
+        ChatwootAccount $account,
+        ChatwootApiClient $apiClient,
+        ChatwootConversationSyncService $syncService,
+    ): Response {
+        if (!$this->isCsrfTokenValid('sync_chatwoot_account'.$account->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('warning', 'Nao foi possivel validar a solicitacao.');
+
+            return $this->redirectToRoute('admin_chatwoot_account_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        try {
+            $synced = 0;
+            foreach ($apiClient->getRecentConversations($account, 50, 'all') as $conversation) {
+                if (null !== $syncService->syncPayload($conversation, $account)) {
+                    ++$synced;
+                }
+            }
+
+            $this->addFlash('success', sprintf('%d conversa(s) sincronizada(s) com protocolos SIGI.', $synced));
+        } catch (\Throwable $exception) {
+            $this->addFlash('danger', 'Falha ao sincronizar Chatwoot: '.$exception->getMessage());
         }
 
         return $this->redirectToRoute('admin_chatwoot_account_index', [], Response::HTTP_SEE_OTHER);

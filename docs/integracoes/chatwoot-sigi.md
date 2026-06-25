@@ -1257,13 +1257,20 @@ Exemplo:
 20260624000001
 ```
 
+### Configuracao da conta Chatwoot
+
+Configure a conta ativa em `Admin > Chatwoot > Contas`:
+
+- URL base do Chatwoot, por exemplo `http://chat.sigi.localhost`.
+- ID da conta no Chatwoot, o numero que aparece em `/app/accounts/{id}`.
+- API token do Chatwoot.
+- Inbox ID, quando quiser restringir a sincronizacao a uma caixa especifica.
+
+O token do Chatwoot fica salvo somente no backend, na conta configurada no admin. O frontend usa apenas URLs publicas de navegacao.
+
 ### Variaveis de ambiente
 
 ```env
-CHATWOOT_BASE_URL=http://chat.sigi.localhost
-CHATWOOT_ACCOUNT_ID=1
-CHATWOOT_API_TOKEN=token-do-chatwoot
-CHATWOOT_INBOX_ID=
 SIGI_CHATWOOT_URL=http://chat.sigi.localhost
 SIGI_BOTPRESS_URL=http://bot.sigi.localhost
 SIGI_TYPEBOT_URL=
@@ -1272,7 +1279,7 @@ SIGI_BI_URL=
 SIGI_DOCS_URL=
 ```
 
-Tokens devem ficar somente no backend. O frontend usa apenas URLs publicas de navegacao.
+As variaveis `SIGI_*` alimentam os links rapidos do Hub. As variaveis `CHATWOOT_*` continuam aceitas como fallback operacional do backend, mas nao sao necessarias quando a conta ativa esta cadastrada no admin.
 
 ### Sincronizacao
 
@@ -1309,7 +1316,7 @@ A coluna `protocol_note_sent` evita duplicidade.
 
 ### Validacao
 
-1. Configure `CHATWOOT_BASE_URL`, `CHATWOOT_ACCOUNT_ID` e `CHATWOOT_API_TOKEN`.
+1. Configure a conta ativa em `Admin > Chatwoot > Contas`, incluindo URL base, ID da conta e API token.
 2. Execute `php bin/console doctrine:migrations:migrate`.
 3. Rode `php bin/console sigi:chatwoot:sync --limit=10`.
 4. Abra `/admin/atendimentos`.
