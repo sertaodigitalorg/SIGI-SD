@@ -18,4 +18,19 @@ class PersonRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Person::class);
     }
+
+    public function findOneByChatwootContactId(string $chatwootContactId): ?Person
+    {
+        return $this->findOneBy(['chatwootContactId' => $chatwootContactId]);
+    }
+
+    public function findOneByPrimaryEmail(string $email): ?Person
+    {
+        return $this->findOneBy(['primaryEmail' => mb_strtolower(trim($email))]);
+    }
+
+    public function findOneByPrimaryPhone(string $phone): ?Person
+    {
+        return $this->findOneBy(['primaryPhone' => trim($phone)]);
+    }
 }

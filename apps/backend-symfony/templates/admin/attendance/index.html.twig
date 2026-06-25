@@ -78,6 +78,7 @@
                         <th>Protocolo</th>
                         <th>Assunto</th>
                         <th>Contato</th>
+                        <th>Pessoa SIGI</th>
                         <th>Canal</th>
                         <th>Status</th>
                         <th>Etiquetas</th>
@@ -85,6 +86,7 @@
                         <th>Agente</th>
                         <th>Entrada</th>
                         <th>Atualizacao</th>
+                        <th>Mensagem</th>
                         <th class="text-end">Acoes</th>
                     </tr>
                 </thead>
@@ -97,6 +99,14 @@
                                 {{ protocol.contactName ?: '-' }}
                                 {% if protocol.contactHandle %}
                                     <div class="small text-body-secondary">{{ protocol.contactHandle }}</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if protocol.person %}
+                                    <a href="{{ path('admin_person_show', {'id': protocol.person.id}) }}">{{ protocol.person.fullName }}</a>
+                                    <div class="small text-body-secondary">{{ protocol.person.personType }}</div>
+                                {% else %}
+                                    -
                                 {% endif %}
                             </td>
                             <td>{{ protocol.sourceChannel ?: '-' }}</td>
@@ -112,6 +122,13 @@
                             <td>{{ protocol.responsibleAgent ?: '-' }}</td>
                             <td>{{ protocol.createdAt ? protocol.createdAt|date('d/m/Y H:i') : '-' }}</td>
                             <td>{{ protocol.updatedAt ? protocol.updatedAt|date('d/m/Y H:i') : '-' }}</td>
+                            <td>
+                                {% if protocol.customerProtocolMessageSent %}
+                                    <span class="badge text-bg-success">Enviada</span>
+                                {% else %}
+                                    <span class="badge text-bg-secondary">Pendente</span>
+                                {% endif %}
+                            </td>
                             <td class="text-end">
                                 {% set chatwootUrl = chatwootRuntimeConfig.conversationUrl(protocol.chatwootConversationId) %}
                                 {% if chatwootUrl %}
@@ -122,7 +139,7 @@
                             </td>
                         </tr>
                     {% else %}
-                        <tr><td colspan="11" class="text-center text-body-secondary">Nenhum atendimento sincronizado.</td></tr>
+                        <tr><td colspan="13" class="text-center text-body-secondary">Nenhum atendimento sincronizado.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>

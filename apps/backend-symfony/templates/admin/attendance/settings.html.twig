@@ -20,6 +20,17 @@
                 </select>
             </div>
 
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" id="send_public_protocol_message" name="send_public_protocol_message" type="checkbox" value="1" {{ settings.sendPublicProtocolMessage ? 'checked' }}>
+                <label class="form-check-label" for="send_public_protocol_message">Enviar mensagem publica ao usuario com o protocolo</label>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="public_protocol_message_template">Texto da mensagem ao usuario</label>
+                <textarea class="form-control" id="public_protocol_message_template" name="public_protocol_message_template" rows="6">{{ settings.publicProtocolMessageTemplate }}</textarea>
+                <div class="form-text">Variaveis disponiveis: {protocol}, {nome}, {assunto}, {canal}</div>
+            </div>
+
             <button class="btn btn-primary" type="submit">
                 <twig:ux:icon name="tabler:device-floppy"/> Salvar configuracao
             </button>

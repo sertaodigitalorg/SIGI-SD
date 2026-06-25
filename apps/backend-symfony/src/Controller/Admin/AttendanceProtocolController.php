@@ -74,6 +74,8 @@ final class AttendanceProtocolController extends AbstractController
             }
 
             $settings->setSequenceScope((string) $request->request->get('sequence_scope', ProtocolSettings::SCOPE_DAILY));
+            $settings->setSendPublicProtocolMessage($request->request->has('send_public_protocol_message'));
+            $settings->setPublicProtocolMessageTemplate((string) $request->request->get('public_protocol_message_template', ProtocolSettings::DEFAULT_PUBLIC_MESSAGE_TEMPLATE));
             $settings->touch();
             $entityManager->persist($settings);
             $entityManager->flush();

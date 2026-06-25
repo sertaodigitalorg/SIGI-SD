@@ -81,6 +81,16 @@ class AttendanceProtocol
     private ?\DateTimeImmutable $protocolNoteSentAt = null;
 
     #[ORM\Column]
+    private bool $customerProtocolMessageSent = false;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $customerProtocolMessageSentAt = null;
+
+    #[ORM\ManyToOne(targetEntity: Person::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Person $person = null;
+
+    #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
@@ -313,6 +323,36 @@ class AttendanceProtocol
     public function getProtocolNoteSentAt(): ?\DateTimeImmutable
     {
         return $this->protocolNoteSentAt;
+    }
+
+    public function isCustomerProtocolMessageSent(): bool
+    {
+        return $this->customerProtocolMessageSent;
+    }
+
+    public function markCustomerProtocolMessageSent(): static
+    {
+        $this->customerProtocolMessageSent = true;
+        $this->customerProtocolMessageSentAt = new \DateTimeImmutable();
+
+        return $this;
+    }
+
+    public function getCustomerProtocolMessageSentAt(): ?\DateTimeImmutable
+    {
+        return $this->customerProtocolMessageSentAt;
+    }
+
+    public function getPerson(): ?Person
+    {
+        return $this->person;
+    }
+
+    public function setPerson(?Person $person): static
+    {
+        $this->person = $person;
+
+        return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable

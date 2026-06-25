@@ -5,6 +5,7 @@ namespace App\Service\Integration\Chatwoot;
 use App\Entity\AttendanceProtocol;
 use App\Entity\Integration\Chatwoot\ChatwootAccount;
 use App\Repository\AttendanceProtocolRepository;
+use App\Repository\ProtocolSettingsRepository;
 use App\Service\ProtocolNumberGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -16,6 +17,8 @@ final readonly class ChatwootConversationSyncService
         private ChatwootConversationNormalizer $normalizer,
         private ProtocolNumberGenerator $protocolNumberGenerator,
         private ChatwootApiClient $apiClient,
+        private ChatwootContactSyncService $contactSyncService,
+        private ProtocolSettingsRepository $settingsRepository,
         private EntityManagerInterface $entityManager,
         private LoggerInterface $logger,
     ) {
@@ -55,6 +58,11 @@ final readonly class ChatwootConversationSyncService
             $isNew = true;
         }
 
+        $person = $this->contactSyncService->sync($data);
+        if (null !== $person) {
+            $protocol->setPerson($person);
+        }
+
         $protocol->applyChatwootData(
             $data->contactId,
             $data->contactName,
@@ -87,6 +95,23 @@ final readonly class ChatwootConversationSyncService
             }
         }
 
+        $settings = $this->settingsRepository->getOrCreate();
+        if ($settings->shouldSendPublicProtocolMessage() && !$protocol->isCustomerProtocolMessageSent()) {
+            try {
+                $this->apiClient->createPublicMessage(
+                    $account,
+                    $data->conversationId,
+                    $this->renderPublicProtocolMessage($settings->getPublicProtocolMessageTemplate(), $protocol, $data),
+                );
+                $protocol->markCustomerProtocolMessageSent();
+            } catch (\Throwable $exception) {
+                $this->logger->warning('Nao foi possivel enviar mensagem publica de protocolo ao Chatwoot.', [
+                    'conversation_id' => $data->conversationId,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        }
+
         $this->entityManager->flush();
         $this->logger->info($isNew ? 'Protocolo SIGI criado.' : 'Protocolo SIGI atualizado.', [
             'protocol' => $protocol->getProtocolCode(),
@@ -94,5 +119,15 @@ final readonly class ChatwootConversationSyncService
         ]);
 
         return $protocol;
+    }
+
+    private function renderPublicProtocolMessage(string $template, AttendanceProtocol $protocol, ChatwootConversationData $data): string
+    {
+        return strtr($template, [
+            '{protocol}' => (string) $protocol->getProtocolCode(),
+            '{nome}' => (string) ($data->contactName ?? ''),
+            '{assunto}' => (string) ($data->subject ?? ''),
+            '{canal}' => (string) ($data->sourceChannel ?? ''),
+        ]);
     }
 }

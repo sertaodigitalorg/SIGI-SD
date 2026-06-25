@@ -7,6 +7,7 @@ use App\Entity\Person;
 use App\Entity\Role;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -27,6 +28,37 @@ class PersonType extends AbstractType
                 'attr' => [
                     'placeholder' => '000.000.000-00',
                 ],
+            ])
+            ->add('personType', ChoiceType::class, [
+                'required' => true,
+                'label' => 'Tipo de pessoa',
+                'choices' => [
+                    'Nao identificado' => Person::TYPE_UNKNOWN,
+                    'Pessoa fisica' => Person::TYPE_INDIVIDUAL,
+                    'Pessoa juridica' => Person::TYPE_ORGANIZATION,
+                ],
+            ])
+            ->add('documentType', ChoiceType::class, [
+                'required' => false,
+                'label' => 'Tipo do documento',
+                'placeholder' => 'Nao informado',
+                'choices' => [
+                    'CPF' => 'CPF',
+                    'CNPJ' => 'CNPJ',
+                    'Outro' => 'OUTRO',
+                ],
+            ])
+            ->add('documentNumber', TextType::class, [
+                'required' => false,
+                'label' => 'Documento principal',
+            ])
+            ->add('primaryEmail', TextType::class, [
+                'required' => false,
+                'label' => 'E-mail principal',
+            ])
+            ->add('primaryPhone', TextType::class, [
+                'required' => false,
+                'label' => 'Telefone principal',
             ])
             ->add('organization', EntityType::class, [
                 'class' => Organization::class,

@@ -149,6 +149,19 @@ final class ChatwootApiClient
         return true;
     }
 
+    public function createPublicMessage(?ChatwootAccount $account, string $conversationId, string $content): bool
+    {
+        $this->request($account, 'POST', sprintf('conversations/%s/messages', rawurlencode($conversationId)), [
+            'json' => [
+                'content' => $content,
+                'message_type' => 'outgoing',
+                'private' => false,
+            ],
+        ]);
+
+        return true;
+    }
+
     /**
      * @param array<string, mixed> $options
      *

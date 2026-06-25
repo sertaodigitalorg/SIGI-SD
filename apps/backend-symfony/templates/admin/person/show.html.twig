@@ -22,8 +22,18 @@
                     <dl class="row mb-0">
                         <dt class="col-sm-4">Nome Completo</dt>
                         <dd class="col-sm-8">{{ person.fullName ?: 'Não informado' }}</dd>
+                        <dt class="col-sm-4">Tipo</dt>
+                        <dd class="col-sm-8">{{ person.personType ?: 'Não informado' }}</dd>
                         <dt class="col-sm-4">CPF</dt>
                         <dd class="col-sm-8">{{ person.cpf ?: 'Não informado' }}</dd>
+                        <dt class="col-sm-4">Documento</dt>
+                        <dd class="col-sm-8">{{ person.documentType ? person.documentType ~ ': ' ~ person.documentNumber : 'Não informado' }}</dd>
+                        <dt class="col-sm-4">E-mail</dt>
+                        <dd class="col-sm-8">{{ person.primaryEmail ?: 'Não informado' }}</dd>
+                        <dt class="col-sm-4">Telefone</dt>
+                        <dd class="col-sm-8">{{ person.primaryPhone ?: 'Não informado' }}</dd>
+                        <dt class="col-sm-4">Origem</dt>
+                        <dd class="col-sm-8">{{ person.source ?: 'Não informado' }}</dd>
                     </dl>
                 </div>
             </div>
