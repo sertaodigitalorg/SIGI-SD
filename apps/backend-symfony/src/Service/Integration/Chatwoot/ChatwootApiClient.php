@@ -16,20 +16,10 @@ final class ChatwootApiClient
 
     public function testConnection(ChatwootAccount $account): bool
     {
-        $baseUrl = $this->runtimeConfig->getBaseUrl($account);
-        if (null === $baseUrl || false === filter_var($baseUrl, FILTER_VALIDATE_URL)) {
-            return false;
-        }
-
         try {
-            $response = $this->httpClient->request('GET', $baseUrl, [
-                'headers' => [
-                    'X-Access-Token' => $this->runtimeConfig->getApiToken($account) ?? '',
-                ],
-                'timeout' => 5,
-            ]);
+            $this->getInboxes($account);
 
-            return $response->getStatusCode() < 500;
+            return true;
         } catch (\Throwable) {
             return false;
         }
@@ -125,7 +115,7 @@ final class ChatwootApiClient
      */
     private function request(?ChatwootAccount $account, string $method, string $path, array $options = []): array
     {
-        $baseUrl = $this->runtimeConfig->getBaseUrl($account);
+        $baseUrl = $this->runtimeConfig->getApiBaseUrl($account);
         $accountId = $this->runtimeConfig->getAccountId($account);
         $apiToken = $this->runtimeConfig->getApiToken($account);
 
@@ -134,6 +124,7 @@ final class ChatwootApiClient
         }
 
         $url = sprintf('%s/api/v1/accounts/%s/%s', $baseUrl, rawurlencode($accountId), ltrim($path, '/'));
+        $options['headers']['api_access_token'] = $apiToken;
         $options['headers']['X-Access-Token'] = $apiToken;
         $options['headers']['Accept'] = 'application/json';
         $options['timeout'] = $options['timeout'] ?? 15;

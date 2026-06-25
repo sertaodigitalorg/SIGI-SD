@@ -168,6 +168,7 @@ Configure a conta ativa em `Admin > Chatwoot > Contas`:
 As variaveis abaixo alimentam os links publicos do Hub SIGI:
 
 ```env
+CHATWOOT_INTERNAL_BASE_URL=http://chatwoot:3000
 SIGI_CHATWOOT_URL=http://chat.sigi.localhost
 SIGI_BOTPRESS_URL=http://bot.sigi.localhost
 SIGI_TYPEBOT_URL=
@@ -177,6 +178,7 @@ SIGI_DOCS_URL=
 ```
 
 O token do Chatwoot deve ficar salvo somente na conta configurada no admin. O backend ainda aceita variaveis `CHATWOOT_*` como fallback operacional, mas elas nao sao necessarias quando a conta ativa esta cadastrada.
+Use `CHATWOOT_INTERNAL_BASE_URL` para a comunicacao interna entre containers; mantenha a URL base da conta e `SIGI_CHATWOOT_URL` como o endereco publico usado no navegador.
 
 Rode a sincronizacao manual:
 

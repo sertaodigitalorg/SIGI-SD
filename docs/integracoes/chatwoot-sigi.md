@@ -1271,6 +1271,7 @@ O token do Chatwoot fica salvo somente no backend, na conta configurada no admin
 ### Variaveis de ambiente
 
 ```env
+CHATWOOT_INTERNAL_BASE_URL=http://chatwoot:3000
 SIGI_CHATWOOT_URL=http://chat.sigi.localhost
 SIGI_BOTPRESS_URL=http://bot.sigi.localhost
 SIGI_TYPEBOT_URL=
@@ -1279,7 +1280,7 @@ SIGI_BI_URL=
 SIGI_DOCS_URL=
 ```
 
-As variaveis `SIGI_*` alimentam os links rapidos do Hub. As variaveis `CHATWOOT_*` continuam aceitas como fallback operacional do backend, mas nao sao necessarias quando a conta ativa esta cadastrada no admin.
+As variaveis `SIGI_*` alimentam os links rapidos do Hub. `CHATWOOT_INTERNAL_BASE_URL` define a URL interna usada pelo backend no Docker para chamar a API do Chatwoot, normalmente `http://chatwoot:3000`. As demais variaveis `CHATWOOT_*` continuam aceitas como fallback operacional do backend, mas nao sao necessarias quando a conta ativa esta cadastrada no admin.
 
 ### Sincronizacao
 

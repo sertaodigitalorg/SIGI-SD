@@ -21,6 +21,13 @@ final class ChatwootRuntimeConfig
         return null === $baseUrl ? null : rtrim($baseUrl, '/');
     }
 
+    public function getApiBaseUrl(?ChatwootAccount $account = null): ?string
+    {
+        $baseUrl = $this->readEnv('CHATWOOT_INTERNAL_BASE_URL') ?? $this->getBaseUrl($account);
+
+        return null === $baseUrl ? null : rtrim($baseUrl, '/');
+    }
+
     public function getAccountId(?ChatwootAccount $account = null): ?string
     {
         $account ??= $this->getPrimaryAccount();
