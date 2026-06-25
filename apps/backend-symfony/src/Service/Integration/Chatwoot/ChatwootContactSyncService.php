@@ -22,17 +22,18 @@ final readonly class ChatwootContactSyncService
 
     public function sync(ChatwootConversationData $data): ?Person
     {
-        if (null === $data->contactId && null === $data->contactName && null === $data->contactHandle) {
+        if (null === $data->contactId && null === $data->contactName && null === $data->contactHandle && null === $data->phone && null === $data->username) {
             return null;
         }
 
-        $email = $this->extractEmail($data->contactHandle);
-        $phone = $this->extractPhone($data->contactHandle);
-        $person = $this->findPerson($data->contactId, $email, $phone);
+        $email = $data->email ?? $this->extractEmail($data->contactHandle);
+        $phone = $data->phone ?? $this->extractPhone($data->contactHandle);
+        $username = $this->normalizeUsername($data->username);
+        $person = $this->findPerson($data->contactId, $email, $phone, $username);
 
         if (null === $person) {
             $person = (new Person())
-                ->setFullName($data->contactName ?: ($email ?? $phone ?? 'Contato Chatwoot'))
+                ->setFullName($data->contactName ?: ($email ?? $phone ?? $username ?? 'Contato Chatwoot'))
                 ->setPersonType(Person::TYPE_UNKNOWN)
                 ->setSource('chatwoot');
 
@@ -58,11 +59,13 @@ final readonly class ChatwootContactSyncService
         $person->setUpdatedAt(new \DateTimeImmutable());
         $this->syncPersonContact($person, 'E-mail', $email);
         $this->syncPersonContact($person, 'Telefone', $phone);
+        $this->syncPersonContact($person, 'WhatsApp', ChatwootChannelMapper::CHANNEL_WHATSAPP === $data->channel ? $phone : null);
+        $this->syncPersonContact($person, 'Instagram', ChatwootChannelMapper::CHANNEL_INSTAGRAM === $data->channel ? $username : null);
 
         return $person;
     }
 
-    private function findPerson(?string $chatwootContactId, ?string $email, ?string $phone): ?Person
+    private function findPerson(?string $chatwootContactId, ?string $email, ?string $phone, ?string $username): ?Person
     {
         if (null !== $chatwootContactId) {
             $person = $this->personRepository->findOneByChatwootContactId($chatwootContactId);
@@ -78,7 +81,18 @@ final readonly class ChatwootContactSyncService
             }
         }
 
-        return null === $phone ? null : $this->personRepository->findOneByPrimaryPhone($phone);
+        if (null !== $phone) {
+            $person = $this->personRepository->findOneByPrimaryPhone($phone);
+            if (null !== $person) {
+                return $person;
+            }
+        }
+
+        if (null !== $username) {
+            return $this->personContactRepository->findOneByValue($username)?->getPerson();
+        }
+
+        return null;
     }
 
     private function syncPersonContact(Person $person, string $contactTypeName, ?string $value): void
@@ -128,5 +142,19 @@ final readonly class ChatwootContactSyncService
         $digits = preg_replace('/\D+/', '', $value);
 
         return is_string($digits) && strlen($digits) >= 8 ? $digits : null;
+    }
+
+    private function normalizeUsername(?string $value): ?string
+    {
+        if (null === $value) {
+            return null;
+        }
+
+        $value = trim($value);
+        if ('' === $value || false !== filter_var($value, FILTER_VALIDATE_EMAIL) || preg_match('/^\+?[\d\s().-]+$/', $value)) {
+            return null;
+        }
+
+        return ltrim($value, '@');
     }
 }

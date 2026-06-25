@@ -19,6 +19,7 @@ final readonly class ChatwootConversationSyncService
     public function __construct(
         private AttendanceProtocolRepository $protocolRepository,
         private ChatwootConversationNormalizer $normalizer,
+        private ChatwootChannelMapper $channelMapper,
         private ProtocolNumberGenerator $protocolNumberGenerator,
         private ChatwootApiClient $apiClient,
         private ChatwootContactSyncService $contactSyncService,
@@ -107,10 +108,11 @@ final readonly class ChatwootConversationSyncService
         $settings = $this->settingsRepository->getOrCreate();
         if ($settings->shouldSendPublicProtocolMessage() && !$protocol->isCustomerProtocolMessageSent()) {
             try {
+                $messageTemplate = $this->channelMapper->protocolMessage($data->channel, $settings->getPublicProtocolMessageTemplate());
                 $this->apiClient->createPublicMessage(
                     $account,
                     $data->conversationId,
-                    $this->renderPublicProtocolMessage($settings->getPublicProtocolMessageTemplate(), $protocol, $data),
+                    $this->renderPublicProtocolMessage($messageTemplate, $protocol, $data),
                 );
                 $protocol->markCustomerProtocolMessageSent();
                 $reservedLabels[] = self::LABEL_PROTOCOL_MESSAGE_SENT;
@@ -126,12 +128,19 @@ final readonly class ChatwootConversationSyncService
             $reservedLabels[] = self::LABEL_PROTOCOL_MESSAGE_SENT;
         }
 
+        $reservedLabels = array_values(array_unique(array_merge(
+            $reservedLabels,
+            $this->channelMapper->defaultLabels($data->channel, $protocol->isCustomerProtocolMessageSent()),
+        )));
+
         $this->syncOperationalLabels($protocol, $account, $data, $reservedLabels);
 
         $this->entityManager->flush();
         $this->logger->info($isNew ? 'Protocolo SIGI criado.' : 'Protocolo SIGI atualizado.', [
             'protocol' => $protocol->getProtocolCode(),
             'conversation_id' => $data->conversationId,
+            'channel' => $data->channel,
+            'contact_id' => $data->contactId,
         ]);
 
         return $protocol;

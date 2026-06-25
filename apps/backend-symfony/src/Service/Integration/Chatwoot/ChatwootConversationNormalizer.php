@@ -4,6 +4,10 @@ namespace App\Service\Integration\Chatwoot;
 
 final class ChatwootConversationNormalizer
 {
+    public function __construct(private readonly ChatwootChannelMapper $channelMapper)
+    {
+    }
+
     /**
      * @param array<string, mixed> $payload
      */
@@ -21,25 +25,64 @@ final class ChatwootConversationNormalizer
         $team = $this->arrayValue($conversation, ['team', 'meta.team']) ?? [];
         $inbox = $this->arrayValue($conversation, ['inbox']) ?? [];
         $customAttributes = $this->arrayValue($conversation, ['custom_attributes']) ?? [];
+        $additionalAttributes = $this->arrayValue($conversation, ['additional_attributes']) ?? [];
+        $message = $this->arrayValue($payload, ['message'])
+            ?? $this->arrayValue($conversation, ['messages.0'])
+            ?? [];
+        $email = $this->firstString([
+            $this->stringValue($contact, ['email']),
+            $this->stringValue($additionalAttributes, ['mail_from', 'email']),
+        ]);
+        $phone = $this->firstString([
+            $this->stringValue($contact, ['phone_number']),
+            $this->stringValue($contact, ['phone']),
+            $this->stringValue($additionalAttributes, ['phone_number', 'phone', 'whatsapp_number']),
+        ]);
+        $username = $this->firstString([
+            $this->stringValue($contact, ['instagram_username', 'username']),
+            $this->stringValue($additionalAttributes, ['instagram_username', 'username']),
+            $this->stringValue($contact, ['identifier']),
+        ]);
+        $sourceId = $this->firstString([
+            $this->stringValue($conversation, ['source_id']),
+            $this->stringValue($contact, ['source_id', 'identifier']),
+            $this->stringValue($additionalAttributes, ['instagram_id', 'source_id']),
+        ]);
+        $sourceChannel = $this->firstString([
+            $this->stringValue($inbox, ['name']),
+            $this->stringValue($conversation, ['inbox.name', 'inbox_name', 'channel']),
+            $this->stringValue($inbox, ['channel_type']),
+            $this->stringValue($conversation, ['source_id', 'inbox_id']),
+        ]);
+        $channel = $this->channelMapper->resolve([
+            $this->stringValue($inbox, ['channel_type']),
+            $this->stringValue($inbox, ['name']),
+            $this->stringValue($conversation, ['channel', 'inbox_name']),
+            $this->stringValue($payload, ['event', 'event_type']),
+            $sourceChannel,
+        ]);
 
         return new ChatwootConversationData(
             conversationId: $conversationId,
             contactId: $this->stringValue($contact, ['id', 'contact_id']),
             contactName: $this->stringValue($contact, ['name', 'full_name']),
             contactHandle: $this->firstString([
-                $this->stringValue($contact, ['email']),
-                $this->stringValue($contact, ['phone_number']),
+                $email,
+                $phone,
+                $username,
                 $this->stringValue($contact, ['identifier']),
             ]),
-            sourceChannel: $this->firstString([
-                $this->stringValue($inbox, ['name']),
-                $this->stringValue($conversation, ['inbox.name', 'inbox_name', 'channel']),
-                $this->stringValue($inbox, ['channel_type']),
-                $this->stringValue($conversation, ['source_id', 'inbox_id']),
-            ]),
+            channel: $channel,
+            inboxId: $this->stringValue($inbox, ['id']) ?? $this->stringValue($conversation, ['inbox_id']),
+            email: $email,
+            phone: $this->normalizePhone($phone),
+            username: $this->normalizeUsername($username),
+            sourceId: $sourceId,
+            sourceChannel: $channel,
             subject: $this->firstString([
                 $this->stringValue($conversation, ['subject']),
                 $this->stringValue($conversation, ['additional_attributes.mail_subject']),
+                $this->stringValue($message, ['content']),
                 $this->stringValue($conversation, ['messages.0.content']),
             ]),
             status: $this->stringValue($conversation, ['status']),
@@ -168,6 +211,31 @@ final class ChatwootConversationNormalizer
         }
 
         return null;
+    }
+
+    private function normalizePhone(?string $value): ?string
+    {
+        if (null === $value || false !== filter_var(trim($value), FILTER_VALIDATE_EMAIL)) {
+            return null;
+        }
+
+        $digits = preg_replace('/\D+/', '', $value);
+
+        return is_string($digits) && strlen($digits) >= 8 ? $digits : null;
+    }
+
+    private function normalizeUsername(?string $value): ?string
+    {
+        if (null === $value || false !== filter_var(trim($value), FILTER_VALIDATE_EMAIL)) {
+            return null;
+        }
+
+        $value = trim($value);
+        if ('' === $value || preg_match('/^\+?[\d\s().-]+$/', $value)) {
+            return null;
+        }
+
+        return ltrim($value, '@');
     }
 
     /**

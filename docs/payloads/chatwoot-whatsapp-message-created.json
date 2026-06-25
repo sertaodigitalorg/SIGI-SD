@@ -1,0 +1,30 @@
+{
+  "event": "message_created",
+  "message": {
+    "id": 9002,
+    "content": "Tenho uma duvida sobre inscricao",
+    "message_type": "incoming"
+  },
+  "conversation": {
+    "id": 456,
+    "status": "open",
+    "source_id": "wa-5583999999999",
+    "inbox_id": 789,
+    "inbox": {
+      "id": 789,
+      "name": "WhatsApp Sertao Digital",
+      "channel_type": "Channel::Whatsapp"
+    },
+    "contact": {
+      "id": 123,
+      "name": "Maria do Sertao",
+      "phone_number": "+55 83 99999-9999",
+      "identifier": "5583999999999"
+    },
+    "labels": [
+      "sigi-protocolo-gerado"
+    ],
+    "created_at": "2026-06-25T09:00:00-03:00",
+    "updated_at": "2026-06-25T09:05:00-03:00"
+  }
+}

@@ -15,4 +15,9 @@ class PersonContactRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, PersonContact::class);
     }
+
+    public function findOneByValue(string $value): ?PersonContact
+    {
+        return $this->findOneBy(['value' => trim($value)]);
+    }
 }

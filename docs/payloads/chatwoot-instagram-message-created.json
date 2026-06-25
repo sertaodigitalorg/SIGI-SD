@@ -1,0 +1,33 @@
+{
+  "event": "message_created",
+  "message": {
+    "id": 9102,
+    "content": "Quero saber sobre o projeto",
+    "message_type": "incoming"
+  },
+  "conversation": {
+    "id": 556,
+    "status": "open",
+    "source_id": "ig-17841400000000000",
+    "inbox_id": 790,
+    "inbox": {
+      "id": 790,
+      "name": "Instagram Sertao Digital",
+      "channel_type": "Channel::Instagram"
+    },
+    "contact": {
+      "id": 223,
+      "name": "Joao Silva",
+      "identifier": "joaosilva.pb",
+      "instagram_username": "joaosilva.pb"
+    },
+    "additional_attributes": {
+      "instagram_id": "17841400000000000"
+    },
+    "labels": [
+      "sigi-protocolo-gerado"
+    ],
+    "created_at": "2026-06-25T10:00:00-03:00",
+    "updated_at": "2026-06-25T10:05:00-03:00"
+  }
+}
