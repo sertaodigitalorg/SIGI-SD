@@ -12,6 +12,10 @@ use Psr\Log\LoggerInterface;
 
 final readonly class ChatwootConversationSyncService
 {
+    private const LABEL_SYNCED = 'sigi-sincronizado';
+    private const LABEL_PROTOCOL_GENERATED = 'sigi-protocolo-gerado';
+    private const LABEL_PROTOCOL_MESSAGE_SENT = 'sigi-mensagem-protocolo-enviada';
+
     public function __construct(
         private AttendanceProtocolRepository $protocolRepository,
         private ChatwootConversationNormalizer $normalizer,
@@ -95,6 +99,11 @@ final readonly class ChatwootConversationSyncService
             }
         }
 
+        $reservedLabels = [
+            self::LABEL_SYNCED,
+            self::LABEL_PROTOCOL_GENERATED,
+        ];
+
         $settings = $this->settingsRepository->getOrCreate();
         if ($settings->shouldSendPublicProtocolMessage() && !$protocol->isCustomerProtocolMessageSent()) {
             try {
@@ -104,6 +113,7 @@ final readonly class ChatwootConversationSyncService
                     $this->renderPublicProtocolMessage($settings->getPublicProtocolMessageTemplate(), $protocol, $data),
                 );
                 $protocol->markCustomerProtocolMessageSent();
+                $reservedLabels[] = self::LABEL_PROTOCOL_MESSAGE_SENT;
             } catch (\Throwable $exception) {
                 $this->logger->warning('Nao foi possivel enviar mensagem publica de protocolo ao Chatwoot.', [
                     'conversation_id' => $data->conversationId,
@@ -111,6 +121,12 @@ final readonly class ChatwootConversationSyncService
                 ]);
             }
         }
+
+        if ($protocol->isCustomerProtocolMessageSent()) {
+            $reservedLabels[] = self::LABEL_PROTOCOL_MESSAGE_SENT;
+        }
+
+        $this->syncOperationalLabels($protocol, $account, $data, $reservedLabels);
 
         $this->entityManager->flush();
         $this->logger->info($isNew ? 'Protocolo SIGI criado.' : 'Protocolo SIGI atualizado.', [
@@ -129,5 +145,61 @@ final readonly class ChatwootConversationSyncService
             '{assunto}' => (string) ($data->subject ?? ''),
             '{canal}' => (string) ($data->sourceChannel ?? ''),
         ]);
+    }
+
+    /**
+     * @param array<int, string> $reservedLabels
+     */
+    private function syncOperationalLabels(
+        AttendanceProtocol $protocol,
+        ?ChatwootAccount $account,
+        ChatwootConversationData $data,
+        array $reservedLabels,
+    ): void {
+        $labels = $this->mergeLabels($data->labels, $reservedLabels);
+        $currentLabels = $this->mergeLabels($data->labels, []);
+
+        if ($labels === $currentLabels) {
+            $protocol->setLabels($currentLabels);
+
+            return;
+        }
+
+        try {
+            $this->apiClient->applyLabels($account, $data->conversationId, $labels);
+            $protocol->setLabels($labels);
+        } catch (\Throwable $exception) {
+            $protocol->setLabels($currentLabels);
+            $this->logger->warning('Nao foi possivel aplicar etiquetas operacionais SIGI no Chatwoot.', [
+                'conversation_id' => $data->conversationId,
+                'labels' => $reservedLabels,
+                'error' => $exception->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * @param array<int, string> $currentLabels
+     * @param array<int, string> $labelsToAdd
+     *
+     * @return array<int, string>
+     */
+    private function mergeLabels(array $currentLabels, array $labelsToAdd): array
+    {
+        $labels = [];
+        foreach (array_merge($currentLabels, $labelsToAdd) as $label) {
+            if (!is_scalar($label)) {
+                continue;
+            }
+
+            $label = trim((string) $label);
+            if ('' === $label) {
+                continue;
+            }
+
+            $labels[mb_strtolower($label)] = $label;
+        }
+
+        return array_values($labels);
     }
 }
