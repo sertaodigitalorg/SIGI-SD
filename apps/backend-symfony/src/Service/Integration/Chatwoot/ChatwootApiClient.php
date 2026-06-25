@@ -30,7 +30,27 @@ final class ChatwootApiClient
      */
     public function getInboxes(?ChatwootAccount $account = null): array
     {
-        return $this->request($account, 'GET', 'inboxes');
+        $payload = $this->request($account, 'GET', 'inboxes');
+        $items = $payload['data']['payload']
+            ?? $payload['payload']
+            ?? $payload['data']['inboxes']
+            ?? $payload['inboxes']
+            ?? $payload['data']
+            ?? $payload;
+
+        if (!is_array($items)) {
+            return [];
+        }
+
+        if (!array_is_list($items)) {
+            $items = $items['payload'] ?? $items['inboxes'] ?? [];
+        }
+
+        if (!is_array($items)) {
+            return [];
+        }
+
+        return array_values(array_filter($items, 'is_array'));
     }
 
     /**
@@ -58,17 +78,38 @@ final class ChatwootApiClient
             'query' => $query,
         ]);
 
-        $conversations = $payload['payload'] ?? $payload['data'] ?? $payload;
-        if (!is_array($conversations)) {
-            return [];
-        }
+        $items = $payload['data']['payload']
+            ?? $payload['payload']
+            ?? $payload['data']['conversations']
+            ?? $payload['conversations']
+            ?? $payload['data']
+            ?? $payload;
 
-        $items = array_is_list($conversations) ? $conversations : ($conversations['conversations'] ?? []);
         if (!is_array($items)) {
             return [];
         }
 
-        return array_slice(array_values(array_filter($items, 'is_array')), 0, $limit);
+        if (!array_is_list($items)) {
+            $items = $items['payload'] ?? $items['conversations'] ?? [];
+        }
+
+        if (!is_array($items)) {
+            return [];
+        }
+
+        $items = array_slice(array_values(array_filter($items, 'is_array')), 0, $limit);
+        $inboxes = $this->getInboxesById($account);
+
+        return array_map(static function (array $conversation) use ($inboxes): array {
+            if (!isset($conversation['inbox']) && isset($conversation['inbox_id'])) {
+                $inboxId = (string) $conversation['inbox_id'];
+                if (isset($inboxes[$inboxId])) {
+                    $conversation['inbox'] = $inboxes[$inboxId];
+                }
+            }
+
+            return $conversation;
+        }, $items);
     }
 
     /**
@@ -151,5 +192,22 @@ final class ChatwootApiClient
         }
 
         return $decoded;
+    }
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    private function getInboxesById(?ChatwootAccount $account): array
+    {
+        $indexed = [];
+        foreach ($this->getInboxes($account) as $inbox) {
+            if (!isset($inbox['id']) || !is_scalar($inbox['id'])) {
+                continue;
+            }
+
+            $indexed[(string) $inbox['id']] = $inbox;
+        }
+
+        return $indexed;
     }
 }

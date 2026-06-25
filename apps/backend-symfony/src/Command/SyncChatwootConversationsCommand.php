@@ -46,9 +46,10 @@ final class SyncChatwootConversationsCommand extends Command
         $limit = max(1, (int) $input->getOption('limit'));
         $status = (string) $input->getOption('status');
         $sendNote = !$input->getOption('no-note');
+        $conversations = $this->apiClient->getRecentConversations($account, $limit, $status);
         $synced = 0;
 
-        foreach ($this->apiClient->getRecentConversations($account, $limit, $status) as $conversation) {
+        foreach ($conversations as $conversation) {
             $protocol = $this->syncService->syncPayload($conversation, $account, $sendNote);
             if (null !== $protocol) {
                 ++$synced;
@@ -56,7 +57,11 @@ final class SyncChatwootConversationsCommand extends Command
             }
         }
 
-        $io->success(sprintf('%d conversa(s) sincronizada(s).', $synced));
+        $io->success(sprintf(
+            '%d conversa(s) sincronizada(s) de %d retornada(s) pela API.',
+            $synced,
+            count($conversations),
+        ));
 
         return Command::SUCCESS;
     }

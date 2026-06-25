@@ -32,8 +32,10 @@ final class ChatwootConversationNormalizer
                 $this->stringValue($contact, ['identifier']),
             ]),
             sourceChannel: $this->firstString([
-                $this->stringValue($inbox, ['channel_type', 'name']),
-                $this->stringValue($conversation, ['channel', 'source_id']),
+                $this->stringValue($inbox, ['name']),
+                $this->stringValue($conversation, ['inbox.name', 'inbox_name', 'channel']),
+                $this->stringValue($inbox, ['channel_type']),
+                $this->stringValue($conversation, ['source_id', 'inbox_id']),
             ]),
             subject: $this->firstString([
                 $this->stringValue($conversation, ['subject']),
