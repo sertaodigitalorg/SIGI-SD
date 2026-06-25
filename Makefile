@@ -43,6 +43,7 @@ help:
 	@echo "  make migrate            Executa migrations do Symfony"
 	@echo "  make cache-clear        Limpa cache do Symfony"
 	@echo "  make sync-chatwoot      Importa conversas recentes do Chatwoot para o SIGI"
+	@echo "  make register-chatwoot-assistant  Registra o Assistente SIGI no Chatwoot"
 
 setup:
 	@if [ ! -f .env ]; then cp .env.example .env; fi
@@ -180,3 +181,7 @@ cache-clear:
 
 sync-chatwoot:
 	$(COMPOSE) exec $(ADMIN) php bin/console sigi:chatwoot:sync --limit=50
+
+register-chatwoot-assistant:
+	$(COMPOSE) cp scripts/register-chatwoot-sigi-assistant.rb chatwoot:/tmp/register-chatwoot-sigi-assistant.rb
+	$(COMPOSE) exec chatwoot bundle exec rails runner /tmp/register-chatwoot-sigi-assistant.rb

@@ -64,6 +64,34 @@ final class ChatwootApiClient
     /**
      * @return array<int, array<string, mixed>>
      */
+    public function getConversationMessages(?ChatwootAccount $account, string $conversationId): array
+    {
+        $payload = $this->request($account, 'GET', sprintf('conversations/%s/messages', rawurlencode($conversationId)));
+        $items = $payload['payload']
+            ?? $payload['data']['payload']
+            ?? $payload['data']['messages']
+            ?? $payload['messages']
+            ?? $payload['data']
+            ?? $payload;
+
+        if (!is_array($items)) {
+            return [];
+        }
+
+        if (!array_is_list($items)) {
+            $items = $items['payload'] ?? $items['messages'] ?? [];
+        }
+
+        if (!is_array($items)) {
+            return [];
+        }
+
+        return array_values(array_filter($items, 'is_array'));
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function getRecentConversations(?ChatwootAccount $account = null, int $limit = 50, string $status = 'all'): array
     {
         $query = [

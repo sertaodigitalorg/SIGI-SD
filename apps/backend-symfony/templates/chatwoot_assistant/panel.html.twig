@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Assistente SIGI</title>
+    <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+</head>
+<body>
+<style>
+    body { background: #f8fafc; }
+    .sigi-assistant { max-width: 760px; margin: 0 auto; padding: 16px; }
+    .sigi-assistant__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .sigi-assistant__title { font-size: 18px; font-weight: 700; margin: 0; }
+    .sigi-assistant__grid { display: grid; gap: 10px; }
+    .sigi-assistant textarea { min-height: 180px; resize: vertical; }
+    .sigi-assistant__actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .sigi-assistant__status { min-height: 24px; font-size: 13px; color: #475569; }
+    @media (max-width: 520px) { .sigi-assistant__actions { grid-template-columns: 1fr; } }
+</style>
+
+<main class="sigi-assistant" data-controller="csrf-protection">
+    <div class="sigi-assistant__header">
+        <h1 class="sigi-assistant__title">Assistente SIGI</h1>
+        <span class="badge text-bg-primary">IA local</span>
+    </div>
+
+    <div class="sigi-assistant__grid">
+        <label class="form-label" for="conversationId">Conversa Chatwoot</label>
+        <input class="form-control" id="conversationId" value="{{ conversationId ?: '' }}" placeholder="ID da conversa">
+
+        <label class="form-label" for="instruction">Orientação para a IA</label>
+        <input class="form-control" id="instruction" placeholder="Ex.: responder com tom institucional e pedir CPF/CNPJ se necessário">
+
+        <label class="form-label" for="assistantText">Resposta sugerida</label>
+        <textarea class="form-control" id="assistantText" placeholder="Clique em Gerar sugestão"></textarea>
+
+        <div class="sigi-assistant__actions">
+            <button class="btn btn-primary" type="button" data-action-button="suggest">Gerar sugestão</button>
+            <button class="btn btn-outline-secondary" type="button" data-action-button="note">Salvar nota privada</button>
+            <button class="btn btn-success" type="button" data-action-button="reply">Enviar ao usuário</button>
+            <button class="btn btn-outline-primary" type="button" data-action-button="labels">Aplicar etiqueta IA</button>
+            <button class="btn btn-outline-dark" type="button" data-action-button="sync">Sincronizar protocolo</button>
+        </div>
+
+        <div class="sigi-assistant__status" id="assistantStatus"></div>
+    </div>
+</main>
+
+<script>
+(() => {
+    const routes = {
+        suggest: '{{ path('chatwoot_assistant_suggest') }}',
+        note: '{{ path('chatwoot_assistant_private_note') }}',
+        reply: '{{ path('chatwoot_assistant_reply') }}',
+        labels: '{{ path('chatwoot_assistant_labels') }}',
+        sync: '{{ path('chatwoot_assistant_sync') }}',
+    };
+
+    const conversationInput = document.getElementById('conversationId');
+    const instructionInput = document.getElementById('instruction');
+    const textInput = document.getElementById('assistantText');
+    const status = document.getElementById('assistantStatus');
+
+    function setStatus(message, isError = false) {
+        status.textContent = message;
+        status.classList.toggle('text-danger', isError);
+    }
+
+    async function post(route, payload) {
+        const response = await fetch(route, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        if (!response.ok || !data.ok) {
+            throw new Error(data.error || 'Falha na ação.');
+        }
+        return data;
+    }
+
+    async function run(action) {
+        const conversationId = conversationInput.value.trim();
+        if (!conversationId) {
+            setStatus('Informe o ID da conversa.', true);
+            return;
+        }
+
+        const content = textInput.value.trim();
+        const payload = {
+            conversationId,
+            content,
+            instruction: instructionInput.value.trim(),
+        };
+
+        try {
+            setStatus('Processando...');
+            if (action === 'suggest') {
+                const data = await post(routes.suggest, payload);
+                textInput.value = data.suggestion || '';
+                setStatus('Sugestão gerada.');
+                return;
+            }
+
+            if ((action === 'note' || action === 'reply') && !content) {
+                setStatus('Gere ou escreva um texto primeiro.', true);
+                return;
+            }
+
+            const data = await post(routes[action], payload);
+            if (action === 'sync' && data.protocol) {
+                setStatus(`Protocolo sincronizado: ${data.protocol}`);
+                return;
+            }
+
+            setStatus('Ação concluída.');
+        } catch (error) {
+            setStatus(error.message, true);
+        }
+    }
+
+    document.querySelectorAll('[data-action-button]').forEach((button) => {
+        button.addEventListener('click', () => run(button.dataset.actionButton));
+    });
+
+    window.parent.postMessage('chatwoot-dashboard-app:fetch-info', '*');
+    window.addEventListener('message', (event) => {
+        let payload = event.data;
+        if (typeof payload === 'string') {
+            try {
+                payload = JSON.parse(payload);
+            } catch {
+                return;
+            }
+        }
+
+        if (!payload || payload.event !== 'appContext') {
+            return;
+        }
+
+        const conversationId = payload.data?.conversation?.id;
+        if (conversationId && !conversationInput.value.trim()) {
+            conversationInput.value = String(conversationId);
+            setStatus('Conversa detectada pelo Chatwoot.');
+        }
+    });
+})();
+</script>
+</body>
+</html>

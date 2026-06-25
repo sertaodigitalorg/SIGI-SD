@@ -84,6 +84,8 @@ services:
       DATABASE_URL: ${DATABASE_URL:-postgresql://sigi:sigi_dev_password@postgres:5432/sigi_sd?serverVersion=16&charset=utf8}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       CHATWOOT_INTERNAL_BASE_URL: ${CHATWOOT_INTERNAL_BASE_URL:-http://chatwoot:3000}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.1}
       SIGI_CHATWOOT_URL: ${SIGI_CHATWOOT_URL:-http://chat.sigi.localhost}
       SIGI_BOTPRESS_URL: ${SIGI_BOTPRESS_URL:-http://bot.sigi.localhost}
       SIGI_TYPEBOT_URL: ${SIGI_TYPEBOT_URL:-}
