@@ -100,6 +100,7 @@ sudo apt install -y make curl
 - `make up-portainer`: sobe Portainer.
 - `make up-pgadmin`: sobe pgAdmin, Postgres e Traefik.
 - `make up-webhook-tunnel`: sobe o Chatwoot e abre um tunnel publico temporario pelo `trycloudflare`.
+- `make logs-webhook-tunnel`: acompanha os logs do tunnel e mostra a URL `trycloudflare`.
 - `make stop-admin`, `make stop-ia`, `make stop-chat`, `make stop-whatsapp`, `make stop-bot`: para servicos especificos.
 - `make logs-admin`, `make logs-ia`, `make logs-chat`, `make logs-whatsapp`, `make logs-bot`, `make logs-proxy`: acompanha logs especificos.
 - `make shell-admin`: abre shell no container Symfony.
@@ -208,7 +209,13 @@ Para expor o Chatwoot local durante o desenvolvimento, abra um tunnel temporario
 make up-webhook-tunnel
 ```
 
-Copie a URL `https://...trycloudflare.com` exibida no terminal e use como endereco publico temporario do Chatwoot.
+O comando volta para o terminal depois de iniciar o container. Para ver a URL publica, acompanhe os logs:
+
+```bash
+make logs-webhook-tunnel
+```
+
+Copie a URL `https://...trycloudflare.com` exibida nos logs e use como endereco publico temporario do Chatwoot.
 
 Se precisar que o Chatwoot gere links usando o dominio publico, atualize `CHATWOOT_FRONTEND_URL` no `.env` com essa URL e recrie o servico:
 
