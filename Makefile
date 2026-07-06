@@ -2,6 +2,9 @@ COMPOSE=docker compose
 ADMIN=symfony-admin
 IA_SERVICES=ollama qdrant
 BASE_SERVICES=postgres redis traefik
+CLOUDFLARED_IMAGE=cloudflare/cloudflared:latest
+WEBHOOK_TUNNEL_URL=http://sigi-traefik:80
+WEBHOOK_TUNNEL_HOST=chat.sigi.localhost
 
 help:
 	@echo "Comandos disponiveis:"
@@ -29,6 +32,7 @@ help:
 	@echo "  make up-proxy           Sobe apenas Traefik"
 	@echo "  make up-portainer       Sobe apenas Portainer e Traefik"
 	@echo "  make up-pgadmin         Sobe apenas pgAdmin e Postgres"
+	@echo "  make up-webhook-tunnel  Abre tunnel trycloudflare para o Chatwoot"
 	@echo "  make stop-admin         Para Symfony Admin Hub"
 	@echo "  make stop-ia            Para Ollama e Qdrant"
 	@echo "  make stop-chat          Para Chatwoot"
@@ -121,6 +125,9 @@ up-portainer:
 
 up-pgadmin:
 	$(COMPOSE) up -d postgres traefik pgadmin
+
+up-webhook-tunnel: up-chat
+	docker run --rm --network sigi-network $(CLOUDFLARED_IMAGE) tunnel --no-autoupdate --url $(WEBHOOK_TUNNEL_URL) --http-host-header $(WEBHOOK_TUNNEL_HOST)
 
 stop-admin:
 	$(COMPOSE) stop $(ADMIN)

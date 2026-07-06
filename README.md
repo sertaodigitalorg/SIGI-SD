@@ -49,6 +49,7 @@ make up-db         # Postgres + Redis
 make up-proxy      # Traefik
 make up-portainer  # Portainer + Traefik
 make up-pgadmin    # pgAdmin + Postgres + Traefik
+make up-webhook-tunnel # Tunnel publico trycloudflare para o Chatwoot
 ```
 
 ## Pre-requisitos
@@ -98,6 +99,7 @@ sudo apt install -y make curl
 - `make up-proxy`: sobe Traefik.
 - `make up-portainer`: sobe Portainer.
 - `make up-pgadmin`: sobe pgAdmin, Postgres e Traefik.
+- `make up-webhook-tunnel`: sobe o Chatwoot e abre um tunnel publico temporario pelo `trycloudflare`.
 - `make stop-admin`, `make stop-ia`, `make stop-chat`, `make stop-whatsapp`, `make stop-bot`: para servicos especificos.
 - `make logs-admin`, `make logs-ia`, `make logs-chat`, `make logs-whatsapp`, `make logs-bot`, `make logs-proxy`: acompanha logs especificos.
 - `make shell-admin`: abre shell no container Symfony.
@@ -199,6 +201,22 @@ Rode a sincronizacao manual:
 make shell-admin
 php bin/console sigi:chatwoot:sync --limit=50
 ```
+
+Para expor o Chatwoot local durante o desenvolvimento, abra um tunnel temporario:
+
+```bash
+make up-webhook-tunnel
+```
+
+Copie a URL `https://...trycloudflare.com` exibida no terminal e use como endereco publico temporario do Chatwoot.
+
+Se precisar que o Chatwoot gere links usando o dominio publico, atualize `CHATWOOT_FRONTEND_URL` no `.env` com essa URL e recrie o servico:
+
+```env
+CHATWOOT_FRONTEND_URL=https://...trycloudflare.com
+```
+
+O alvo roda o `cloudflared` dentro da rede Docker `sigi-network`, aponta para o Traefik (`http://sigi-traefik:80`) e envia o Host header `chat.sigi.localhost`. Isso evita a falha comum de tentar expor `http://chat.sigi.localhost` diretamente, que normalmente nao resolve corretamente de dentro do tunnel.
 
 Para validar, abra `/admin/atendimentos`: cada conversa importada deve ter protocolo no formato `YYYYMMDD000001` e botao `Abrir no Chatwoot`. A regra do sequencial fica em `/admin/atendimentos/configuracao`.
 
