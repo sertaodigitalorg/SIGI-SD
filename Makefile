@@ -11,6 +11,7 @@ help:
 	@echo "Comandos disponiveis:"
 	@echo "  make setup              Copia .env.example para .env se necessario"
 	@echo "  make up                 Sobe toda a aplicacao em segundo plano"
+	@echo "  make stop               Para os containers e o tunnel webhook"
 	@echo "  make down               Para e remove os containers"
 	@echo "  make restart            Reinicia toda a aplicacao"
 	@echo "  make logs               Mostra logs de todos os servicos"
@@ -34,6 +35,7 @@ help:
 	@echo "  make up-portainer       Sobe apenas Portainer e Traefik"
 	@echo "  make up-pgadmin         Sobe apenas pgAdmin e Postgres"
 	@echo "  make up-webhook-tunnel  Abre tunnel trycloudflare para o Chatwoot"
+	@echo "  make stop-webhook-tunnel  Para o tunnel trycloudflare"
 	@echo "  make logs-webhook-tunnel  Logs do tunnel trycloudflare"
 	@echo "  make stop-admin         Para Symfony Admin Hub"
 	@echo "  make stop-ia            Para Ollama e Qdrant"
@@ -57,7 +59,11 @@ setup:
 up:
 	$(COMPOSE) up -d
 
+stop: stop-webhook-tunnel
+	$(COMPOSE) stop
+
 down:
+	@docker stop $(WEBHOOK_TUNNEL_CONTAINER) >/dev/null 2>&1 || true
 	$(COMPOSE) down
 
 restart:
@@ -134,6 +140,9 @@ up-webhook-tunnel: up-chat
 logs-webhook-tunnel:
 	docker logs -f $(WEBHOOK_TUNNEL_CONTAINER)
 
+stop-webhook-tunnel:
+	@docker stop $(WEBHOOK_TUNNEL_CONTAINER) >/dev/null 2>&1 || true
+
 stop-admin:
 	$(COMPOSE) stop $(ADMIN)
 
@@ -144,7 +153,7 @@ stop-ia:
 
 stop-ai: stop-ia
 
-stop-chat:
+stop-chat: stop-webhook-tunnel
 	$(COMPOSE) stop chatwoot chatwoot-worker
 
 stop-chatwoot: stop-chat
