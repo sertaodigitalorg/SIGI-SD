@@ -26,8 +26,6 @@ help:
 	@echo "  make up-ai              Alias para make up-ia"
 	@echo "  make up-chat            Sobe apenas Chatwoot e dependencias basicas"
 	@echo "  make up-chatwoot        Alias para make up-chat"
-	@echo "  make up-whatsapp        Sobe apenas Evolution API e dependencias basicas"
-	@echo "  make up-evolution       Alias para make up-whatsapp"
 	@echo "  make up-bot             Sobe apenas Botpress e Traefik"
 	@echo "  make up-botpress        Alias para make up-bot"
 	@echo "  make up-db              Sobe apenas Postgres e Redis"
@@ -43,7 +41,6 @@ help:
 	@echo "  make logs-admin         Logs do Symfony Admin Hub"
 	@echo "  make logs-ia            Logs de Ollama e Qdrant"
 	@echo "  make logs-chat          Logs do Chatwoot"
-	@echo "  make logs-whatsapp      Logs da Evolution API"
 	@echo "  make logs-bot           Logs do Botpress"
 	@echo "  make logs-proxy         Logs do Traefik"
 	@echo "  make shell-admin        Abre shell no Symfony Admin Hub"
@@ -89,7 +86,6 @@ health:
 	@curl -I -sS http://admin.sigi.localhost | head -n 1
 	@curl -I -sS http://chat.sigi.localhost | head -n 1
 	@curl -I -sS http://bot.sigi.localhost | head -n 1
-	@curl -I -sS http://whatsapp.sigi.localhost | head -n 1
 	@curl -I -sS http://pgadmin.sigi.localhost | head -n 1
 	@curl -sS http://ia.sigi.localhost/api/version
 	@echo
@@ -110,12 +106,6 @@ up-chat:
 	$(COMPOSE) up -d postgres redis traefik chatwoot chatwoot-worker
 
 up-chatwoot: up-chat
-
-up-whatsapp:
-	$(COMPOSE) up -d postgres redis traefik evolution-api
-
-up-evolution:
-	$(COMPOSE) up -d postgres redis traefik evolution-api
 
 up-bot:
 	$(COMPOSE) up -d traefik botpress
@@ -158,9 +148,6 @@ stop-chat: stop-webhook-tunnel
 
 stop-chatwoot: stop-chat
 
-stop-whatsapp:
-	$(COMPOSE) stop evolution-api
-
 stop-bot:
 	$(COMPOSE) stop botpress
 
@@ -176,9 +163,6 @@ logs-ai: logs-ia
 
 logs-chat:
 	$(COMPOSE) logs -f chatwoot chatwoot-worker
-
-logs-whatsapp:
-	$(COMPOSE) logs -f evolution-api
 
 logs-bot:
 	$(COMPOSE) logs -f botpress

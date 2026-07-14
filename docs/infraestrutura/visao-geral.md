@@ -9,8 +9,7 @@ Servicos:
 - Traefik: proxy reverso.
 - Portainer: gestao de containers.
 - Symfony API: backend principal.
-- Chatwoot: CRM multiatendimento.
-- Evolution API: integracao WhatsApp.
+- Chatwoot: CRM multiatendimento e canal WhatsApp oficial via Meta Cloud API.
 - Botpress: chatbot e agente conversacional.
 - Ollama: IA local embarcada.
 - Qdrant: banco vetorial.

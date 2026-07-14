@@ -15,7 +15,6 @@ Todos os servicos usam `sigi-network`.
 - `postgres_data`
 - `redis_data`
 - `chatwoot_data`
-- `evolution_data`
 - `botpress_data`
 - `qdrant_data`
 - `ollama_data`
@@ -26,7 +25,6 @@ Todos os servicos usam `sigi-network`.
 
 - `admin.sigi.localhost`
 - `chat.sigi.localhost`
-- `whatsapp.sigi.localhost`
 - `bot.sigi.localhost`
 - `ia.sigi.localhost`
 - `qdrant.sigi.localhost`
@@ -34,6 +32,8 @@ Todos os servicos usam `sigi-network`.
 - `pgadmin.sigi.localhost`
 
 O dashboard local do Traefik fica em `http://localhost:18080`.
+
+O WhatsApp produtivo e configurado no Chatwoot pela Meta Cloud API. Para webhooks do Chatwoot chamarem o SIGI dentro da rede Docker, use o endereco interno http://symfony-admin/admin/integrations/chatwoot/webhook/{accountId} em vez do dominio publico dmin.sigi.localhost.
 
 ## Admin Hub Symfony
 

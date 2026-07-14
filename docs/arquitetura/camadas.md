@@ -2,10 +2,9 @@
 
 ## Interface e canais
 
-- Chatwoot para atendimento humano e CRM operacional.
-- Evolution API para WhatsApp.
+- Chatwoot para atendimento humano, CRM operacional e canais oficiais, incluindo WhatsApp via Meta Cloud API.
 - Botpress para chatbot e transferencia para humano.
-- Canais futuros: e-mail, Telegram, webchat, telefone local e presencial.
+- Canais futuros: Telegram, webchat, telefone local e presencial.
 
 ## Backend
 

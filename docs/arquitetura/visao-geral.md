@@ -41,7 +41,7 @@ flowchart TD
     CHAT --> CHATWORKER[Chatwoot Worker Sidekiq]
     SIGI --> BOT[Botpress]
     SIGI --> API[Symfony Admin Hub]
-    SIGI --> EVO[Evolution API]
+    META[Meta WhatsApp Cloud API] --> CHAT
     SIGI --> OLLAMA[Ollama]
     SIGI --> QDRANT[Qdrant]
     API --> PG[PostgreSQL]
@@ -58,9 +58,12 @@ flowchart TD
 
 ## Chatwoot na arquitetura operacional
 
+O WhatsApp produtivo entra no SIGI-SD pela integracao oficial da Meta Cloud API configurada no Chatwoot. O Chatwoot envia eventos ao Symfony, que gera/atualiza protocolos e responde ao cidadao com o numero do protocolo pelo mesmo canal.
+
+
 ## Admin Hub Symfony
 
-O Symfony e o hub administrativo do SIGI-SD e responde em `http://admin.sigi.localhost`. Ele concentra a administracao da plataforma, os cadastros internos e os pontos de integracao com aplicacoes como Chatwoot, Evolution API, Botpress e servicos de IA.
+O Symfony e o hub administrativo do SIGI-SD e responde em `http://admin.sigi.localhost`. Ele concentra a administracao da plataforma, os cadastros internos e os pontos de integracao com aplicacoes como Chatwoot, Botpress e servicos de IA.
 
 O Admin Hub usa o banco legado `sigi_sd`, preservando a continuidade do sistema Symfony que ja existia.
 

@@ -78,7 +78,7 @@ Todos os servicos devem aparecer como `Up`.
 
 - Admin Hub Symfony: http://admin.sigi.localhost
 - Chatwoot: http://chat.sigi.localhost
-- Evolution API: http://whatsapp.sigi.localhost
+- WhatsApp oficial: configurado no Chatwoot via Meta Cloud API
 - Botpress: http://bot.sigi.localhost
 - Ollama: http://ia.sigi.localhost
 - Qdrant: http://qdrant.sigi.localhost
@@ -132,18 +132,6 @@ make up-chatwoot
 
 Esse comando sobe `chatwoot`, `chatwoot-worker`, `postgres`, `redis` e `traefik`.
 
-Subir apenas WhatsApp/Evolution API:
-
-```bash
-make up-whatsapp
-```
-
-Tambem funciona:
-
-```bash
-make up-evolution
-```
-
 Subir apenas Botpress:
 
 ```bash
@@ -188,7 +176,6 @@ Parar servicos especificos:
 make stop-admin
 make stop-ia
 make stop-chat
-make stop-whatsapp
 make stop-bot
 ```
 
@@ -198,7 +185,6 @@ Ver logs especificos:
 make logs-admin
 make logs-ia
 make logs-chat
-make logs-whatsapp
 make logs-bot
 make logs-proxy
 ```
@@ -297,7 +283,6 @@ Resultados esperados:
 - `admin.sigi.localhost`: HTTP 200.
 - `chat.sigi.localhost`: HTTP 302 para onboarding ou dashboard.
 - `bot.sigi.localhost`: HTTP 302 para `/admin`.
-- `whatsapp.sigi.localhost`: HTTP 200.
 - `pgadmin.sigi.localhost`: HTTP 200 ou HTTP 302 para tela de login.
 - `ia.sigi.localhost/api/version`: JSON com versao do Ollama.
 - `qdrant.sigi.localhost/collections`: JSON com `status: ok`.

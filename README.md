@@ -43,7 +43,6 @@ Use estes comandos quando nao quiser subir tudo:
 make up-admin      # Symfony Admin Hub + Postgres + Redis + Traefik
 make up-ia         # Ollama + Qdrant + Traefik
 make up-chat       # Chatwoot web + worker + Postgres + Redis + Traefik
-make up-whatsapp   # Evolution API + Postgres + Redis + Traefik
 make up-bot        # Botpress + Traefik
 make up-db         # Postgres + Redis
 make up-proxy      # Traefik
@@ -70,7 +69,7 @@ sudo apt install -y make curl
 
 - Admin Hub Symfony: http://admin.sigi.localhost
 - Chatwoot: http://chat.sigi.localhost
-- Evolution API: http://whatsapp.sigi.localhost
+- WhatsApp oficial: configurado no Chatwoot via Meta Cloud API
 - Botpress: http://bot.sigi.localhost
 - Ollama: http://ia.sigi.localhost
 - Qdrant: http://qdrant.sigi.localhost
@@ -93,7 +92,6 @@ sudo apt install -y make curl
 - `make up-admin` ou `make up-symfony`: sobe Symfony Admin Hub e dependencias basicas.
 - `make up-ia` ou `make up-ai`: sobe Ollama e Qdrant.
 - `make up-chat` ou `make up-chatwoot`: sobe Chatwoot web, worker Sidekiq e dependencias.
-- `make up-whatsapp` ou `make up-evolution`: sobe Evolution API.
 - `make up-bot` ou `make up-botpress`: sobe Botpress.
 - `make up-db`: sobe Postgres e Redis.
 - `make up-proxy`: sobe Traefik.
@@ -101,8 +99,8 @@ sudo apt install -y make curl
 - `make up-pgadmin`: sobe pgAdmin, Postgres e Traefik.
 - `make up-webhook-tunnel`: sobe o Chatwoot e abre um tunnel publico temporario pelo `trycloudflare`.
 - `make logs-webhook-tunnel`: acompanha os logs do tunnel e mostra a URL `trycloudflare`.
-- `make stop-admin`, `make stop-ia`, `make stop-chat`, `make stop-whatsapp`, `make stop-bot`: para servicos especificos.
-- `make logs-admin`, `make logs-ia`, `make logs-chat`, `make logs-whatsapp`, `make logs-bot`, `make logs-proxy`: acompanha logs especificos.
+- `make stop-admin`, `make stop-ia`, `make stop-chat`, `make stop-bot`: para servicos especificos.
+- `make logs-admin`, `make logs-ia`, `make logs-chat`, `make logs-bot`, `make logs-proxy`: acompanha logs especificos.
 - `make shell-admin`: abre shell no container Symfony.
 - `make composer-install`: instala dependencias do Symfony.
 - `make migrate`: executa migrations do Symfony.
@@ -114,7 +112,6 @@ sudo apt install -y make curl
 apps/
   backend-symfony/   Admin Hub Symfony e backend principal
   chatwoot/          Espaco para configuracoes do CRM multiatendimento
-  evolution-api/     Espaco para configuracoes da integracao WhatsApp
   botpress/          Espaco para configuracoes do chatbot
   ollama/            Espaco para IA local
   qdrant/            Espaco para banco vetorial
@@ -161,8 +158,19 @@ php bin/console cache:clear
 
 ### Sincronizacao Chatwoot e protocolos
 
-Configure a conta ativa em `Admin > Chatwoot > Contas`:
+### WhatsApp oficial
 
+O SIGI-SD nao utiliza Evolution API no fluxo produtivo. O WhatsApp deve ser configurado no Chatwoot pela integracao oficial da Meta Cloud API. O SIGI recebe eventos do Chatwoot, gera/atualiza protocolos e envia automaticamente ao cidadao a mensagem com o numero do protocolo pelo proprio Chatwoot.
+
+Dentro da rede Docker, o webhook do Chatwoot deve apontar para:
+
+```text
+http://symfony-admin/admin/integrations/chatwoot/webhook/{accountId}
+```
+
+Use o segredo cadastrado na conta Chatwoot do SIGI em `X-SIGI-CHATWOOT-SECRET` ou no campo `secret` do webhook do Chatwoot.
+
+Configure a conta ativa em `Admin > Chatwoot > Contas`:
 - URL base do Chatwoot, por exemplo `http://chat.sigi.localhost`.
 - ID da conta no Chatwoot, o numero que aparece em `/app/accounts/{id}`.
 - API token do Chatwoot.
