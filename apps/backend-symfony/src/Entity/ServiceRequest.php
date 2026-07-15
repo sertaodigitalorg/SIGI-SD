@@ -304,6 +304,37 @@ class ServiceRequest
         return $this;
     }
 
+    public function setAssignedAgentId(?string $assignedAgentId): static
+    {
+        $this->assignedAgentId = $this->normalizeNullableString($assignedAgentId, 191);
+
+        return $this;
+    }
+
+    public function setAssignedTeamId(?string $assignedTeamId): static
+    {
+        $this->assignedTeamId = $this->normalizeNullableString($assignedTeamId, 191);
+
+        return $this;
+    }
+
+    public function markCompleted(?\DateTimeImmutable $completedAt = null): static
+    {
+        $this->status = self::STATUS_COMPLETED;
+        $this->completedAt = $completedAt ?? new \DateTimeImmutable();
+        $this->touch();
+
+        return $this;
+    }
+
+    public function markClosed(?\DateTimeImmutable $closedAt = null): static
+    {
+        $this->status = self::STATUS_CLOSED;
+        $this->closedAt = $closedAt ?? new \DateTimeImmutable();
+        $this->touch();
+
+        return $this;
+    }
     public function touch(): static
     {
         $this->updatedAt = new \DateTimeImmutable();

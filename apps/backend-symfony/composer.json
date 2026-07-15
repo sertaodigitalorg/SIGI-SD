@@ -37,6 +37,7 @@
         "symfony/ux-icons": "^2.20",
         "symfony/ux-live-component": "^2.6",
         "symfony/validator": "^8",
+        "symfony/workflow": "^8",
         "symfony/yaml": "^8",
         "symfonycasts/sass-bundle": "^0.9.0",
         "twbs/bootstrap": "^5",

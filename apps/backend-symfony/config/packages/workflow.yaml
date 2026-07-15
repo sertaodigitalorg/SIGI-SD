@@ -1,0 +1,50 @@
+framework:
+    workflows:
+        service_request:
+            type: state_machine
+            supports:
+                - App\Entity\ServiceRequest
+            marking_store:
+                type: method
+                property: currentState
+            initial_marking: new
+            places:
+                - new
+                - collecting
+                - awaiting_human
+                - awaiting_external
+                - ready_for_response
+                - completed
+                - cancelled
+                - closed
+            transitions:
+                start_collection:
+                    from: new
+                    to: collecting
+                    guard: "subject.getConversation() === null or subject.getConversation().isAutomationEnabled()"
+                request_human:
+                    from: [new, collecting, awaiting_external, ready_for_response]
+                    to: awaiting_human
+                resume_ai:
+                    from: awaiting_human
+                    to: collecting
+                    guard: "subject.getConversation() !== null and subject.getConversation().isAutomationEnabled()"
+                wait_external:
+                    from: collecting
+                    to: awaiting_external
+                external_resolved:
+                    from: awaiting_external
+                    to: collecting
+                    guard: "subject.getConversation() === null or subject.getConversation().isAutomationEnabled()"
+                ready_to_answer:
+                    from: [new, collecting, awaiting_external]
+                    to: ready_for_response
+                complete:
+                    from: [ready_for_response, awaiting_human]
+                    to: completed
+                cancel:
+                    from: [new, collecting, awaiting_human, awaiting_external, ready_for_response]
+                    to: cancelled
+                close:
+                    from: [completed, cancelled]
+                    to: closed

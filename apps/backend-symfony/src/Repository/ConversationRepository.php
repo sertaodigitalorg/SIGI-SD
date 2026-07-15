@@ -15,4 +15,12 @@ final class ConversationRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Conversation::class);
     }
+
+    public function findOneByChatwootReference(int $accountId, string $conversationId): ?Conversation
+    {
+        return $this->findOneBy([
+            'chatwootAccountId' => $accountId,
+            'chatwootConversationId' => $conversationId,
+        ]);
+    }
 }

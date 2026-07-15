@@ -6,6 +6,7 @@ use App\Entity\AttendanceProtocol;
 use App\Entity\Integration\Chatwoot\ChatwootAccount;
 use App\Repository\AttendanceProtocolRepository;
 use App\Repository\ProtocolSettingsRepository;
+use App\Service\Conversation\ConversationWorkflowSyncService;
 use App\Service\ProtocolNumberGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -23,6 +24,7 @@ final readonly class ChatwootConversationSyncService
         private ProtocolNumberGenerator $protocolNumberGenerator,
         private ChatwootApiClient $apiClient,
         private ChatwootContactSyncService $contactSyncService,
+        private ConversationWorkflowSyncService $conversationWorkflowSyncService,
         private ProtocolSettingsRepository $settingsRepository,
         private EntityManagerInterface $entityManager,
         private LoggerInterface $logger,
@@ -41,7 +43,7 @@ final readonly class ChatwootConversationSyncService
             return null;
         }
 
-        return $this->syncConversationData($data, $account, $sendPrivateNote);
+        return $this->syncConversationData($data, $account, $sendPrivateNote, $payload);
     }
 
     public function syncConversationId(string $conversationId, ?ChatwootAccount $account = null, bool $sendPrivateNote = true): ?AttendanceProtocol
@@ -51,7 +53,10 @@ final readonly class ChatwootConversationSyncService
         return $this->syncPayload($payload, $account, $sendPrivateNote);
     }
 
-    public function syncConversationData(ChatwootConversationData $data, ?ChatwootAccount $account = null, bool $sendPrivateNote = true): AttendanceProtocol
+    /**
+     * @param array<string, mixed>|null $rawPayload
+     */
+    public function syncConversationData(ChatwootConversationData $data, ?ChatwootAccount $account = null, bool $sendPrivateNote = true, ?array $rawPayload = null): AttendanceProtocol
     {
         $protocol = $this->protocolRepository->findOneByConversationId($data->conversationId);
         $isNew = false;
@@ -127,6 +132,8 @@ final readonly class ChatwootConversationSyncService
         if ($protocol->isCustomerProtocolMessageSent()) {
             $reservedLabels[] = self::LABEL_PROTOCOL_MESSAGE_SENT;
         }
+
+        $this->conversationWorkflowSyncService->syncFromChatwoot($data, $protocol, $account, $rawPayload ?? []);
 
         $reservedLabels = array_values(array_unique(array_merge(
             $reservedLabels,

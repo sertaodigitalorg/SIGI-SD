@@ -4,7 +4,7 @@
 
 Esta etapa entrega a analise tecnica e o plano incremental para evoluir o SIGI-SD para um motor local de fluxos de atendimento com Symfony Workflow, Messenger, Lock, PostgreSQL, Redis, Chatwoot self-hosted, Ollama e Qdrant.
 
-Nao foram iniciadas mudancas estruturais de dominio, entidades, migrations, filas ou controllers nesta etapa.
+As mudancas estruturais ja foram iniciadas: a Etapa 2 criou as entidades/migrations base e a Etapa 3 adicionou o state machine `service_request` com sincronizacao inicial a partir do fluxo Chatwoot existente.
 
 ## Estado atual do repositorio
 
@@ -523,12 +523,28 @@ Migrar sem quebrar:
 
 ### Etapa 3: Workflow e guards
 
-Criar:
+Status atual: iniciado.
 
-- `config/packages/workflow.yaml`
-- guard services;
-- aplicador de transicoes;
-- testes de transicao valida/invalida.
+Entregue:
+
+- dependencia `symfony/workflow` adicionada ao backend Symfony;
+- `config/packages/workflow.yaml` com state machine `service_request`;
+- guard de automacao para impedir transicao automatica quando a conversa esta sob controle humano;
+- `ConversationWorkflowSyncService` para sincronizar `Conversation`, `ServiceRequest`, `ConversationMessage` e `RequestEvent` a partir do payload Chatwoot normalizado;
+- integracao do bridge no `ChatwootConversationSyncService`, preservando `AttendanceProtocol` como compatibilidade legada;
+- validaÃ§Ã£o no WSL/container com `lint:container`, `doctrine:schema:validate --skip-sync` e `debug:config framework workflows`.
+
+Resolvido nesta etapa:
+
+- testes automatizados de transicao valida/invalida;
+- teste de guard bloqueando automacao quando humano controla a conversa;
+- regra explicita de baixa confianca levando para humano;
+- `ServiceRequestTransitionService` como aplicador publico de transicoes para futuros comandos/admin/API.
+
+Pendente para evolucao posterior:
+
+- expor as transicoes em UI/API administrativa;
+- enriquecer `RequestEvent` com eventos explicitos para cada transicao manual.
 
 ### Etapa 4: Messenger, Redis, Lock e idempotencia
 

@@ -172,6 +172,33 @@ class ConversationMessage
         return $this;
     }
 
+    public function setMessageType(?string $messageType): static
+    {
+        $this->messageType = $this->normalizeNullableString($messageType, 64);
+
+        return $this;
+    }
+
+    public function setDeliveryStatus(?string $deliveryStatus): static
+    {
+        $this->deliveryStatus = $this->normalizeNullableString($deliveryStatus, 64);
+
+        return $this;
+    }
+
+    public function setSentAt(?\DateTimeImmutable $sentAt): static
+    {
+        $this->sentAt = $sentAt;
+
+        return $this;
+    }
+
+    public function setReceivedAt(?\DateTimeImmutable $receivedAt): static
+    {
+        $this->receivedAt = $receivedAt;
+
+        return $this;
+    }
     /**
      * @return array<int, array<string, mixed>>
      */

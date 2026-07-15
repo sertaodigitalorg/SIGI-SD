@@ -3,6 +3,8 @@
 var/cache/*
 var/log/*
 var/share/*
+var/dart-sass*
+var/*.tar.gz
 vendor/
 data/*.sqlite
 .env.local
