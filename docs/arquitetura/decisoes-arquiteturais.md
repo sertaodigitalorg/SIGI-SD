@@ -12,9 +12,21 @@ O SIGI-SD registra e organiza interacoes. Analytics, BI, dashboards e indicadore
 
 Sistemas como e-Cidade, i-Educar e Amadeus LMS continuam sendo sistemas transacionais. O SIGI-SD acessa esses sistemas por conectores, contratos e adaptadores.
 
-## ADR-004: Sem modulo de workflow
+## ADR-004: Workflow transacional de atendimento
 
-O SIGI-SD pode registrar status, encaminhamentos e tramitacao simples, mas nao deve se transformar em motor de workflow.
+O SIGI-SD deve controlar o ciclo de vida transacional das solicitacoes de atendimento com Symfony Workflow, mantendo o Chatwoot como interface operacional das conversas.
+
+Esta decisao substitui a orientacao anterior de nao possuir modulo de workflow. O limite arquitetural permanece: o SIGI-SD nao deve se tornar um orquestrador generico de todos os processos administrativos. O workflow fica restrito a protocolo, estado oficial da solicitacao, controle de automacao, handoff humano, auditoria e integracoes de atendimento.
+
+Regras:
+
+- Chatwoot continua sendo a interface do atendente e dos canais.
+- SIGI-SD e a fonte oficial de protocolo, estado, auditoria e decisoes de fluxo.
+- Processamento assicrono deve usar Symfony Messenger com Redis.
+- Concorrencia deve ser controlada com Symfony Lock e Redis.
+- IA local via Ollama e base vetorial local via Qdrant devem ser acessadas por nomes de servico Docker, sem APIs externas de IA.
+- URLs internas devem usar nomes como `symfony-admin`, `chatwoot`, `postgres`, `redis`, `ollama` e `qdrant`; URLs locais de navegador devem usar hosts Traefik como `admin.sigi.localhost` e `chat.sigi.localhost`.
+- Validacoes com banco e servicos locais devem ser executadas pelo WSL/Docker, nao pelo PHP local do Windows.
 
 ## ADR-005: Chatwoot web separado do worker
 

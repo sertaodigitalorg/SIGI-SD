@@ -14,7 +14,7 @@ class PersonOrganizationRole
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: PersonOrganization::class)]
+    #[ORM\ManyToOne(targetEntity: PersonOrganization::class, inversedBy: 'personOrganizationRoles')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?PersonOrganization $personOrganization = null;
 

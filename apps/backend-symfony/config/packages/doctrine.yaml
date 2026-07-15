@@ -1,7 +1,7 @@
 doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
-        schema_filter: '~^(addresses|address_types|attendance_protocols|cities|comment|contact_issue_types|contact_statuses|contact_types|countries|coverage_types|interaction_statuses|interaction_threads|chatwoot_accounts|chatwoot_message_events|mesoregions|microregions|organizations|organization_addresses|organization_contacts|organization_contact_interactions|organization_coverages|organization_thematic_areas|organization_types|persons|person_addresses|person_contacts|person_contact_interactions|person_coverages|person_organizations|person_organization_roles|person_thematic_areas|post|post_tag|protocol_settings|regions|response_types|roles|states|tag|thematic_areas|users|doctrine_migration_versions)$~'
+        schema_filter: '~^(addresses|address_types|ai_execution_logs|attendance_protocols|cities|comment|contact_issue_types|contact_statuses|contact_types|countries|coverage_types|interaction_statuses|interaction_threads|chatwoot_accounts|chatwoot_message_events|conversation_messages|conversations|external_integration_logs|mesoregions|microregions|organizations|organization_addresses|organization_contacts|organization_contact_interactions|organization_coverages|organization_thematic_areas|organization_types|persons|person_addresses|person_contacts|person_contact_interactions|person_coverages|person_organizations|person_organization_roles|person_thematic_areas|post|post_tag|protocol_settings|request_events|regions|response_types|roles|service_requests|states|tag|thematic_areas|users|doctrine_migration_versions)$~'
 
         # IMPORTANT: You MUST configure your server version,
         # either here or in the DATABASE_URL env var (see .env file)
