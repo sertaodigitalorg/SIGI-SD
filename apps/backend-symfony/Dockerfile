@@ -15,6 +15,8 @@ RUN set -eux; \
 
 RUN set -eux; \
     docker-php-ext-install intl opcache pdo_pgsql pdo_sqlite zip; \
+    pecl install redis; \
+    docker-php-ext-enable redis; \
     a2enmod rewrite
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

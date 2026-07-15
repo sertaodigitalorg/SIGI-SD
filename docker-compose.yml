@@ -83,6 +83,9 @@ services:
       APP_SECRET: ${APP_SECRET:-troque-este-segredo}
       DATABASE_URL: ${DATABASE_URL:-postgresql://sigi:sigi_dev_password@postgres:5432/sigi_sd?serverVersion=16&charset=utf8}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      MESSENGER_TRANSPORT_DSN: ${MESSENGER_TRANSPORT_DSN:-redis://redis:6379/messages}
+      MESSENGER_FAILED_TRANSPORT_DSN: ${MESSENGER_FAILED_TRANSPORT_DSN:-redis://redis:6379/failed}
+      LOCK_DSN: ${LOCK_DSN:-redis://redis:6379}
       CHATWOOT_INTERNAL_BASE_URL: ${CHATWOOT_INTERNAL_BASE_URL:-http://chatwoot:3000}
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
       OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.1}
@@ -103,6 +106,29 @@ services:
     networks:
       - sigi-network
 
+  sigi-worker:
+    build:
+      context: ./apps/backend-symfony
+    container_name: sigi-worker
+    environment:
+      APP_ENV: ${APP_ENV:-dev}
+      APP_SECRET: ${APP_SECRET:-troque-este-segredo}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://sigi:sigi_dev_password@postgres:5432/sigi_sd?serverVersion=16&charset=utf8}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      MESSENGER_TRANSPORT_DSN: ${MESSENGER_TRANSPORT_DSN:-redis://redis:6379/messages}
+      MESSENGER_FAILED_TRANSPORT_DSN: ${MESSENGER_FAILED_TRANSPORT_DSN:-redis://redis:6379/failed}
+      MESSENGER_CONSUMER_NAME: ${MESSENGER_CONSUMER_NAME:-sigi-worker}
+      LOCK_DSN: ${LOCK_DSN:-redis://redis:6379}
+      CHATWOOT_INTERNAL_BASE_URL: ${CHATWOOT_INTERNAL_BASE_URL:-http://chatwoot:3000}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.1}
+    command: php bin/console messenger:consume async --time-limit=3600 --memory-limit=256M -vv
+    depends_on:
+      - postgres
+      - redis
+      - symfony-admin
+    networks:
+      - sigi-network
   chatwoot:
     image: chatwoot/chatwoot:latest
     container_name: sigi-chatwoot

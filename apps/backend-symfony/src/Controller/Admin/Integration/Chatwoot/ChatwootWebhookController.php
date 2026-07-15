@@ -31,7 +31,7 @@ final class ChatwootWebhookController extends AbstractController
         $result = $webhookService->receive($accountId, $payload, $secret);
 
         return $this->json([
-            'success' => Response::HTTP_OK === $result->getHttpStatus(),
+            'success' => $result->getHttpStatus() < Response::HTTP_BAD_REQUEST,
             'status' => $result->getStatus(),
         ], $result->getHttpStatus());
     }

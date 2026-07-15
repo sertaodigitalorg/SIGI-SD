@@ -1,5 +1,6 @@
 COMPOSE=docker compose
 ADMIN=symfony-admin
+WORKER=sigi-worker
 IA_SERVICES=ollama qdrant
 BASE_SERVICES=postgres redis traefik
 CLOUDFLARED_IMAGE=cloudflare/cloudflared:latest
@@ -25,6 +26,7 @@ help:
 	@echo "  make up-ia              Sobe apenas IA local (Ollama + Qdrant)"
 	@echo "  make up-ai              Alias para make up-ia"
 	@echo "  make up-chat            Sobe apenas Chatwoot e dependencias basicas"
+	@echo "  make up-worker          Sobe o worker Messenger do SIGI"
 	@echo "  make up-chatwoot        Alias para make up-chat"
 	@echo "  make up-bot             Sobe apenas Botpress e Traefik"
 	@echo "  make up-botpress        Alias para make up-bot"
@@ -38,12 +40,15 @@ help:
 	@echo "  make stop-admin         Para Symfony Admin Hub"
 	@echo "  make stop-ia            Para Ollama e Qdrant"
 	@echo "  make stop-chat          Para Chatwoot"
+	@echo "  make stop-worker        Para o worker Messenger do SIGI"
 	@echo "  make logs-admin         Logs do Symfony Admin Hub"
 	@echo "  make logs-ia            Logs de Ollama e Qdrant"
 	@echo "  make logs-chat          Logs do Chatwoot"
+	@echo "  make logs-worker        Logs do worker Messenger do SIGI"
 	@echo "  make logs-bot           Logs do Botpress"
 	@echo "  make logs-proxy         Logs do Traefik"
 	@echo "  make shell-admin        Abre shell no Symfony Admin Hub"
+	@echo "  make consume-async      Consome a fila async manualmente"
 	@echo "  make composer-install   Instala dependencias do Symfony"
 	@echo "  make migrate            Executa migrations do Symfony"
 	@echo "  make cache-clear        Limpa cache do Symfony"
@@ -97,6 +102,9 @@ up-admin:
 
 up-symfony: up-admin
 
+up-worker: up-admin
+	$(COMPOSE) up -d $(WORKER)
+
 up-ia:
 	$(COMPOSE) up -d traefik $(IA_SERVICES)
 
@@ -138,6 +146,9 @@ stop-admin:
 
 stop-symfony: stop-admin
 
+stop-worker:
+	$(COMPOSE) stop $(WORKER)
+
 stop-ia:
 	$(COMPOSE) stop $(IA_SERVICES)
 
@@ -155,6 +166,9 @@ logs-admin:
 	$(COMPOSE) logs -f $(ADMIN)
 
 logs-symfony: logs-admin
+
+logs-worker:
+	$(COMPOSE) logs -f $(WORKER)
 
 logs-ia:
 	$(COMPOSE) logs -f $(IA_SERVICES)
@@ -174,6 +188,9 @@ shell-admin:
 	$(COMPOSE) exec $(ADMIN) bash
 
 shell-symfony: shell-admin
+
+consume-async:
+	$(COMPOSE) exec $(ADMIN) php bin/console messenger:consume async -vv
 
 composer-install:
 	$(COMPOSE) exec $(ADMIN) composer install

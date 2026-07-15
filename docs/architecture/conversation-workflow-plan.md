@@ -532,7 +532,7 @@ Entregue:
 - guard de automacao para impedir transicao automatica quando a conversa esta sob controle humano;
 - `ConversationWorkflowSyncService` para sincronizar `Conversation`, `ServiceRequest`, `ConversationMessage` e `RequestEvent` a partir do payload Chatwoot normalizado;
 - integracao do bridge no `ChatwootConversationSyncService`, preservando `AttendanceProtocol` como compatibilidade legada;
-- validaÃ§Ã£o no WSL/container com `lint:container`, `doctrine:schema:validate --skip-sync` e `debug:config framework workflows`.
+- validaÃƒÂ§ÃƒÂ£o no WSL/container com `lint:container`, `doctrine:schema:validate --skip-sync` e `debug:config framework workflows`.
 
 Resolvido nesta etapa:
 
@@ -548,7 +548,9 @@ Pendente para evolucao posterior:
 
 ### Etapa 4: Messenger, Redis, Lock e idempotencia
 
-Criar:
+Status atual: implementado em ambiente WSL/Docker.
+
+Entregue:
 
 - mensagens e handlers;
 - `messenger.yaml`;

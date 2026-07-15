@@ -3,17 +3,19 @@
 namespace App\Service\Integration\Chatwoot;
 
 use App\Entity\Integration\Chatwoot\ChatwootMessageEvent;
+use App\Message\Integration\Chatwoot\ProcessChatwootEventMessage;
 use App\Repository\Integration\Chatwoot\ChatwootAccountRepository;
 use App\Repository\Integration\Chatwoot\ChatwootMessageEventRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 final class ChatwootWebhookService
 {
     public function __construct(
         private readonly ChatwootAccountRepository $accountRepository,
         private readonly ChatwootMessageEventRepository $eventRepository,
-        private readonly ChatwootEventProcessorService $eventProcessor,
+        private readonly MessageBusInterface $messageBus,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
@@ -62,10 +64,13 @@ final class ChatwootWebhookService
             ->setRawPayload($payload);
 
         $this->entityManager->persist($event);
-        $this->eventProcessor->process($event);
         $this->entityManager->flush();
 
-        return new ChatwootWebhookResult(Response::HTTP_OK, 'received', $event);
+        if (null !== $event->getId()) {
+            $this->messageBus->dispatch(new ProcessChatwootEventMessage($event->getId()));
+        }
+
+        return new ChatwootWebhookResult(Response::HTTP_ACCEPTED, 'queued', $event);
     }
 
     /**
