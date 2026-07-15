@@ -6,8 +6,10 @@ use App\Entity\Integration\Chatwoot\ChatwootMessageEvent;
 
 final class ChatwootEventProcessorService
 {
-    public function __construct(private readonly ChatwootConversationSyncService $conversationSyncService)
-    {
+    public function __construct(
+        private readonly ChatwootConversationSyncService $conversationSyncService,
+        private readonly ChatwootWebhookEventInspector $eventInspector,
+    ) {
     }
 
     public function process(ChatwootMessageEvent $event): void
@@ -15,8 +17,9 @@ final class ChatwootEventProcessorService
         try {
             $event->markProcessing();
 
-            if (null === $event->getEventType()) {
-                $event->markIgnored('Tipo de evento nao identificado no payload.');
+            $ignoreReason = $this->eventInspector->processabilityReason($event);
+            if (null !== $ignoreReason) {
+                $event->markIgnored($ignoreReason);
 
                 return;
             }

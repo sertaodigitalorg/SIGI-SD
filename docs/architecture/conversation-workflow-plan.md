@@ -532,7 +532,7 @@ Entregue:
 - guard de automacao para impedir transicao automatica quando a conversa esta sob controle humano;
 - `ConversationWorkflowSyncService` para sincronizar `Conversation`, `ServiceRequest`, `ConversationMessage` e `RequestEvent` a partir do payload Chatwoot normalizado;
 - integracao do bridge no `ChatwootConversationSyncService`, preservando `AttendanceProtocol` como compatibilidade legada;
-- validaÃƒÂ§ÃƒÂ£o no WSL/container com `lint:container`, `doctrine:schema:validate --skip-sync` e `debug:config framework workflows`.
+- validaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o no WSL/container com `lint:container`, `doctrine:schema:validate --skip-sync` e `debug:config framework workflows`.
 
 Resolvido nesta etapa:
 
@@ -561,7 +561,9 @@ Entregue:
 
 ### Etapa 5: Integracao Chatwoot
 
-Adaptar:
+Status atual: implementado em ambiente WSL/Docker.
+
+Entregue:
 
 - `ChatwootWebhookService` para apenas validar, deduplicar, persistir e despachar;
 - `ChatwootEventProcessorService` para ser usado por handler;

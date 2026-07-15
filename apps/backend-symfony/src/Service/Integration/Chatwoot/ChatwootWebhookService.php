@@ -16,6 +16,7 @@ final class ChatwootWebhookService
         private readonly ChatwootAccountRepository $accountRepository,
         private readonly ChatwootMessageEventRepository $eventRepository,
         private readonly MessageBusInterface $messageBus,
+        private readonly ChatwootWebhookEventInspector $eventInspector,
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
@@ -34,7 +35,7 @@ final class ChatwootWebhookService
             return new ChatwootWebhookResult(Response::HTTP_FORBIDDEN, 'forbidden');
         }
 
-        $eventType = $this->extractString($payload, ['event', 'event_type', 'message_type']);
+        $eventType = $this->eventInspector->normalizeEventType($this->extractString($payload, ['event', 'event_type', 'message_type']));
         $externalConversationId = $this->extractString($payload, ['conversation.id', 'conversation_id', 'id']);
         $externalMessageId = $this->extractString($payload, ['message.id', 'message_id']);
 
