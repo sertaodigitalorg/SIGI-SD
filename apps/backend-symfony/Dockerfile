@@ -28,6 +28,7 @@ COPY . .
 RUN set -eux; \
     composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts; \
     mkdir -p var/cache var/log var/share; \
+    php bin/console importmap:install; \
     php bin/console sass:build; \
     chown -R www-data:www-data var; \
     sed -ri 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
