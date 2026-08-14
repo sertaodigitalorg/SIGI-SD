@@ -14,6 +14,7 @@
 /apps/backend-symfony/.php-cs-fixer.cache
 /apps/backend-symfony/phpstan.neon
 /apps/backend-symfony/phpunit.xml
+/apps/chatwoot-sd/
 
 ###> symfony/framework-bundle ###
 /.env.local
