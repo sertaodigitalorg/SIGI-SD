@@ -45,6 +45,13 @@
                         </button>
                     </fieldset>
                 </form>
+                {% if oidc.enabled %}
+                    <div class="border-top mt-4 pt-3">
+                        <a class="btn btn-outline-primary w-100" href="{{ path('security_legislagd_login') }}">
+                            <twig:ux:icon name="tabler:key"/> Entrar com {{ oidc.display_name }}
+                        </a>
+                    </div>
+                {% endif %}
             </div>
         </div>
 
