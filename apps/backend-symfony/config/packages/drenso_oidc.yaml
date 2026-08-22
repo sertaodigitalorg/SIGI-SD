@@ -3,6 +3,7 @@ drenso_oidc:
     clients:
         legislagd:
             well_known_url: '%env(SIGI_OIDC_WELL_KNOWN_URL)%'
+            well_known_parser: App\Security\LegislagdOidcWellKnownParser
             client_id: '%env(SIGI_OIDC_CLIENT_ID)%'
             client_secret: '%env(SIGI_OIDC_CLIENT_SECRET)%'
             redirect_route: 'security_legislagd_callback'
