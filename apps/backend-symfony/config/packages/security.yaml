@@ -47,7 +47,9 @@ security:
                 user_identifier_property: preferred_username
                 default_target_path: /pt_BR/admin/atendimentos
                 failure_path: security_login
-                enable_retrieve_user_info: true
+                enable_retrieve_user_info: false
+                user_identifier_from_idtoken: true
+                user_info_from_idtoken: true
 
             # This option allows users to choose to stay logged in for longer than
             # the session lasts using a cookie. Reference: https://symfony.com/doc/current/security/remember_me.html
