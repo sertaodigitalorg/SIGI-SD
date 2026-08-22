@@ -16,6 +16,12 @@
         <server name="APP_ENV" value="test" force="true" />
         <env name="APP_ENV" value="test" force="true" />
         <server name="SHELL_VERBOSITY" value="-1" />
+
+        <!-- ###+ drenso/symfony-oidc-bundle ### -->
+        <env name="OIDC_WELL_KNOWN_URL" value="Enter the .well-known url for the OIDC provider"/>
+        <env name="OIDC_CLIENT_ID" value="Enter your OIDC client id"/>
+        <env name="OIDC_CLIENT_SECRET" value="Enter your OIDC client secret"/>
+        <!-- ###- drenso/symfony-oidc-bundle ### -->
     </php>
 
     <testsuites>

@@ -41,6 +41,8 @@ class UserFixtures extends Fixture
             // [$fullName, $username, $password, $email, $roles]
             ['John User', 'john_user', 'kitten', 'john_user@sertaodigital.org', [User::ROLE_USER]],
             ['Jane Admin', 'jane_admin', 'kitten', 'jane_admin@sertaodigital.org', [User::ROLE_ADMIN]],
+            ['Administrador SIGI-SD', 'sigi.admin', 'sigi_dev_password', 'sigi.admin@legislagd.localhost', [User::ROLE_ADMIN]],
+            ['Atendente SIGI-SD', 'sigi.atendente', 'sigi_dev_password', 'sigi.atendente@legislagd.localhost', [User::ROLE_USER]],
             ['Wellington Carvalho', 'wellington', '123456', 'wellington.carvalho@sertaodigital.org', [User::ROLE_ADMIN]],
             ['Administrador SIGI-SD', 'admin', '123456', 'admin@sertaodigital.org', [User::ROLE_ADMIN]],
             ['Usuário Operacional', 'operacional', '123456', 'operacional@sertaodigital.org', [User::ROLE_USER]],

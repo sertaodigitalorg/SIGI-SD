@@ -12,12 +12,12 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use Drenso\OidcBundle\OidcClientInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
@@ -65,42 +65,23 @@ final class SecurityController extends AbstractController
     }
 
     #[Route('/auth/legislagd/login', name: 'security_legislagd_login', methods: ['GET'])]
-    public function legislagdLogin(Request $request): RedirectResponse
+    public function legislagdLogin(OidcClientInterface $legislagdOidcClient): RedirectResponse
     {
         $oidc = $this->getOidcConfig();
 
-        if (!$oidc['enabled'] || '' === $oidc['issuer'] || '' === $oidc['client_id']) {
+        if (!$oidc['enabled']) {
             throw $this->createNotFoundException();
         }
 
-        $state = bin2hex(random_bytes(16));
-        $nonce = bin2hex(random_bytes(16));
-        $request->getSession()->set('sigi_oidc_state', $state);
-        $request->getSession()->set('sigi_oidc_nonce', $nonce);
-
-        $authorizationEndpoint = $this->getEnv('SIGI_OIDC_AUTHORIZATION_URL');
-        if ('' === $authorizationEndpoint) {
-            $authorizationEndpoint = rtrim($oidc['issuer'], '/').'/protocol/openid-connect/auth';
-        }
-
-        return $this->redirect($authorizationEndpoint.'?'.http_build_query([
-            'response_type' => 'code',
-            'client_id' => $oidc['client_id'],
-            'redirect_uri' => $this->generateUrl('security_legislagd_callback', [], UrlGeneratorInterface::ABSOLUTE_URL),
-            'scope' => $oidc['scopes'],
-            'state' => $state,
-            'nonce' => $nonce,
-            'ui_locales' => $this->getEnv('SIGI_OIDC_UI_LOCALES', 'pt-BR'),
-        ], '', '&', PHP_QUERY_RFC3986));
+        return $legislagdOidcClient->generateAuthorizationRedirect(
+            scopes: explode(' ', $oidc['scopes']),
+            additionalQueryParams: ['ui_locales' => $this->getEnv('SIGI_OIDC_UI_LOCALES', 'pt-BR')],
+        );
     }
 
     #[Route('/auth/legislagd/callback', name: 'security_legislagd_callback', methods: ['GET'])]
     public function legislagdCallback(Request $request): RedirectResponse
     {
-        $request->getSession()->remove('sigi_oidc_state');
-        $request->getSession()->remove('sigi_oidc_nonce');
-        $this->addFlash('warning', 'O login com LegislaGD no SIGI-SD ainda precisa concluir a validação OIDC.');
-
         return $this->redirectToRoute('security_login');
     }
 
