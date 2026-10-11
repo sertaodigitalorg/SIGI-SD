@@ -1,50 +1,47 @@
 name: "Tests"
 
 on:
-    pull_request:
-    push:
-        branches:
-            - main
-
-env:
-    fail-fast: true
+  pull_request:
+  push:
+    branches: [main]
 
 permissions:
-    contents: read
+  contents: read
 
 jobs:
-    test:
-        name: "${{ matrix.operating-system }} / PHP ${{ matrix.php-version }}"
-        runs-on: ${{ matrix.operating-system }}
-        continue-on-error: false
-
-        strategy:
-            matrix:
-                operating-system: ['ubuntu-latest']
-                php-version: ['8.4', '8.5']
-                include:
-                    - operating-system: 'macos-latest'
-                      php-version: '8.4'
-                    - operating-system: 'windows-latest'
-                      php-version: '8.4'
-
-        steps:
-            - name: "Checkout code"
-              uses: actions/checkout@v6
-
-            - name: "Install PHP with extensions"
-              uses: shivammathur/setup-php@v2
-              with:
-                  coverage: "none"
-                  extensions: "intl, mbstring, pdo_sqlite, zip"
-                  php-version: ${{ matrix.php-version }}
-                  tools: composer:v2
-
-            - name: "Add PHPUnit matcher"
-              run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
-
-            - name: "Install dependencies"
-              run: composer install --ansi --no-interaction --no-progress
-
-            - name: "Run tests"
-              run: vendor/bin/phpunit
+  test:
+    name: "${{ matrix.operating-system }} / PHP ${{ matrix.php-version }}"
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      fail-fast: false
+      matrix:
+        operating-system: [ubuntu-latest]
+        php-version: ['8.4', '8.5']
+        include:
+          - operating-system: macos-latest
+            php-version: '8.4'
+          - operating-system: windows-latest
+            php-version: '8.4'
+    steps:
+      - uses: actions/checkout@v6
+      - name: Detect PHP project
+        id: php
+        shell: bash
+        run: |
+          if [[ -f composer.json ]]; then echo "present=true" >> "$GITHUB_OUTPUT"; else echo "present=false" >> "$GITHUB_OUTPUT"; fi
+      - uses: shivammathur/setup-php@v2
+        if: steps.php.outputs.present == 'true'
+        with:
+          coverage: none
+          extensions: intl, mbstring, pdo_sqlite, zip
+          php-version: ${{ matrix.php-version }}
+          tools: composer:v2
+      - name: Install dependencies
+        if: steps.php.outputs.present == 'true'
+        run: composer install --ansi --no-interaction --no-progress
+      - name: Run tests
+        if: steps.php.outputs.present == 'true'
+        run: vendor/bin/phpunit
+      - name: No PHP application at repository root
+        if: steps.php.outputs.present != 'true'
+        run: echo "PHP unit tests are not applicable without a root Composer project."
