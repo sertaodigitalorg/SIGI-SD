@@ -44,7 +44,7 @@ O SIGI-SD nao substitui o Chatwoot. O Chatwoot nao substitui o SIGI-SD. Ambos de
 - Backend: Symfony.
 - Templates: Twig.
 - ORM: Doctrine.
-- Banco de dados: MySQL, conforme stack indicada para este modulo.
+- Banco de dados: PostgreSQL, conforme padrão técnico confirmado para o SIGI-SD.
 - Area administrativa: `/admin`.
 - Codigo: ingles.
 - Interface: portugues do Brasil.
@@ -54,7 +54,7 @@ O SIGI-SD nao substitui o Chatwoot. O Chatwoot nao substitui o SIGI-SD. Ambos de
   - Domain Layer.
   - Infrastructure Layer.
 
-Observacao de implementacao: o ambiente Docker atual do projeto tambem usa PostgreSQL para os servicos de infraestrutura. Se este modulo for implementado no banco atual do container, adaptar tipos Doctrine e migrations sem alterar a decisao funcional da integracao.
+Observação de implementação: PostgreSQL é o banco definido para o SIGI-SD e para este módulo. As entidades Doctrine e migrations devem ser compatíveis com PostgreSQL. A implementação efetiva deve continuar sendo verificada por testes e inspeção do código.
 
 ## Operacao Docker do Chatwoot
 
