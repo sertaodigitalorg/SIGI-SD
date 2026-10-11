@@ -17,6 +17,9 @@ jobs:
         name: "${{ matrix.operating-system }} / PHP ${{ matrix.php-version }}"
         runs-on: ${{ matrix.operating-system }}
         continue-on-error: false
+        defaults:
+            run:
+                working-directory: apps/backend-symfony
 
         strategy:
             matrix:
